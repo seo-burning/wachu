@@ -1,6 +1,6 @@
 from .common import *
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", ".compute.amazonaws.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".compute.amazonaws.com"]
 
 DEBUG = True
 
