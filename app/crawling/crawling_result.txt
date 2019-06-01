@@ -1,0 +1,30 @@
+20 created, 0 updated, 0 failed in post, 3 deactivated(failed)
+
+created_account_list 
+http://www.instagram.com/duyenperfume/
+http://www.instagram.com/lesavrilagencyvn/
+http://www.instagram.com/aucor.store/
+http://www.instagram.com/_d.wwatch_auth.hn/
+http://www.instagram.com/khabi.vintagestore/
+http://www.instagram.com/seonguk_seo_/
+http://www.instagram.com/polarbear.store__/
+http://www.instagram.com/shee.clothes/
+http://www.instagram.com/plmcaseofficial/
+http://www.instagram.com/biquyettangdonhang/
+http://www.instagram.com/airwick.sin/
+http://www.instagram.com/kieuoanh_eyebrows/
+http://www.instagram.com/xpstore7/
+http://www.instagram.com/theyri.sg/
+http://www.instagram.com/biquyetkinhdoanhonline/
+http://www.instagram.com/goldenstrawb/
+http://www.instagram.com/_ulz_k/
+http://www.instagram.com/bongbasic/
+http://www.instagram.com/aothunnunu/
+http://www.instagram.com/ai.accessorize/
+
+deactivated_account_list 
+https://www.instagram.com/test_fakeaccount/
+https://www.instagram.com/upan.store_/
+https://www.instagram.com/test_fakeaccount2/
+
+failed in post 
