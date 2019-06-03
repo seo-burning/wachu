@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
+from django.utils.translation import gettext as _
 
 from store import models
 
@@ -22,7 +23,7 @@ class ExportCsvMixin:
         writer.writerow(field_names)
         for obj in queryset:
             writer.writerow([getattr(obj, field)
-                            for field in field_names])
+                             for field in field_names])
 
         return response
 
@@ -33,11 +34,11 @@ class StorePostInline(admin.StackedInline):
     model = models.StorePost
     readonly_fields = ('post_image', 'post_like',
                        'post_description', 'post_taken_at_timestamp')
-    fields = ['is_active']
+    fields = ['is_active', 'post_description']
     extra = 0
     ordering = ['post_taken_at_timestamp']
-    verbose_name = 'Post'
-    verbose_name_plural = 'Post'
+    verbose_name = _('Post')
+    verbose_name_plural = _('Post')
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -59,9 +60,13 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         'follower',
         'following',
         'post_num',
-        'description',)
+        'description',
+        'ranking',
+        'ranking_changed',
+        'store_score',
+        'last_score')
     fieldsets = [
-        ("User Profile", {'fields': [
+        (_("User Profile"), {'fields': [
             'is_active',
             'is_updated',
             'instagram_link',
@@ -71,10 +76,15 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             'name',
             'description'
         ]}),
-        ("Instagram Images", {'fields': (
+        (_("Url Infomation"), {'fields': (('facebook_url', 'shopee_url'),)}),
+        (_("Ranking Infomation"), {'fields':
+                                   (('ranking', 'ranking_changed',
+                                     'store_score', 'last_score'),
+                                    )}),
+        (_("Instagram Numbers"), {'fields': (
             ('post_num', 'follower', 'following'),
         )}),
-        ("images", {'fields': (
+        (_("Images"), {'fields': (
             ("category", "region"),
             ("primary_style", "secondary_style", "tpo"),
         )}),
