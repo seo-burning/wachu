@@ -1,3 +1,14 @@
-# from django.shortcuts import render
+from rest_framework import viewsets, mixins
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+from store import serializers
+from store.models import Store
+
+
+class StoreViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """Manage store in the database"""
+    serializer_class = serializers.StoreSerializer
+    queryset = Store.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
