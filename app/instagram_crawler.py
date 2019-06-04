@@ -150,10 +150,9 @@ class InstagramScraper:
             obj_store.follower = follower
             obj_store.following = follow
             obj_store.post_num = post_num
-            obj_store.description = profile_description
+            obj_store.description = profile_description + "\n" + facebook_url
             obj_store.phone = phone
             obj_store.email = email
-            obj_store.facebook_url = facebook_url
             obj_store.insta_url = 'http://www.instagram.com/' + username + '/'
             obj_store.profile_image = profile_image
             obj_store.save()
@@ -202,9 +201,6 @@ class InstagramScraper:
                                                                obj_store.id, post_saved))
 
 
-# In[24]:
-
-
 def report_to_teams(url, created_account_list, updated_account_list, deactivated_account_list, post_error_account_list):
     ca_len = len(created_account_list)
     ua_len = len(updated_account_list)
@@ -230,7 +226,7 @@ def report_to_teams(url, created_account_list, updated_account_list, deactivated
     section_text = ''
     for item in created_account_list:
         section_text = section_text + \
-            "<p><a href='https://www.instagram.com/{}/'>{}</a></p>".format(
+            "<p><a href='{}'>{}</a></p>".format(
                 item, item)
     CreatedListSection.text(section_text)
 
@@ -239,7 +235,7 @@ def report_to_teams(url, created_account_list, updated_account_list, deactivated
     section_text = ''
     for item in deactivated_account_list:
         section_text = section_text + \
-            "<p><a href='https://www.instagram.com/{}/'>{}</a></p>".format(
+            "<p><a href='{}'>{}</a></p>".format(
                 item, item)
     DeactivatedListSection.text(section_text)
 
@@ -248,7 +244,7 @@ def report_to_teams(url, created_account_list, updated_account_list, deactivated
     section_text = ''
     for item in post_error_account_list:
         section_text = section_text + \
-            "<p><a href='https://www.instagram.com/{}/'>{}</a></p>".format(
+            "<p><a href='{}'>{}</a></p>".format(
                 item, item)
     PostErrorListSection.text(section_text)
 
@@ -260,7 +256,6 @@ def report_to_teams(url, created_account_list, updated_account_list, deactivated
     myTeamsMessage.send()
 
 
-# In[25]:
 if __name__ == '__main__':
 
     with open('crawling/account_list.txt', 'r') as f:
@@ -287,24 +282,21 @@ if __name__ == '__main__':
 
     report_to_teams(url, created_account_list, updated_account_list,
                     deactivated_account_list, post_error_account_list)
-    # with open('crawling/crawling_result.txt', 'wt') as f:
-    #     f.write("{} created, {} updated, {} failed in post, {} deactivated(failed)\n".format(len(created_account_list),
-    #                                                                                          len(
-    #                                                                                              updated_account_list),
-    #                                                                                          len(
-    #                                                                                              post_error_account_list),
-    #                                                                                          len(deactivated_account_list)))
-    #     f.write('\ncreated_account_list \n')
-    #     created_account_list = map(lambda x: x + '\n', created_account_list)
-    #     f.writelines(created_account_list)
-    #     f.write('\ndeactivated_account_list \n')
-    #     deactivated_account_list = map(
-    #         lambda x: x + '\n', deactivated_account_list)
-    #     f.writelines(deactivated_account_list)
-    #     f.write('\nfailed in post \n')
-    #     post_error_account_list = map(
-    #         lambda x: x + '\n', post_error_account_list)
-    #     f.writelines(post_error_account_list)
-
-
-# In[ ]:
+    with open('crawling/crawling_result.txt', 'wt') as f:
+        f.write("{} created, {} updated, {} failed in post, {} deactivated(failed)\n".format(len(created_account_list),
+                                                                                             len(
+                                                                                                 updated_account_list),
+                                                                                             len(
+                                                                                                 post_error_account_list),
+                                                                                             len(deactivated_account_list)))
+        f.write('\ncreated_account_list \n')
+        created_account_list = map(lambda x: x + '\n', created_account_list)
+        f.writelines(created_account_list)
+        f.write('\ndeactivated_account_list \n')
+        deactivated_account_list = map(
+            lambda x: x + '\n', deactivated_account_list)
+        f.writelines(deactivated_account_list)
+        f.write('\nfailed in post \n')
+        post_error_account_list = map(
+            lambda x: x + '\n', post_error_account_list)
+        f.writelines(post_error_account_list)
