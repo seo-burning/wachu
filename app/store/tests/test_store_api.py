@@ -56,13 +56,13 @@ class PrivateStoreAPITests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_store(self):
-        """Test retrieving store"""
+        """Test retrieving store that it returns is_active only"""
         sample_store()
         sample_store(insta_id='test2')
 
         res = self.client.get(STORE_URL)
 
-        stores = Store.objects.all().order_by('-insta_id')
+        stores = Store.objects.all().filter(is_active=True)
         serializer = StoreSerializer(stores, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)

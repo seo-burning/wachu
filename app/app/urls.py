@@ -42,9 +42,11 @@ urlpatterns = [
     url(r'^swagger(?P<format>\.json|\.yaml)$',
         schema_view.without_ui(cache_timeout=0), name='schema-json'),
     url(r'^swagger/$', schema_view.with_ui('swagger',
-                                           cache_timeout=0), name='schema-swagger-ui'),
+                                           cache_timeout=0),
+        name='schema-swagger-ui'),
     url(r'^redoc/$', schema_view.with_ui('redoc',
-                                         cache_timeout=0), name='schema-redoc'),
+                                         cache_timeout=0),
+        name='schema-redoc'),
 
     path('', TemplateView.as_view(template_name='home.html')),
     path('admin/', admin.site.urls),

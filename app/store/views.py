@@ -12,3 +12,7 @@ class StoreViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     queryset = Store.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Return objects that is_activated only"""
+        return self.queryset.filter(is_active=True)
