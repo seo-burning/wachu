@@ -32,10 +32,11 @@ class ExportCsvMixin:
 
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
-    readonly_fields = ('post_image', 'post_like',
+    readonly_fields = ('post_image', 'post_like', 'post_score',
                        'post_description', 'post_taken_at_timestamp')
-    fields = ['is_active', 'post_description']
+    fields = ['is_active', 'post_score', 'post_description']
     extra = 0
+    max_num = 50
     ordering = ['post_taken_at_timestamp']
     verbose_name = _('Post')
     verbose_name_plural = _('Post')
@@ -47,9 +48,34 @@ class StorePostInline(admin.StackedInline):
         return False
 
 
+class StoreSurveyInline(admin.StackedInline):
+    model = models.StoreSurvey
+    readonly_fields = ['updated_at']
+    fields = ['title', 'updated_at',
+              'contact_status', 'reaction_rate', 'content']
+    extra = 0
+
+
+class StoreRankingInline(admin.StackedInline):
+    model = models.StoreRanking
+    readonly_fields = ['follower', 'following', 'post_num', 'store_score',
+                       'post_total_score', 'date', 'ranking',
+                       'ranking_changed']
+    fields = ['ranking', 'ranking_changed',
+              'store_score', 'post_total_score']
+    extra = 0
+    max_num = 3
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
-    inlines = [StorePostInline]
+    inlines = [StoreRankingInline, StorePostInline, StoreSurveyInline]
     readonly_fields = (
         'insta_id',
         'insta_url',
@@ -60,11 +86,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         'follower',
         'following',
         'post_num',
-        'description',
-        'ranking',
-        'ranking_changed',
-        'store_score',
-        'last_score')
+        'description',)
     fieldsets = [
         (_("User Profile"), {'fields': [
             'is_active',
@@ -77,10 +99,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             'description'
         ]}),
         (_("Url Infomation"), {'fields': (('facebook_url', 'shopee_url'),)}),
-        (_("Ranking Infomation"), {'fields':
-                                   (('ranking', 'ranking_changed',
-                                     'store_score', 'last_score'),
-                                    )}),
         (_("Instagram Numbers"), {'fields': (
             ('post_num', 'follower', 'following'),
         )}),
@@ -89,7 +107,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             ("primary_style", "secondary_style", "tpo"),
         )}),
     ]
-    list_display = ["instagram_link", "insta_id", 'profile_thumb',
+    list_display = ["instagram_link", "insta_id", 'profile_thumb', 'follower',
                     "category",
                     "primary_style", "secondary_style", "tpo"]
     list_filter = ['is_active', 'is_updated']
@@ -101,17 +119,17 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                      "tpo__name"]
 
     actions = ['export_as_csv', 'make_activate',
-               'make_deactivate', 'make_deactivate_under_1000']
+               'make_deactivate', 'make_deactivate_under_5000']
 
-    def make_deactivate_under_1000(self, request, queryset):
+    def make_deactivate_under_5000(self, request, queryset):
         num = 0
         for q in queryset:
-            if (int(q.follower) < 1000):
+            if (int(q.follower) < 5000):
                 num = num+1
                 q.is_active = False
                 q.save()
         self.message_user(
-            request, '1000 follower 이하인 {}의 계정을 deactivate>로 변경'.format(num))
+            request, '5000 follower 이하인 {}의 계정을 deactivate로 변경'.format(num))
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)

@@ -10,13 +10,12 @@ from time import sleep
 import pymsteams  # https://pypi.org/project/pymsteams/
 import datetime
 
-
 PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
 django.setup()
-from store.models import Store, StorePost
-
+from store.models import Store, StorePost, StoreRanking
+from store_point_logic import calculate_post_point, calculate_store_point
 _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 ]
@@ -25,7 +24,7 @@ created_account = []
 updated_account = []
 deactivated_account = []
 post_error_account = []
-
+dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
 
 class InstagramScraper:
 
@@ -85,8 +84,8 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']["edges"]
         except Exception as e:
-            print("Failed {}".format(profile_url))
-            deactivated_account.append(profile_url)
+            print("Failed in Posts {}".format(profile_url))
+            post_error_account.append(profile_url)
             pass
         else:
             for node in metrics:
@@ -94,6 +93,7 @@ class InstagramScraper:
                 if node and isinstance(node, dict):
                     results.append(node)
         return results
+
 
     def insert_insta(self, url):
         results = {}
@@ -158,6 +158,7 @@ class InstagramScraper:
             obj_store.save()
 
             post_saved = 0
+            post_score_sum = 0
             if len(result_post) > 0:
                 for post in result_post:
                     post_url = ''
@@ -165,6 +166,7 @@ class InstagramScraper:
                     post_commnet = 0
                     post_description = ''
                     post_taken_at_timestamp = 0
+                    post_score = 0
                     try:
                         if 'display_url' in post:
                             post_url = post['display_url']
@@ -184,12 +186,24 @@ class InstagramScraper:
                         obj.post_description = post_description
                         obj.post_comment = post_comment
                         obj.post_taken_at_timestamp = post_taken_at_timestamp
+                        obj.post_score = calculate_post_point(post_like, post_comment, post_taken_at_timestamp)
                         obj.save()
                         post_saved = post_saved + 1
+                        post_score_sum = post_score_sum + obj.post_score
                     except IndexError as e:
                         print('E', end='')
                         post_error_account.append(obj_store.insta_url)
                         pass
+            obj_store_ranking, is_created = StoreRanking.objects.get_or_create(
+                store = obj_store, date = dateInfo
+            )
+            obj_store_ranking.post_total_score = post_score_sum
+            obj_store_ranking.follower = follower
+            obj_store_ranking.following = follow
+            obj_store_ranking.post_num = post_num
+            obj_store_ranking.store_score  = calculate_store_point(post_score_sum,follower,follow,post_num)
+            obj_store_ranking.save()
+
 
             if (is_created):
                 created_account.append(obj_store.insta_url)
@@ -280,23 +294,23 @@ if __name__ == '__main__':
                                                                                          post_error_account_list),
                                                                                      len(deactivated_account_list)))
 
-    report_to_teams(url, created_account_list, updated_account_list,
-                    deactivated_account_list, post_error_account_list)
-    with open('crawling/crawling_result.txt', 'wt') as f:
-        f.write("{} created, {} updated, {} failed in post, {} deactivated(failed)\n".format(len(created_account_list),
-                                                                                             len(
-                                                                                                 updated_account_list),
-                                                                                             len(
-                                                                                                 post_error_account_list),
-                                                                                             len(deactivated_account_list)))
-        f.write('\ncreated_account_list \n')
-        created_account_list = map(lambda x: x + '\n', created_account_list)
-        f.writelines(created_account_list)
-        f.write('\ndeactivated_account_list \n')
-        deactivated_account_list = map(
-            lambda x: x + '\n', deactivated_account_list)
-        f.writelines(deactivated_account_list)
-        f.write('\nfailed in post \n')
-        post_error_account_list = map(
-            lambda x: x + '\n', post_error_account_list)
-        f.writelines(post_error_account_list)
+    # report_to_teams(url, created_account_list, updated_account_list,
+                    # deactivated_account_list, post_error_account_list)
+    # with open('crawling/crawling_result.txt', 'wt') as f:
+    #     f.write("{} created, {} updated, {} failed in post, {} deactivated(failed)\n".format(len(created_account_list),
+    #                                                                                          len(
+    #                                                                                              updated_account_list),
+    #                                                                                          len(
+    #                                                                                              post_error_account_list),
+    #                                                                                          len(deactivated_account_list)))
+    #     f.write('\ncreated_account_list \n')
+    #     created_account_list = map(lambda x: x + '\n', created_account_list)
+    #     f.writelines(created_account_list)
+    #     f.write('\ndeactivated_account_list \n')
+    #     deactivated_account_list = map(
+    #         lambda x: x + '\n', deactivated_account_list)
+    #     f.writelines(deactivated_account_list)
+    #     f.write('\nfailed in post \n')
+    #     post_error_account_list = map(
+    #         lambda x: x + '\n', post_error_account_list)
+    #     f.writelines(post_error_account_list)

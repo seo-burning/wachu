@@ -66,13 +66,6 @@ class Store(TimeStampedModel):
         _("Instagram Profile Image"), null=True, blank=True, max_length=500)
     name = models.CharField(_("Instagram Name"), max_length=255)
 
-    store_score = models.DecimalField(
-        max_digits=5, decimal_places=2, default=0)
-    last_score = models.DecimalField(
-        max_digits=5, decimal_places=2, default=0)
-    ranking_changed = models.IntegerField(null=True)
-    ranking = models.IntegerField(null=True)
-
     # Cannot be changed in Admin site ( updated by crwaler )
     follower = models.IntegerField(_("Instagram Follower"), null=True)
     following = models.IntegerField(_("Instagram Following"), null=True)
@@ -105,10 +98,34 @@ class Store(TimeStampedModel):
         return self.name
 
 
+class StoreRanking(TimeStampedModel):
+    class Meta(object):
+        unique_together = (('date', 'store'))
+
+    date = models.DateField(db_index=True)
+    store = models.ForeignKey(
+        Store, on_delete=models.CASCADE, related_name='store_ranking_set',
+        default=None)
+    post_total_score = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    store_score = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0)
+    follower = models.IntegerField(_("Instagram Follower"), null=True)
+    following = models.IntegerField(_("Instagram Following"), null=True)
+    post_num = models.IntegerField(_("Instagram Number of posts"), null=True)
+    ranking = models.IntegerField(null=True)
+    ranking_changed = models.IntegerField(null=True)
+
+    def __str__(self):
+        return ("{}, {}".format(self.date, self.store))
+
+
 class StorePost(TimeStampedModel):
     is_active = models.BooleanField(default=True)
+    post_score = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     store = models.ForeignKey(
-        Store, on_delete=models.CASCADE, related_name='store', default=None)
+        Store, on_delete=models.CASCADE,
+        related_name='store_post_set', default=None)
     post_like = models.IntegerField(_("Post Like"), null=True)
     post_comment = models.IntegerField(_("Post Comment"), null=True)
     post_taken_at_timestamp = models.IntegerField(
@@ -125,3 +142,34 @@ class StorePost(TimeStampedModel):
             url=self.post_image,
         )
         )
+
+
+CONTACT_STATUS_CHOICES = (
+    ('NONE', _('연락안함')),
+    ('DM', _('DM 보냄, 답장대기중')),
+    ('CM', _('연락중')),
+)
+
+REACT_RATE_CHOICES = (
+    (1, '매우 부정적'),
+    (2, '부정적'),
+    (3, '의견 없음'),
+    (4, '긍정적'),
+    (5, '매우 긍정적'),
+)
+
+
+class StoreSurvey(TimeStampedModel):
+    title = models.CharField(max_length=25)
+    store = models.ForeignKey(
+        Store, on_delete=models.CASCADE, related_name='store_survey',
+        default=None)
+    contact_status = models.CharField(
+        max_length=25, choices=CONTACT_STATUS_CHOICES)
+    content = models.TextField(
+        _("Survey Content"), blank=True, null=True)
+    reaction_rate = models.IntegerField(
+        choices=REACT_RATE_CHOICES, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
