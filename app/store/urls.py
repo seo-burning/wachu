@@ -9,5 +9,6 @@ router.register('stores', views.StoreViewSet)
 app_name = 'store'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('stores/<store_id>/', views.StorePostView.as_view())
 ]

@@ -103,7 +103,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             ('post_num', 'follower', 'following'),
         )}),
         (_("Images"), {'fields': (
-            ("category", "region"),
+            ("category", "region", 'age'),
             ("primary_style", "secondary_style", "tpo"),
         )}),
     ]
