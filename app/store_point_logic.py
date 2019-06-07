@@ -35,11 +35,8 @@ def calculate_post_point(post_like, post_comment, post_taken_at_timestamp):
         + datetime.timedelta(days=recent_post_date)
     day_adjustment_factor = str_timestamp.days
     if (day_adjustment_factor <= 1):  # 차이가 1일 때부터는 가산비율을 적용 안함
-        print(post_point, day_adjustment_factor)
         return post_point
     else:
-        print(post_point*day_adjustment_factor *
-              recent_post_addition_ratio, post_point, day_adjustment_factor)
         return post_point * day_adjustment_factor * recent_post_addition_ratio
 
 

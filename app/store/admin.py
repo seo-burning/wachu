@@ -79,6 +79,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     readonly_fields = (
         'insta_id',
         'insta_url',
+        'current_ranking',
+        'current_ranking_changed',
         'instagram_link',
         'profile_image',
         'profile_image_shot',
@@ -91,6 +93,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         (_("User Profile"), {'fields': [
             'is_active',
             'is_updated',
+            'current_ranking',
+            'current_ranking_changed',
             'instagram_link',
             'profile_image_shot',
             'insta_id',
@@ -107,12 +111,15 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             ("primary_style", "secondary_style", "tpo"),
         )}),
     ]
-    list_display = ["instagram_link", "insta_id", 'profile_thumb', 'follower',
+    list_display = ["instagram_link",
+                    'current_ranking',
+                    'current_ranking_changed',
+                    "insta_id", 'profile_thumb', 'follower',
                     "category",
-                    "primary_style", "secondary_style", "tpo"]
+                    "primary_style", "secondary_style", "tpo", "age"]
     list_filter = ['is_active', 'is_updated']
     list_editable = ["category",
-                     "primary_style", "secondary_style", "tpo"]
+                     "primary_style", "secondary_style", "tpo", "age"]
     list_display_links = ["insta_id"]
     search_fields = ["insta_id", "category__name", "region__name",
                      "primary_style__name", "secondary_style__name",

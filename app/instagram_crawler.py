@@ -6,9 +6,11 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from random import choice
-from time import sleep
 import pymsteams  # https://pypi.org/project/pymsteams/
+import time
 import datetime
+import multiprocessing as mp
+from functools import partial
 
 PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
@@ -20,10 +22,7 @@ _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 ]
 
-created_account = []
-updated_account = []
-deactivated_account = []
-post_error_account = []
+
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
 
 class InstagramScraper:
@@ -95,7 +94,7 @@ class InstagramScraper:
         return results
 
 
-    def insert_insta(self, url):
+    def insert_insta(self, url, created_account,updated_account,deactivated_account,post_error_account,post_0_account):
         results = {}
         results = self.profile_page_metrics(url)
         result_post = []
@@ -194,6 +193,9 @@ class InstagramScraper:
                         print('E', end='')
                         post_error_account.append(obj_store.insta_url)
                         pass
+            else:
+                post_0_account.append(obj_store.insta_url)
+                print("Fail to Find post. Account may be Private")
             obj_store_ranking, is_created = StoreRanking.objects.get_or_create(
                 store = obj_store, date = dateInfo
             )
@@ -213,6 +215,22 @@ class InstagramScraper:
                 updated_account.append(obj_store.insta_url)
                 print("U - {} (id:{} / {} post saved.)".format(username,
                                                                obj_store.id, post_saved))
+            time.sleep(1)
+
+def calculate_ranking(store_ranking_obj, all_store_ranking_objs_for_today):
+    ranking = all_store_ranking_objs_for_today.filter(store_score__gt=store_ranking_obj.store_score).count()+1
+    store_ranking_obj.ranking = ranking
+    try:
+        previous_ranking = StoreRanking.objects.filter(store=store_ranking_obj.store)[1].ranking
+        store_ranking_obj.ranking_changed = ranking - previous_ranking
+    except:
+        store_ranking_obj.ranking_changed = 99999
+    store_ranking_obj.save()
+    store_ranking_obj.store.current_ranking =store_ranking_obj.ranking
+    store_ranking_obj.store.current_ranking = store_ranking_obj.ranking_changed
+    store_ranking_obj.store.save()
+
+
 
 
 def report_to_teams(url, created_account_list, updated_account_list, deactivated_account_list, post_error_account_list):
@@ -270,47 +288,63 @@ def report_to_teams(url, created_account_list, updated_account_list, deactivated
     myTeamsMessage.send()
 
 
+
 if __name__ == '__main__':
+    start_time = time.time()
+    pool = mp.Pool(processes=4)
+    manager = mp.Manager()
+    created_account = manager.list()
+    updated_account = manager.list()
+    deactivated_account = manager.list()
+    post_error_account = manager.list()
+    post_0_account = manager.list() 
+    # http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
+
 
     with open('crawling/account_list.txt', 'r') as f:
         content = f.readlines()
 
-    content = [x.strip() for x in content]
-
+    content = ['https://www.instagram.com/' + x.strip() + '/' for x in content]
     obj = InstagramScraper()
-    for account in content:
-        acc = 'https://www.instagram.com/' + account + '/'
-        obj.insert_insta(acc)
-        sleep(1)
+    [pool.apply_async(obj.insert_insta, args=[url, created_account,updated_account,deactivated_account,post_error_account,post_0_account]) for url in content]
+    
+    all_store_ranking_objs_for_today = StoreRanking.objects.filter(date=dateInfo)
+    func = partial(calculate_ranking, all_store_ranking_objs_for_today=all_store_ranking_objs_for_today)
+    pool.map(func, all_store_ranking_objs_for_today)
+
+    pool.close()
+    pool.join()
+
     deactivated_account_list = set(deactivated_account)
     post_error_account_list = set(post_error_account)
     updated_account_list = set(updated_account)
     created_account_list = set(created_account)
+    post_0_account_list = set(post_0_account)
     url = 'https://outlook.office.com/webhook/d9d7a72c-a2ed-408a-af8c-11d5fe4f644c@91737814-ef77-47df-924e-004375937240/IncomingWebhook/b8b0ed239e544929b960847316a1d6c7/692ad803-8ead-405e-a95e-ca10cff195db'
-    print("{} created, {} updated, {} failed in post, {} deactivated(failed)".format(len(created_account_list),
-                                                                                     len(
-                                                                                         updated_account_list),
-                                                                                     len(
-                                                                                         post_error_account_list),
+    print("{} created, {} updated, {} failed in post, {} private account, {} deactivated(failed)".format(len(created_account_list),
+                                                                                     len(updated_account_list),
+                                                                                     len(post_error_account_list),
+                                                                                     len(post_0_account_list),
                                                                                      len(deactivated_account_list)))
+    report_to_teams(url, created_account_list, updated_account_list,
+                    deactivated_account_list, post_error_account_list)
+    with open('crawling/crawling_result.txt', 'wt') as f:
+        f.write("{} created, {} updated, {} failed in post, {} deactivated(failed)\n".format(len(created_account_list),
+                                                                                             len(
+                                                                                                 updated_account_list),
+                                                                                             len(
+                                                                                                 post_error_account_list),
+                                                                                             len(deactivated_account_list)))
+        f.write('\ncreated_account_list \n')
+        created_account_list = map(lambda x: x + '\n', created_account_list)
+        f.writelines(created_account_list)
+        f.write('\ndeactivated_account_list \n')
+        deactivated_account_list = map(
+            lambda x: x + '\n', deactivated_account_list)
+        f.writelines(deactivated_account_list)
+        f.write('\nfailed in post \n')
+        post_error_account_list = map(
+            lambda x: x + '\n', post_error_account_list)
+        f.writelines(post_error_account_list)
 
-    # report_to_teams(url, created_account_list, updated_account_list,
-                    # deactivated_account_list, post_error_account_list)
-    # with open('crawling/crawling_result.txt', 'wt') as f:
-    #     f.write("{} created, {} updated, {} failed in post, {} deactivated(failed)\n".format(len(created_account_list),
-    #                                                                                          len(
-    #                                                                                              updated_account_list),
-    #                                                                                          len(
-    #                                                                                              post_error_account_list),
-    #                                                                                          len(deactivated_account_list)))
-    #     f.write('\ncreated_account_list \n')
-    #     created_account_list = map(lambda x: x + '\n', created_account_list)
-    #     f.writelines(created_account_list)
-    #     f.write('\ndeactivated_account_list \n')
-    #     deactivated_account_list = map(
-    #         lambda x: x + '\n', deactivated_account_list)
-    #     f.writelines(deactivated_account_list)
-    #     f.write('\nfailed in post \n')
-    #     post_error_account_list = map(
-    #         lambda x: x + '\n', post_error_account_list)
-    #     f.writelines(post_error_account_list)
+    print("--- %s seconds ---" % (time.time() - start_time))

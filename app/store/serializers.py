@@ -20,6 +20,8 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ('insta_id',
+                  'current_ranking',
+                  'current_ranking_changed',
                   'insta_url',
                   'profile_image',
                   'region',
@@ -28,8 +30,10 @@ class StoreSerializer(serializers.ModelSerializer):
                   'tpo',
                   'age',
                   'facebook_url',
-                  'shopee_url')
+                  'shopee_url',)
         read_only_fields = ('insta_id',
+                            'current_ranking',
+                            'current_ranking_changed',
                             'insta_url',
                             'profile_image',
                             'region',

@@ -94,6 +94,10 @@ class Store(TimeStampedModel):
     facebook_url = models.URLField(null=True, blank=True, max_length=500)
     shopee_url = models.URLField(null=True, blank=True, max_length=500)
 
+    # Ranking Info
+    current_ranking = models.IntegerField(null=True)
+    current_ranking_changed = models.IntegerField(null=True)
+
     def __str__(self):
         return self.name
 
