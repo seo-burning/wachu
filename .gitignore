@@ -107,4 +107,4 @@ venv.bak/
 docker-compose-dev.yml
 
 #django
-migrations/
+# migrations/
