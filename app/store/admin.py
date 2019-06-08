@@ -205,4 +205,11 @@ class TpoAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(models.Age)
+class AgeAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+    )
+
+
 admin.site.register(models.StorePost)
