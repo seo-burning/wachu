@@ -9,7 +9,7 @@ from store.models import Store, StorePost
 class StoreViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     """Manage store in the database w/Viewset"""
     serializer_class = serializers.StoreSerializer
-    queryset = Store.objects.all()
+    queryset = Store.objects.all().order_by('current_ranking')
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -21,11 +21,11 @@ class StoreViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 class StorePostView(generics.ListAPIView):
     """Manage store post in the database w/View"""
     serializer_class = serializers.StorePostSerializer
-    queryset = StorePost.objects.all()
+    queryset = StorePost.objects.all().order_by('-id')
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         """Return objects that is_activated only"""
-        return self.queryset.filter(store=self.kwargs['store_id'])
+        return self.queryset.filter(store__insta_id=self.kwargs['store_insta_id'])

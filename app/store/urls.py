@@ -10,5 +10,5 @@ app_name = 'store'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('stores/<store_id>/', views.StorePostView.as_view())
+    path('stores/<store_insta_id>/', views.StorePostView.as_view())
 ]

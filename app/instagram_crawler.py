@@ -227,7 +227,7 @@ def calculate_ranking(store_ranking_obj, all_store_ranking_objs_for_today):
         store_ranking_obj.ranking_changed = 99999
     store_ranking_obj.save()
     store_ranking_obj.store.current_ranking =store_ranking_obj.ranking
-    store_ranking_obj.store.current_ranking = store_ranking_obj.ranking_changed
+    store_ranking_obj.store.current_ranking_changed = store_ranking_obj.ranking_changed
     store_ranking_obj.store.save()
 
 
@@ -298,15 +298,15 @@ if __name__ == '__main__':
     deactivated_account = manager.list()
     post_error_account = manager.list()
     post_0_account = manager.list() 
-    # http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
+    # # http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
 
 
-    with open('crawling/account_list.txt', 'r') as f:
-        content = f.readlines()
+    # with open('crawling/account_list.txt', 'r') as f:
+    #     content = f.readlines()
 
-    content = ['https://www.instagram.com/' + x.strip() + '/' for x in content]
-    obj = InstagramScraper()
-    [pool.apply_async(obj.insert_insta, args=[url, created_account,updated_account,deactivated_account,post_error_account,post_0_account]) for url in content]
+    # content = ['https://www.instagram.com/' + x.strip() + '/' for x in content]
+    # obj = InstagramScraper()
+    # [pool.apply_async(obj.insert_insta, args=[url, created_account,updated_account,deactivated_account,post_error_account,post_0_account]) for url in content]
     
     all_store_ranking_objs_for_today = StoreRanking.objects.filter(date=dateInfo)
     func = partial(calculate_ranking, all_store_ranking_objs_for_today=all_store_ranking_objs_for_today)
