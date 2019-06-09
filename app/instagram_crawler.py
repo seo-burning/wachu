@@ -179,7 +179,7 @@ class InstagramScraper:
                                 post_description = post['edge_media_to_caption']['edges'][0]['node']['text']
                             except:
                                 pass
-                        obj, is_created = StorePost.objects.get_or_create(
+                        obj, post_is_created = StorePost.objects.get_or_create(
                             post_image=post_url, store=obj_store)
                         obj.post_like = post_like
                         obj.post_description = post_description
@@ -196,7 +196,7 @@ class InstagramScraper:
             else:
                 post_0_account.append(obj_store.insta_url)
                 print("Fail to Find post. Account may be Private")
-            obj_store_ranking, is_created = StoreRanking.objects.get_or_create(
+            obj_store_ranking, ranking_is_created = StoreRanking.objects.get_or_create(
                 store = obj_store, date = dateInfo
             )
             obj_store_ranking.post_total_score = post_score_sum
@@ -298,15 +298,15 @@ if __name__ == '__main__':
     deactivated_account = manager.list()
     post_error_account = manager.list()
     post_0_account = manager.list() 
-    # # http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
+    # http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
 
 
-    # with open('crawling/account_list.txt', 'r') as f:
-    #     content = f.readlines()
+    with open('crawling/account_list.txt', 'r') as f:
+        content = f.readlines()
 
-    # content = ['https://www.instagram.com/' + x.strip() + '/' for x in content]
-    # obj = InstagramScraper()
-    # [pool.apply_async(obj.insert_insta, args=[url, created_account,updated_account,deactivated_account,post_error_account,post_0_account]) for url in content]
+    content = ['https://www.instagram.com/' + x.strip() + '/' for x in content]
+    obj = InstagramScraper()
+    [pool.apply_async(obj.insert_insta, args=[url, created_account,updated_account,deactivated_account,post_error_account,post_0_account]) for url in content]
     
     all_store_ranking_objs_for_today = StoreRanking.objects.filter(date=dateInfo)
     func = partial(calculate_ranking, all_store_ranking_objs_for_today=all_store_ranking_objs_for_today)
