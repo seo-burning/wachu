@@ -48,7 +48,7 @@ urlpatterns = [
                                          cache_timeout=0),
         name='schema-redoc'),
     url(r'^accounts/', include('allauth.urls')),
-    path('', TemplateView.as_view(template_name='home.html')),
+    path('', TemplateView.as_view(template_name='index.html')),
     path('admin/', admin.site.urls),
     path('api/user/', include('user.urls')),
     path('api/store/', include('store.urls'))
