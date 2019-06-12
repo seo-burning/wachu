@@ -70,6 +70,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
     'drf_yasg',
 
     'core',
@@ -211,5 +212,5 @@ SOCIALACCOUNT_STORE_TOKENS = True
 
 
 # SITE_ID with your domain site in /admin/sites/
-SITE_ID = 1
+SITE_ID = 2
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
