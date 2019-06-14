@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.safestring import mark_safe
 
 from django.utils.translation import ugettext_lazy as _
+from product.models import SlidingBannerSection, MainSection
 
 
 class TimeStampedModel(models.Model):
@@ -126,6 +127,7 @@ class StoreRanking(TimeStampedModel):
 
 class StorePost(TimeStampedModel):
     is_active = models.BooleanField(default=True)
+    ordering_keyword = models.IntegerField(null=True, default=True)
     post_score = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     store = models.ForeignKey(
         Store, on_delete=models.CASCADE,
@@ -138,6 +140,18 @@ class StorePost(TimeStampedModel):
         _("Post Description"), blank=True, null=True)
     post_image = models.URLField(
         _("Post Image"),  blank=True, null=True, max_length=255)
+    sliding_section_published = models.ForeignKey(
+        SlidingBannerSection,
+        related_name='sliding_banner_post_set',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True)
+    main_section_published = models.ForeignKey(
+        MainSection,
+        related_name='main_banner_post_set',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True)
 
     def __str__(self):
         return mark_safe('<center><img src="{url}" \

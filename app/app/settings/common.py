@@ -74,8 +74,9 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'core',
+    'product',
+    'store',
     'user',
-    'store'
 ]
 
 MIDDLEWARE = [

@@ -34,7 +34,8 @@ class StorePostInline(admin.StackedInline):
     model = models.StorePost
     readonly_fields = ('post_image', 'post_like', 'post_score',
                        'post_description', 'post_taken_at_timestamp')
-    fields = ['is_active', 'post_score', 'post_description']
+    fields = ['is_active', 'post_score', 'post_description',
+              'sliding_section_published', 'main_section_published']
     extra = 0
     max_num = 50
     ordering = ['post_taken_at_timestamp']
