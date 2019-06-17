@@ -8,8 +8,8 @@ from product import models
 
 class StorePostInline(admin.StackedInline):
     model = StorePost
-    readonly_fields = ('post_image',)
-    fields = ['ordering_keyword', 'name']
+    readonly_fields = ('post_image', 'post_description')
+    fields = ['ordering_keyword', 'name', 'post_description']
     extra = 0
     max_num = 50
     ordering = ['post_taken_at_timestamp']
