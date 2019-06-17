@@ -5,6 +5,10 @@ from product import models
 
 
 class StoreSerializer(serializers.ModelSerializer):
+    primary_style = serializers.StringRelatedField(many=False)
+    secondary_style = serializers.StringRelatedField(many=False)
+    age = serializers.StringRelatedField(many=False)
+
     class Meta:
         model = Store
         fields = ('insta_url', 'name', 'age',
