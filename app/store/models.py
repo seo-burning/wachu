@@ -127,6 +127,8 @@ class StoreRanking(TimeStampedModel):
 
 class StorePost(TimeStampedModel):
     is_active = models.BooleanField(default=True)
+    name = models.CharField(
+        _("Post Name"), max_length=255, blank=True, null=True)
     ordering_keyword = models.IntegerField(null=True, default=True)
     post_score = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     store = models.ForeignKey(
