@@ -17,7 +17,7 @@ class StorePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StorePost
-        fields = ('post_image', 'name', 'store')
+        fields = ('post_image', 'name', 'store', 'ordering_keyword')
 
 
 class SlidingBannerSectionSerializer(serializers.ModelSerializer):
@@ -28,6 +28,13 @@ class SlidingBannerSectionSerializer(serializers.ModelSerializer):
         fields = ('title_head', 'title_colored_keyword',
                   'title_foot', 'sliding_banner_post_set')
 
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response["sliding_banner_post_set"] = sorted(
+            response["sliding_banner_post_set"],
+            key=lambda x: x["ordering_keyword"])
+        return response
+
 
 class MainSectionSerializer(serializers.ModelSerializer):
     main_banner_post_set = StorePostSerializer(read_only=True, many=True)
@@ -35,3 +42,10 @@ class MainSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MainSection
         fields = ('date', 'main_banner_post_set')
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response["main_banner_post_set"] = sorted(
+            response["main_banner_post_set"],
+            key=lambda x: x["ordering_keyword"])
+        return response
