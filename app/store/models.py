@@ -100,7 +100,7 @@ class Store(TimeStampedModel):
     current_ranking_changed = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.name
+        return self.insta_id
 
 
 class StoreRanking(TimeStampedModel):

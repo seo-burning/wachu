@@ -74,8 +74,10 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'core',
+    'pick',
     'product',
     'store',
+    'report',
     'user',
 ]
 
