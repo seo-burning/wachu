@@ -177,6 +177,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = '/media'
 STATIC_ROOT = '/static'
 
+
 AUTH_USER_MODEL = 'core.User'
 
 SOCIALACCOUNT_PROVIDERS = {

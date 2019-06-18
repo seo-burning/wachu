@@ -23,6 +23,16 @@ class StorePostInline(admin.StackedInline):
         return False
 
 
+@admin.register(models.ProductCategory)
+class ProductCategoryAdmin(admin.ModelAdmin):
+    fields = ['name']
+
+
+@admin.register(models.ProductColor)
+class ProductColor(admin.ModelAdmin):
+    fields = ['name']
+
+
 @admin.register(models.SlidingBannerSection)
 class SlidingBannerSectionAdmin(admin.ModelAdmin):
     inlines = [StorePostInline]

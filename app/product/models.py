@@ -10,6 +10,20 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+class ProductCategory(TimeStampedModel):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class ProductColor(TimeStampedModel):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
 class SlidingBannerSection(TimeStampedModel):
     is_published = models.BooleanField(default=False)
     title_head = models.CharField(_('Section title head'), max_length=30)
