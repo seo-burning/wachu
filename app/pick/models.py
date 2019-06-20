@@ -51,7 +51,8 @@ class ChuPickRating(TimeStampedModel):
     is_published = models.BooleanField(default=False)
     store = models.ForeignKey(
         Store, on_delete=models.CASCADE,
-        related_name='chu_pick_rating_set', default=None, blank=True)
+        related_name='chu_pick_rating_set',
+        default=None, blank=True)
     outlink = models.URLField(null=True, blank=True, max_length=500)
     pick_image = models.ImageField(blank=True, upload_to='pick/%Y/%m')
     chu_point = models.ForeignKey(
