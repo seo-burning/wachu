@@ -6,7 +6,7 @@ from store.models import Store, StorePost
 class StorePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = StorePost
-        fields = ('post_image',)
+        fields = ('post_image', 'post_url')
 
 
 class StoreSerializer(serializers.ModelSerializer):
