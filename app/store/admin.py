@@ -33,9 +33,9 @@ class ExportCsvMixin:
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
     readonly_fields = ('post_image', 'post_like', 'post_score',
-                       'post_description', 'post_taken_at_timestamp')
+                       'post_description', 'post_taken_at_timestamp', 'post_url')
     fields = ['is_active', 'post_score', 'post_description',
-              'sliding_section_published', 'main_section_published']
+              'sliding_section_published', 'main_section_published', 'post_url']
     extra = 0
     max_num = 50
     ordering = ['post_taken_at_timestamp']
@@ -171,6 +171,30 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     instagram_link.allow_tags = True
 
 
+@admin.register(models.StorePost)
+class StorePostAdmin(admin.ModelAdmin):
+    model = models.StorePost
+    readonly_fields = ('post_image', 'post_like', 'post_score',
+                       'post_description', 'post_taken_at_timestamp', 'post_url')
+    fields = ['is_active', 'post_score', 'post_description',
+              'sliding_section_published', 'main_section_published', 'post_url']
+    ordering = ['post_taken_at_timestamp']
+    actions = ['make_activate',
+               'make_deactivate']
+
+    def make_activate(self, request, queryset):
+        updated_count = queryset.update(is_active=True)
+        self.message_user(
+            request, '{}건의 포스팅을 Activated 상태로 변경'.format(updated_count))
+    make_activate.short_description = '지정 스토어를 Activate 상태로 변경'
+
+    def make_deactivate(self, request, queryset):
+        updated_count = queryset.update(is_active=False)
+        self.message_user(
+            request, '{}건의 포스팅을 Deavtivate 상태로 변경'.format(updated_count))
+    make_deactivate.short_description = '지정 스토어를 Deactivate 상태로 변경'
+
+
 @admin.register(models.Region)
 class RegionAdmin(admin.ModelAdmin):
     list_display = (
@@ -211,6 +235,3 @@ class AgeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
     )
-
-
-admin.site.register(models.StorePost)

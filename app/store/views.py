@@ -21,7 +21,7 @@ class StoreViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 class StorePostView(generics.ListAPIView):
     """Manage store post in the database w/View"""
     serializer_class = serializers.StorePostSerializer
-    queryset = StorePost.objects.all().order_by('-id')
+    queryset = StorePost.objects.all().order_by('-post_taken_at_timestamp')
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -29,4 +29,4 @@ class StorePostView(generics.ListAPIView):
     def get_queryset(self):
         """Return objects that is_activated only"""
         return self.queryset.filter(
-            store__insta_id=self.kwargs['store_insta_id'])
+            store__insta_id=self.kwargs['store_insta_id']).filter(is_active=True)
