@@ -29,4 +29,5 @@ class StorePostView(generics.ListAPIView):
     def get_queryset(self):
         """Return objects that is_activated only"""
         return self.queryset.filter(
-            store__insta_id=self.kwargs['store_insta_id']).filter(is_active=True)
+            store__insta_id=self.kwargs['store_insta_id'])\
+            .filter(is_active=True)
