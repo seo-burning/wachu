@@ -108,3 +108,7 @@ docker-compose-dev.yml
 
 #staicfile
 static/
+
+#crawling
+ic.py
+app/crawling
