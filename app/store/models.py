@@ -124,24 +124,32 @@ class StoreRanking(TimeStampedModel):
     def __str__(self):
         return ("{}, {}".format(self.date, self.store))
 
+
 class PostImage(TimeStampedModel):
     source = models.CharField(_('URL Source'), max_length=1024, null=True)
-    source_thumb = models.CharField(_('Thumb Small Link'), max_length=1024, null=True)
-    store_post = models.ForeignKey('StorePost', on_delete=models.CASCADE, related_name='post_image_set')
+    source_thumb = models.CharField(
+        _('Thumb Small Link'), max_length=1024, null=True)
+    store_post = models.ForeignKey(
+        'StorePost', on_delete=models.CASCADE, related_name='post_image_set')
 
     def __str__(self):
-        return self.source_thumb 
+        return self.source_thumb
 
 
 class PostVideo(TimeStampedModel):
     source = models.CharField(_('URL Source'), null=True, max_length=1024)
-    store_post = models.ForeignKey('StorePost', on_delete=models.CASCADE, related_name='post_video_set')
+    store_post = models.ForeignKey(
+        'StorePost', on_delete=models.CASCADE, related_name='post_video_set')
     view_count = models.IntegerField(_("Video View Count"), null=True)
+
     def __str__(self):
-        return self.source 
+        return self.source
 
 
-POST_TYPE = (('SP',_('Single Picture')),('MP',_('Multiple Picture')),('V',_('Video')))
+POST_TYPE = (('SP', _('Single Picture')),
+             ('MP', _('Multiple Picture')), ('V', _('Video')))
+
+
 class StorePost(TimeStampedModel):
     post_type = models.CharField(max_length=25, choices=POST_TYPE, null=True)
     post_id = models.CharField(max_length=25)
@@ -155,7 +163,8 @@ class StorePost(TimeStampedModel):
         Store, on_delete=models.CASCADE,
         related_name='store_post_set', default=None)
     post_like = models.IntegerField(_("Post Like"), null=True)
-    post_thumb_image =models.CharField(_('post_thumb_image'), null=True, max_length=1024)
+    post_thumb_image = models.CharField(
+        _('post_thumb_image'), null=True, max_length=1024)
     post_comment = models.IntegerField(_("Post Comment"), null=True)
     post_taken_at_timestamp = models.IntegerField(
         _("Taken_at_timestamp"), null=True)
@@ -177,8 +186,9 @@ class StorePost(TimeStampedModel):
     def __str__(self):
         return mark_safe('<img src="{url}" \
         width="300" height="300" border="1" />'.format(
-        url=self.post_thumb_image
-    ))
+            url=self.post_thumb_image
+        ))
+
 
 CONTACT_STATUS_CHOICES = (
     ('NONE', _('연락안함')),

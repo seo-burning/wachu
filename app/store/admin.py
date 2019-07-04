@@ -5,14 +5,12 @@ from django.utils.translation import gettext as _
 
 from store import models
 from core.models import ExportCsvMixin
-from django.http import HttpResponse
-
 
 
 class PostImageInline(admin.StackedInline):
     model = models.PostImage
-    fields = ['post_image_shot',]
-    readonly_fields = ['post_image_shot',]
+    fields = ['post_image_shot', ]
+    readonly_fields = ['post_image_shot', ]
     extra = 0
 
     def post_image_shot(self, obj):
@@ -21,17 +19,18 @@ class PostImageInline(admin.StackedInline):
             url=obj.source_thumb
         ))
 
+
 class PostVideoInline(admin.StackedInline):
     model = models.PostVideo
-    fields = ['source',]
-    readonly_fields = ['source',]
+    fields = ['source', ]
+    readonly_fields = ['source', ]
     extra = 0
 
 
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
-    readonly_fields = ('post_taken_at_timestamp','post_type')
-    fields = ['post_taken_at_timestamp','post_type']
+    readonly_fields = ('post_taken_at_timestamp', 'post_type')
+    fields = ['post_taken_at_timestamp', 'post_type']
     extra = 0
     max_num = 50
     ordering = ['-post_taken_at_timestamp']
@@ -165,10 +164,9 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     instagram_link.allow_tags = True
 
 
-
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
-    inlines = [PostImageInline,PostVideoInline]
+    inlines = [PostImageInline, PostVideoInline]
     model = models.StorePost
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
