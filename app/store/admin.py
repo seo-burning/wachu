@@ -4,47 +4,37 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from store import models
-
-import csv
+from core.models import ExportCsvMixin
 from django.http import HttpResponse
 
 
-class ExportCsvMixin:
-    def export_as_csv(self, request, queryset):
 
-        meta = self.model._meta
-        field_names = [field.name for field in meta.fields]
+class PostImageInline(admin.StackedInline):
+    model = models.PostImage
+    fields = ['post_image_shot',]
+    readonly_fields = ['post_image_shot',]
+    extra = 0
 
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(
-            meta)
-        writer = csv.writer(response)
+    def post_image_shot(self, obj):
+        return mark_safe('<img src="{url}" \
+            width="300" height="300" border="1" />'.format(
+            url=obj.source_thumb
+        ))
 
-        writer.writerow(field_names)
-        for obj in queryset:
-            writer.writerow([getattr(obj, field)
-                             for field in field_names])
-
-        return response
-
-    export_as_csv.short_description = "Export Selected"
+class PostVideoInline(admin.StackedInline):
+    model = models.PostVideo
+    fields = ['source',]
+    readonly_fields = ['source',]
+    extra = 0
 
 
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
-    readonly_fields = ('post_image', 'post_like', 'post_score',
-                       'post_description',
-                       'post_taken_at_timestamp',
-                       'post_url')
-    fields = ['is_active', 'post_score', 'post_description',
-              'sliding_section_published',
-              'main_section_published',
-              'post_url']
+    readonly_fields = ('post_taken_at_timestamp','post_type')
+    fields = ['post_taken_at_timestamp','post_type']
     extra = 0
     max_num = 50
-    ordering = ['post_taken_at_timestamp']
-    verbose_name = _('Post')
-    verbose_name_plural = _('Post')
+    ordering = ['-post_taken_at_timestamp']
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -175,10 +165,12 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     instagram_link.allow_tags = True
 
 
+
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
+    inlines = [PostImageInline,PostVideoInline]
     model = models.StorePost
-    readonly_fields = ('post_image', 'post_like', 'post_score',
+    readonly_fields = ('post_like', 'post_score',
                        'post_description',
                        'post_taken_at_timestamp',
                        'post_url')

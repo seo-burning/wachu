@@ -1,12 +1,24 @@
 from rest_framework import serializers
 
-from store.models import Store, StorePost
+from store.models import Store, StorePost, PostImage, PostVideo
 
+
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model =PostImage
+        fields=('source_thumb',)
+
+class PostVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model =PostVideo
+        fields=('source',)
 
 class StorePostSerializer(serializers.ModelSerializer):
+    post_image_set = PostImageSerializer(read_only=True, many=True)
+    post_video_set = PostVideoSerializer(read_only=True, many=True)
     class Meta:
         model = StorePost
-        fields = ('post_image', 'post_url')
+        fields = ('post_url','post_type','post_thumb_image','post_description', 'post_image_set', 'post_video_set')
 
 
 class StoreSerializer(serializers.ModelSerializer):

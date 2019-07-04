@@ -22,7 +22,6 @@ class StorePostView(generics.ListAPIView):
     """Manage store post in the database w/View"""
     serializer_class = serializers.StorePostSerializer
     queryset = StorePost.objects.all().order_by('-post_taken_at_timestamp')
-
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
