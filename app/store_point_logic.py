@@ -26,8 +26,8 @@ def calculate_post_point(post_like, post_comment, post_taken_at_timestamp):
     """
     post_point = 0
     commet_addition_ratio = 1.3  # 댓글 가산 포인트 (좋아요 대비)
-    recent_post_addition_ratio = 0.6
-    recent_post_date = 4  # days from today
+    recent_post_addition_ratio = 0.55
+    recent_post_date = 3  # days from today
 
     post_point = post_like + post_comment * commet_addition_ratio
     str_timestamp = datetime.datetime.fromtimestamp(

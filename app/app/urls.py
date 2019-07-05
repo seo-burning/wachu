@@ -56,7 +56,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('user.urls')),
     path('api/store/', include('store.urls')),
-    path('api/product/', include('product.urls')),
+    path('api/publish/', include('publish.urls')),
     path('api/chu/', include('pick.urls')),
     path('api/auth/', include('rest_auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

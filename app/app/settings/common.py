@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'core',
     'pick',
     'product',
+    'publish',
     'store',
     'report',
     'user',

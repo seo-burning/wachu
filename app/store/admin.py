@@ -4,6 +4,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from store import models
+from publish.models import PostGroup
 from core.models import ExportCsvMixin
 
 
@@ -18,6 +19,11 @@ class PostImageInline(admin.StackedInline):
             width="300" height="300" border="1" />'.format(
             url=obj.source_thumb
         ))
+
+
+class PostGroupInline(admin.TabularInline):
+    model = PostGroup.post_list.through
+    extra = 1
 
 
 class StorePostInline(admin.StackedInline):
@@ -159,15 +165,13 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
-    inlines = [PostImageInline, ]
+    inlines = [PostImageInline, PostGroupInline]
     model = models.StorePost
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
                        'post_taken_at_timestamp',
                        'post_url')
     fields = ['is_active', 'post_score', 'post_description',
-              'sliding_section_published',
-              'main_section_published',
               'post_url']
     ordering = ['post_taken_at_timestamp']
     actions = ['make_activate',
