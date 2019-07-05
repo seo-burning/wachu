@@ -14,8 +14,15 @@ class StorePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StorePost
-        fields = ('post_url', 'post_type', 'post_thumb_image',
+        fields = ('post_url', 'post_type', 'post_thumb_image', 'video_source',
                   'post_description', 'post_image_set', )
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related('post_image_set')
+        return queryset
 
 
 class StoreSerializer(serializers.ModelSerializer):
@@ -52,3 +59,15 @@ class StoreSerializer(serializers.ModelSerializer):
                             'age',
                             'facebook_url',
                             'shopee_url')
+
+    # https://trameltonis.com/en/blog/optimizing-slow-django-rest-framework-performance/
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.select_related('primary_style')
+        queryset = queryset.select_related('secondary_style')
+        queryset = queryset.select_related('tpo')
+        queryset = queryset.select_related('age')
+        queryset = queryset.prefetch_related('region')
+        return queryset
