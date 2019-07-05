@@ -6,9 +6,10 @@ DEBUG = True
 INSTALLED_APPS += [
     'debug_toolbar',
 ]
-MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
 # WSGI application
 WSGI_APPLICATION = 'app.wsgi.dev.application'
 
 
 INTERNAL_IPS = ('172.18.0.1',)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000

@@ -136,40 +136,36 @@ class PostImage(TimeStampedModel):
         return self.source_thumb
 
 
-class PostVideo(TimeStampedModel):
-    source = models.CharField(_('URL Source'), null=True, max_length=1024)
-    store_post = models.ForeignKey(
-        'StorePost', on_delete=models.CASCADE, related_name='post_video_set')
-    view_count = models.IntegerField(_("Video View Count"), null=True)
-
-    def __str__(self):
-        return self.source
-
-
 POST_TYPE = (('SP', _('Single Picture')),
              ('MP', _('Multiple Picture')), ('V', _('Video')))
 
 
 class StorePost(TimeStampedModel):
-    post_type = models.CharField(max_length=25, choices=POST_TYPE, null=True)
-    post_id = models.CharField(max_length=25)
     is_active = models.BooleanField(default=True)
+
+    post_id = models.CharField(max_length=25)
+    post_type = models.CharField(max_length=25, choices=POST_TYPE, null=True)
     post_url = models.URLField(null=True, blank=True, max_length=500)
-    name = models.CharField(
-        _("Post Name"), max_length=255, blank=True, null=True)
-    ordering_keyword = models.IntegerField(null=True, default=True)
-    post_score = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    store = models.ForeignKey(
-        Store, on_delete=models.CASCADE,
-        related_name='store_post_set', default=None)
-    post_like = models.IntegerField(_("Post Like"), null=True)
-    post_thumb_image = models.CharField(
-        _('post_thumb_image'), null=True, max_length=1024)
-    post_comment = models.IntegerField(_("Post Comment"), null=True)
     post_taken_at_timestamp = models.IntegerField(
         _("Taken_at_timestamp"), null=True)
     post_description = models.TextField(
         _("Post Description"), blank=True, null=True)
+
+    store = models.ForeignKey(
+        Store, on_delete=models.CASCADE,
+        related_name='store_post_set', default=None)
+    post_thumb_image = models.CharField(
+        _('Post Thumb Image'), null=True, max_length=1024)
+
+    video_source = models.CharField(
+        _('URL Source'), null=True, max_length=1024)
+
+    view_count = models.IntegerField(_("Video View Count"), null=True)
+    post_like = models.IntegerField(_("Post Like"), null=True)
+    post_comment = models.IntegerField(_("Post Comment"), null=True)
+    post_score = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
+    ordering_keyword = models.IntegerField(null=True, default=True)
     sliding_section_published = models.ForeignKey(
         SlidingBannerSection,
         related_name='sliding_banner_post_set',

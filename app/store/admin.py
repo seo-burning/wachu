@@ -20,13 +20,6 @@ class PostImageInline(admin.StackedInline):
         ))
 
 
-class PostVideoInline(admin.StackedInline):
-    model = models.PostVideo
-    fields = ['source', ]
-    readonly_fields = ['source', ]
-    extra = 0
-
-
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
     readonly_fields = ('post_taken_at_timestamp', 'post_type')
@@ -42,12 +35,12 @@ class StorePostInline(admin.StackedInline):
         return False
 
 
-class StoreSurveyInline(admin.StackedInline):
-    model = models.StoreSurvey
-    readonly_fields = ['updated_at']
-    fields = ['title', 'updated_at',
-              'contact_status', 'reaction_rate', 'content']
-    extra = 0
+# class StoreSurveyInline(admin.StackedInline):
+#     model = models.StoreSurvey
+#     readonly_fields = ['updated_at']
+#     fields = ['title', 'updated_at',
+#               'contact_status', 'reaction_rate', 'content']
+#     extra = 0
 
 
 class StoreRankingInline(admin.StackedInline):
@@ -69,7 +62,7 @@ class StoreRankingInline(admin.StackedInline):
 
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
-    inlines = [StoreRankingInline, StorePostInline, StoreSurveyInline]
+    inlines = [StoreRankingInline, StorePostInline, ]
     readonly_fields = (
         'insta_id',
         'insta_url',
@@ -166,7 +159,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
-    inlines = [PostImageInline, PostVideoInline]
+    inlines = [PostImageInline, ]
     model = models.StorePost
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
@@ -179,6 +172,7 @@ class StorePostAdmin(admin.ModelAdmin):
     ordering = ['post_taken_at_timestamp']
     actions = ['make_activate',
                'make_deactivate']
+    list_per_page = 1000
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
