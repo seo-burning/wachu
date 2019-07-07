@@ -57,10 +57,22 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
         model = models.MainPagePublish
         fields = ('top_section_post_group', 'main_section_post_group_list',)
 
+# https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
-        queryset = queryset.select_related('top_section_post_group')
-        queryset = queryset.prefetch_related('main_section_post_group_list')
+        queryset = queryset.select_related(
+            'top_section_post_group',
+        )
+        queryset = queryset.prefetch_related(
+            'top_section_post_group__post_list',
+            'top_section_post_group__post_list__post_image_set',
+            'top_section_post_group__post_list__store',
+            'main_section_post_group_list',
+            'main_section_post_group_list__post_list',
+            'main_section_post_group_list__post_list__post_image_set',
+            'main_section_post_group_list__post_list__store',
+        )
+
         return queryset

@@ -11,7 +11,7 @@ class StorePostInline(admin.TabularInline):
 
 @admin.register(models.PostGroup)
 class PostGroupAdmin(admin.ModelAdmin):
-    inlines = [StorePostInline]
+    # inlines = [StorePostInline]
     fields = ['title']
     extra = 0
 
