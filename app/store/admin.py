@@ -101,7 +101,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         )}),
         (_("Images"), {'fields': (
             ("category", "region", 'age'),
-            ("primary_style", "secondary_style", "tpo"),
+            ("primary_style", "secondary_style"),
         )}),
     ]
     list_display = ["instagram_link",
@@ -109,14 +109,13 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     'current_ranking_changed',
                     "insta_id", 'profile_thumb', 'follower',
                     "category",
-                    "primary_style", "secondary_style", "tpo", "age"]
+                    "primary_style", "secondary_style", "age"]
     list_filter = ['is_active', 'is_updated']
     list_editable = ["category",
-                     "primary_style", "secondary_style", "tpo", "age"]
+                     "primary_style", "secondary_style", "age"]
     list_display_links = ["insta_id"]
     search_fields = ["insta_id", "category__name", "region__name",
-                     "primary_style__name", "secondary_style__name",
-                     "tpo__name"]
+                     "primary_style__name", "secondary_style__name", ]
 
     actions = ['export_as_csv', 'make_activate',
                'make_deactivate', 'make_deactivate_under_5000']
@@ -214,13 +213,6 @@ class Primary_StyleAdmin(admin.ModelAdmin):
 
 @admin.register(models.Secondary_Style)
 class Secondary_StyleAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-    )
-
-
-@admin.register(models.Tpo)
-class TpoAdmin(admin.ModelAdmin):
     list_display = (
         'name',
     )

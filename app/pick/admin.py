@@ -34,13 +34,11 @@ class ChuPointAdmin(admin.ModelAdmin):
               'product_color',
               'primary_style',
               'secondary_style',
-              'tpo',
               'age')
     list_display = (
         '__str__',
         'primary_style',
         'secondary_style',
-        'tpo',
         'age')
     verbose_name = _('ChuPoint')
     verbose_name_plural = _('ChuPoint')

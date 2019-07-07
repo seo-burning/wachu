@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel
 from product.models import ProductCategory, ProductColor
-from store.models import Store, Primary_Style, Secondary_Style, Tpo, Age
+from store.models import Store, Primary_Style, Secondary_Style, Age
 
 
 class ChuPoint(TimeStampedModel):
@@ -22,8 +22,6 @@ class ChuPoint(TimeStampedModel):
         Primary_Style, on_delete=models.CASCADE, null=True, blank=True)
     secondary_style = models.ForeignKey(
         Secondary_Style, on_delete=models.CASCADE, null=True, blank=True)
-    tpo = models.ForeignKey(
-        Tpo, on_delete=models.CASCADE, null=True, blank=True)
     age = models.ForeignKey(
         Age, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -34,7 +32,6 @@ class ChuPoint(TimeStampedModel):
             obj.name for obj in self.product_color.all()),
             self.primary_style,
             self.secondary_style,
-            self.tpo,
             self.age)
 
 

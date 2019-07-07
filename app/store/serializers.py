@@ -30,7 +30,6 @@ class StoreSerializer(serializers.ModelSerializer):
     region = serializers.StringRelatedField(many=True)
     primary_style = serializers.StringRelatedField(many=False)
     secondary_style = serializers.StringRelatedField(many=False)
-    tpo = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
 
     class Meta:
@@ -43,7 +42,6 @@ class StoreSerializer(serializers.ModelSerializer):
                   'region',
                   'primary_style',
                   'secondary_style',
-                  'tpo',
                   'age',
                   'facebook_url',
                   'shopee_url',)
@@ -55,7 +53,6 @@ class StoreSerializer(serializers.ModelSerializer):
                             'region',
                             'primary_style',
                             'secondary_style',
-                            'tpo',
                             'age',
                             'facebook_url',
                             'shopee_url')
@@ -67,7 +64,6 @@ class StoreSerializer(serializers.ModelSerializer):
         # select_related for "to-one" relationships
         queryset = queryset.select_related('primary_style')
         queryset = queryset.select_related('secondary_style')
-        queryset = queryset.select_related('tpo')
         queryset = queryset.select_related('age')
         queryset = queryset.prefetch_related('region')
         return queryset

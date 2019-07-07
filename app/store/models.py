@@ -41,13 +41,6 @@ class Secondary_Style(models.Model):
         return self.name
 
 
-class Tpo(models.Model):
-    name = models.CharField('Tpo', max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
 class Age(models.Model):
     name = models.CharField('Age', max_length=100)
 
@@ -86,8 +79,6 @@ class Store(TimeStampedModel):
         Primary_Style, on_delete=models.CASCADE, null=True, blank=True)
     secondary_style = models.ForeignKey(
         Secondary_Style, on_delete=models.CASCADE, null=True, blank=True)
-    tpo = models.ForeignKey(
-        Tpo, on_delete=models.CASCADE, null=True, blank=True)
     age = models.ForeignKey(
         Age, on_delete=models.CASCADE, null=True, blank=True)
 
