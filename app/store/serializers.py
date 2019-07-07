@@ -27,6 +27,7 @@ class StorePostSerializer(serializers.ModelSerializer):
 
 class StoreSerializer(serializers.ModelSerializer):
     """Serailizer for Store objects"""
+    category = serializers.StringRelatedField(many=True)
     region = serializers.StringRelatedField(many=True)
     primary_style = serializers.StringRelatedField(many=False)
     secondary_style = serializers.StringRelatedField(many=False)
@@ -40,6 +41,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'insta_url',
                   'profile_image',
                   'region',
+                  'category',
                   'primary_style',
                   'secondary_style',
                   'age',
@@ -51,6 +53,7 @@ class StoreSerializer(serializers.ModelSerializer):
                             'insta_url',
                             'profile_image',
                             'region',
+                            'category',
                             'primary_style',
                             'secondary_style',
                             'age',
@@ -65,5 +68,6 @@ class StoreSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('primary_style')
         queryset = queryset.select_related('secondary_style')
         queryset = queryset.select_related('age')
+        queryset = queryset.prefetch_related('category')
         queryset = queryset.prefetch_related('region')
         return queryset

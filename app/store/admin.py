@@ -108,13 +108,11 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     'current_ranking',
                     'current_ranking_changed',
                     "insta_id", 'profile_thumb', 'follower',
-                    "category",
                     "primary_style", "secondary_style", "age"]
     list_filter = ['is_active', 'is_updated']
-    list_editable = ["category",
-                     "primary_style", "secondary_style", "age"]
+    list_editable = ["primary_style", "secondary_style", "age"]
     list_display_links = ["insta_id"]
-    search_fields = ["insta_id", "category__name", "region__name",
+    search_fields = ["insta_id", "region__name",
                      "primary_style__name", "secondary_style__name", ]
 
     actions = ['export_as_csv', 'make_activate',

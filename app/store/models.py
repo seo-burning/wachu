@@ -70,8 +70,8 @@ class Store(TimeStampedModel):
     email = models.CharField(max_length=255)
 
     # Categorizing Fields ( updated by admin user )
-    category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, null=True, blank=True)
+    category = models.ManyToManyField(
+        Category, blank=True, symmetrical=False, related_name="categorys_set")
     region = models.ManyToManyField(
         Region, blank=True, symmetrical=False, related_name="regions_set")
 
