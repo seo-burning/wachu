@@ -7,6 +7,7 @@ from publish import models
 # TODO Preview need to be fixed
 class StorePostInline(admin.TabularInline):
     model = models.PostGroup.post_list.through
+    extra = 0
 
 
 @admin.register(models.PostGroup)
@@ -14,6 +15,9 @@ class PostGroupAdmin(admin.ModelAdmin):
     # inlines = [StorePostInline]
     fields = ['title']
     extra = 0
+
+    # def test(self):
+    #     return
 
 
 class PostGroupInline(admin.TabularInline):

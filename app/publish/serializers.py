@@ -14,7 +14,7 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ('insta_id', 'insta_url', 'name', 'age',
-                  'primary_style', 'secondary_style',
+                  'primary_style', 'secondary_style', 'category',
                   'facebook_url', 'shopee_url', 'profile_image')
 
 

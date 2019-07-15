@@ -28,6 +28,7 @@ class PostGroupInline(admin.TabularInline):
 
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
+    show_change_link = True
     readonly_fields = ('post_taken_at_timestamp', 'post_type')
     fields = ['post_taken_at_timestamp', 'post_type']
     extra = 0
@@ -65,7 +66,7 @@ class StoreRankingInline(admin.StackedInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
-
+# https://medium.com/@hakibenita/things-you-must-know-about-django-admin-as-your-app-gets-bigger-6be0b0ee9614
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     inlines = [StoreRankingInline, StorePostInline, ]
@@ -112,6 +113,9 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_filter = ['is_active', 'is_updated']
     list_editable = ["primary_style", "secondary_style", "age"]
     list_display_links = ["insta_id"]
+    list_select_related = (
+        'primary_style', 'secondary_style', 'age'
+    )
     search_fields = ["insta_id", "region__name",
                      "primary_style__name", "secondary_style__name", ]
 

@@ -49,7 +49,7 @@ SECRET_KEY = "!tx*78@vcu(ee71csue0p%zm#id_q9oeaqk^%)pt&9+pvnlins"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.wachu.shop','*']
+ALLOWED_HOSTS = ['www.wachu.shop', '*']
 
 
 # Application definition
@@ -216,5 +216,5 @@ SOCIALACCOUNT_STORE_TOKENS = True
 
 
 # SITE_ID with your domain site in /admin/sites/
-SITE_ID = 2
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+SITE_ID = 3
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

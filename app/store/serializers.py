@@ -3,6 +3,18 @@ from rest_framework import serializers
 from store.models import Store, StorePost, PostImage
 
 
+class StoreInlineSerializer(serializers.ModelSerializer):
+    primary_style = serializers.StringRelatedField(many=False)
+    secondary_style = serializers.StringRelatedField(many=False)
+    age = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = Store
+        fields = ('insta_id', 'insta_url', 'name', 'age',
+                  'primary_style', 'secondary_style', 'category',
+                  'facebook_url', 'shopee_url', 'profile_image')
+
+
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
@@ -11,16 +23,22 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 class StorePostSerializer(serializers.ModelSerializer):
     post_image_set = PostImageSerializer(read_only=True, many=True)
+    store = StoreInlineSerializer(many=False)
 
     class Meta:
         model = StorePost
         fields = ('post_url', 'post_type', 'post_thumb_image', 'video_source',
-                  'post_description', 'post_image_set', )
+                  'post_description', 'post_image_set', 'store')
 
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
+        queryset = queryset.select_related('store')
+        queryset = queryset.select_related('store__age')
+        queryset = queryset.select_related('store__secondary_style')
+        queryset = queryset.select_related('store__primary_style')
+        queryset = queryset.prefetch_related('store__category')
         queryset = queryset.prefetch_related('post_image_set')
         return queryset
 
