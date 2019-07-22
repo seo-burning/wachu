@@ -8,6 +8,11 @@ from publish.models import PostGroup
 from core.models import ExportCsvMixin
 
 
+@admin.register(models.UserFavoritePost)
+class FavoritePost(admin.ModelAdmin):
+    model = models.UserFavoritePost
+
+
 class PostImageInline(admin.StackedInline):
     model = models.PostImage
     fields = ['post_image_shot', ]

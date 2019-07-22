@@ -1,8 +1,8 @@
 from django.db import models
+from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from django.utils.translation import ugettext_lazy as _
-# from product.models import SlidingBannerSection, MainSection
 
 
 class TimeStampedModel(models.Model):
@@ -11,6 +11,18 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class UserFavoriteStore(TimeStampedModel):
+    store = models.ForeignKey('Store', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+
+
+class UserFavoritePost(TimeStampedModel):
+    store_post = models.ForeignKey('StorePost', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
 
 
 class Region(models.Model):
@@ -90,6 +102,13 @@ class Store(TimeStampedModel):
     current_ranking = models.IntegerField(null=True)
     current_ranking_changed = models.IntegerField(null=True)
 
+    # Favorite info
+    favorite_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='UserFavoriteStore',
+        related_name='favorite_stores'
+    )
+
     def __str__(self):
         return self.insta_id
 
@@ -157,6 +176,13 @@ class StorePost(TimeStampedModel):
     post_score = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     ordering_keyword = models.IntegerField(null=True, default=True)
+
+    # Favorite info
+    favorite_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='UserFavoritePost',
+        related_name='favorite_posts'
+    )
 
     def __str__(self):
         return mark_safe('<img src="{url}" \

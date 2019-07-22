@@ -1,7 +1,29 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
-
+from store.models import UserFavoritePost, UserFavoriteStore, Store, StorePost
 from rest_framework import serializers
+
+
+# TODO SELECT_RELATED
+class StoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ('insta_id',)
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    favorite_stores = serializers.StringRelatedField(many=True, read_only=True)
+    favorite_posts = serializers.StringRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('favorite_stores', 'favorite_posts')
+
+
+class FavoriteStoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFavoriteStore
+        fields = ('store', 'user')
 
 
 class UserSerializer(serializers.ModelSerializer):
