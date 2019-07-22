@@ -10,6 +10,7 @@ class StoreSerializer(serializers.ModelSerializer):
     primary_style = serializers.StringRelatedField(many=False)
     secondary_style = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
+    category = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Store
@@ -69,10 +70,18 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
             'top_section_post_group__post_list',
             'top_section_post_group__post_list__post_image_set',
             'top_section_post_group__post_list__store',
+            'top_section_post_group__post_list__store__category',
+            'top_section_post_group__post_list__store__primary_style',
+            'top_section_post_group__post_list__store__secondary_style',
+            'top_section_post_group__post_list__store__age',
             'main_section_post_group_list',
             'main_section_post_group_list__post_list',
             'main_section_post_group_list__post_list__post_image_set',
             'main_section_post_group_list__post_list__store',
+            'main_section_post_group_list__post_list__store__category',
+            'main_section_post_group_list__post_list__store__primary_style',
+            'main_section_post_group_list__post_list__store__secondary_style',
+            'main_section_post_group_list__post_list__store__age',
         )
 
         return queryset
