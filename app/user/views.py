@@ -5,8 +5,6 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-from django.conf import settings
-from core.models import User
 from user import serializers
 from allauth.socialaccount.providers.facebook.views \
     import FacebookOAuth2Adapter
@@ -78,6 +76,3 @@ class FavoriteStoreCreateView(generics.CreateAPIView):
     serializer_class = serializers.FavoriteStoreSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-
-    def perfrom_create(self, serializer):
-        serializer.save(use=self.request.user)

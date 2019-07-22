@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
-from store.models import UserFavoritePost, UserFavoriteStore, Store, StorePost
+from store.models import UserFavoriteStore, Store
 from rest_framework import serializers
 
 

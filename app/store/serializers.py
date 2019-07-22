@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from store.models import Store, StorePost, PostImage, UserFavoriteStore, UserFavoritePost
+from store.models import Store, StorePost, PostImage
 
 
 class StoreInlineSerializer(serializers.ModelSerializer):
