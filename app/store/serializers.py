@@ -27,7 +27,8 @@ class StorePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StorePost
-        fields = ('post_url', 'post_type', 'post_thumb_image', 'video_source',
+        fields = ('pk', 'post_url', 'post_type', 'post_thumb_image',
+                  'video_source',
                   'post_description', 'post_image_set', 'store')
 
     @staticmethod

@@ -38,7 +38,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class FavoriteStoreListView(generics.RetrieveAPIView):
+class FavoriteListView(generics.RetrieveAPIView):
     serializer_class = serializers.FavoriteSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -48,31 +48,37 @@ class FavoriteStoreListView(generics.RetrieveAPIView):
         return self.request.user
 
 
-class FavoriteStoreObjectView(generics.DestroyAPIView):
+class FavoriteStoreView(generics.DestroyAPIView):
     queryset = UserFavoriteStore.objects.all()
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def destroy(self, request, *args, **kwargs):
         data = self.queryset.filter(
-            store__insta_id=kwargs['pk'], user=request.user)
+            store=kwargs['pk'], user=request.user)
         data.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class FavoritePostObjectView(generics.DestroyAPIView):
+class FavoritePostView(generics.DestroyAPIView):
     queryset = UserFavoritePost.objects.all()
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def destroy(self, request, *args, **kwargs):
         data = self.queryset.filter(
-            store_post__post_url=kwargs['pk'], user=request.user)
+            store_post=kwargs['pk'], user=request.user)
         data.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FavoriteStoreCreateView(generics.CreateAPIView):
     serializer_class = serializers.FavoriteStoreSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class FavoritePostCreateView(generics.CreateAPIView):
+    serializer_class = serializers.FavoritePostSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)

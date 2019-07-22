@@ -14,7 +14,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Store
-        fields = ('insta_id', 'insta_url', 'name', 'age',
+        fields = ('pk', 'insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style', 'category',
                   'facebook_url', 'shopee_url', 'profile_image')
 
@@ -31,7 +31,8 @@ class StorePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StorePost
-        fields = ('post_url', 'post_type', 'post_thumb_image', 'video_source',
+        fields = ('pk', 'post_url', 'post_type', 'post_thumb_image',
+                  'video_source',
                   'post_description', 'post_image_set', 'store')
 
     @staticmethod
