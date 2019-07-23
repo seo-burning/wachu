@@ -54,7 +54,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Store
-        fields = ('insta_id',
+        fields = ('pk', 'insta_id',
                   'current_ranking',
                   'current_ranking_changed',
                   'insta_url',

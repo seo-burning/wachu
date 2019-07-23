@@ -2,9 +2,11 @@ from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
 from store.models import UserFavoriteStore, Store, UserFavoritePost
 from rest_framework import serializers
-
+from publish.serializers import StorePostSerializer
 
 # TODO SELECT_RELATED
+
+
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
@@ -12,6 +14,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    favorite_posts = StorePostSerializer(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
