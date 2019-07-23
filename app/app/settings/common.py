@@ -218,3 +218,9 @@ SOCIALACCOUNT_STORE_TOKENS = True
 # SITE_ID with your domain site in /admin/sites/
 SITE_ID = 3
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 50
+}

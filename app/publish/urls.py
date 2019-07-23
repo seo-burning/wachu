@@ -4,4 +4,5 @@ from publish import views
 
 urlpatterns = [
     path('main-page/', views.MainPagePublishView.as_view()),
+    path('test/', views.TestPostSerializer.as_view())
 ]

@@ -4,7 +4,7 @@ from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework import status
 
-
+from django.contrib.auth import get_user_model
 from user import serializers
 from allauth.socialaccount.providers.facebook.views \
     import FacebookOAuth2Adapter
@@ -46,6 +46,11 @@ class FavoriteListView(generics.RetrieveAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+
+    def get_queryset(self):
+        queryset = get_user_model()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
 
 
 class FavoriteStoreView(generics.DestroyAPIView):

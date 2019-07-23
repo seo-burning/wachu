@@ -12,6 +12,8 @@ class StoreSerializer(serializers.ModelSerializer):
         model = Store
         fields = ('insta_id',)
 
+# TODO Optimize
+
 
 class FavoriteSerializer(serializers.ModelSerializer):
     favorite_posts = StorePostSerializer(many=True, read_only=True)
@@ -19,6 +21,21 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('favorite_stores', 'favorite_posts')
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(
+            'favorite_posts',
+            'favorite_posts__post_image_set',
+            'favorite_posts__store',
+            'favorite_posts__store__category',
+            'favorite_posts__store__primary_style',
+            'favorite_posts__store__secondary_style',
+            'favorite_posts__store__age',
+        )
+        return queryset
 
 
 class FavoriteStoreSerializer(serializers.ModelSerializer):
