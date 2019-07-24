@@ -59,6 +59,7 @@ urlpatterns = [
     path('api/publish/', include('publish.urls')),
     path('api/chu/', include('pick.urls')),
     path('api/auth/', include('rest_auth.urls')),
+    path('api/core/', include('core.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
