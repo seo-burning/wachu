@@ -13,6 +13,12 @@ class FavoritePost(admin.ModelAdmin):
     model = models.UserFavoritePost
 
 
+class StoreCategoryInline(admin.TabularInline):
+    model = models.Store.category.through
+    extra = 0
+    max_num = 200
+
+
 class PostImageInline(admin.StackedInline):
     model = models.PostImage
     fields = ['post_image_shot', ]
@@ -125,7 +131,20 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                      "primary_style__name", "secondary_style__name", ]
 
     actions = ['export_as_csv', 'make_activate',
-               'make_deactivate', 'make_deactivate_under_5000']
+               'make_deactivate', 'make_deactivate_under_5000',
+               'make_is_updated', 'make_is_not_updated',
+               'make_deactivate_not_categorized']
+
+    def make_deactivate_not_categorized(self, request, queryset):
+        num = 0
+        for q in queryset:
+            if (len(q.category.all()) == 0):
+                print(q.insta_id)
+                num = num + 1
+                q.is_active = False
+                q.save()
+        self.message_user(
+            request, '분류되지 않은 {}의 계정을 deactivate로 변경'.format(num))
 
     def make_deactivate_under_5000(self, request, queryset):
         num = 0
@@ -148,6 +167,18 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         self.message_user(
             request, '{}건의 포스팅을 Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = '지정 스토어를 Deactivate 상태로 변경'
+
+    def make_is_updated(self, request, queryset):
+        updated_count = queryset.update(is_updated=True)
+        self.message_user(
+            request, '{}건의 포스팅을 Updated 상태로 변경'.format(updated_count))
+    make_is_updated.short_description = '지정 스토어를 Updated 상태로 변경'
+
+    def make_is_not_updated(self, request, queryset):
+        updated_count = queryset.update(is_updated=False)
+        self.message_user(
+            request, '{}건의 포스팅을 Not Updated 상태로 변경'.format(updated_count))
+    make_is_not_updated.short_description = '지정 스토어를 Not Updated 상태로 변경'
 
     def profile_image_shot(self, obj):
         return mark_safe('<img src="{url}" \
@@ -176,9 +207,9 @@ class StorePostAdmin(admin.ModelAdmin):
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
                        'post_taken_at_timestamp',
-                       'post_url')
+                       'post_url', 'store')
     fields = ['is_active', 'post_score', 'post_description',
-              'post_url']
+              'post_url', 'product', 'store']
     ordering = ['post_taken_at_timestamp']
     actions = ['make_activate',
                'make_deactivate']
@@ -206,6 +237,7 @@ class RegionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
+    inlines = [StoreCategoryInline, ]
     list_display = (
         'name',
     )

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from django.utils.translation import ugettext_lazy as _
+from product.models import Product
 
 
 class TimeStampedModel(models.Model):
@@ -183,6 +184,8 @@ class StorePost(TimeStampedModel):
         through='UserFavoritePost',
         related_name='favorite_posts'
     )
+
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return mark_safe('<img src="{url}" \

@@ -11,3 +11,14 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColor(admin.ModelAdmin):
     fields = ['name']
+
+
+@admin.register(models.ProductSize)
+class ProductSize(admin.ModelAdmin):
+    fields = ['name']
+
+
+@admin.register(models.Product)
+class Product(admin.ModelAdmin):
+    fields = ['name', 'category', 'color', 'size', 'store']
+    raw_id_fields = ['store']
