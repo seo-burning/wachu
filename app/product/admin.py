@@ -18,6 +18,11 @@ class ProductSize(admin.ModelAdmin):
     fields = ['name']
 
 
+@admin.register(models.ProductTag)
+class ProductTag(admin.ModelAdmin):
+    fields = ['name']
+
+
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
     fields = ['name', 'category', 'tag', 'store']

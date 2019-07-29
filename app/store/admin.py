@@ -11,7 +11,7 @@ from core.models import ExportCsvMixin
 
 class ProductInline(admin.StackedInline):
     model = Product
-    fields = ['name', 'category', 'store']
+    fields = ['name', 'category', 'store', 'tag']
     raw_id_fields = ['store']
     extra = 1
 
