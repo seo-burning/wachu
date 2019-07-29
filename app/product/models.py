@@ -24,6 +24,13 @@ class ProductColor(TimeStampedModel):
         return self.name
 
 
+class ProductTag(TimeStampedModel):
+    name = models.CharField(_('Product Tag'), max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
 class ProductSize(TimeStampedModel):
     name = models.CharField(_('Product Size'), max_length=255)
 
@@ -35,9 +42,11 @@ class Product(TimeStampedModel):
     store = models.ForeignKey('store.Store', on_delete=models.CASCADE)
     name = models.CharField(_('Product Model'), max_length=255)
     category = models.ForeignKey(
-        ProductCategory, on_delete=models.SET_NULL, null=True)
+        ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
     color = models.ManyToManyField(
         ProductColor, blank=True)
+    tag = models.ManyToManyField(
+        ProductTag)
     price = models.PositiveIntegerField(null=True, blank=True)
     size = models.ManyToManyField(
         ProductSize, blank=True)

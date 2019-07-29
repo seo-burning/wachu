@@ -20,5 +20,5 @@ class ProductSize(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    fields = ['name', 'category', 'color', 'size', 'store']
+    fields = ['name', 'category', 'tag', 'store']
     raw_id_fields = ['store']
