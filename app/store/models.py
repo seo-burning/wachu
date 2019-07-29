@@ -109,6 +109,11 @@ class Store(TimeStampedModel):
         related_name='favorite_stores'
     )
 
+    # Recent Post
+    recent_post_1 = models.URLField(null=True, blank=True, max_length=500)
+    recent_post_2 = models.URLField(null=True, blank=True, max_length=500)
+    recent_post_3 = models.URLField(null=True, blank=True, max_length=500)
+
     def __str__(self):
         return self.insta_id
 
