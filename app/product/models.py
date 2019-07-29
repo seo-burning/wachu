@@ -37,10 +37,10 @@ class Product(TimeStampedModel):
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL, null=True)
     color = models.ManyToManyField(
-        ProductColor)
-    price = models.PositiveIntegerField(null=True)
+        ProductColor, blank=True)
+    price = models.PositiveIntegerField(null=True, blank=True)
     size = models.ManyToManyField(
-        ProductSize)
+        ProductSize, blank=True)
 
     def __str__(self):
         return self.name
