@@ -48,8 +48,10 @@ class PostGroupInline(admin.TabularInline):
 class StorePostInline(admin.StackedInline):
     model = models.StorePost
     show_change_link = True
-    readonly_fields = ('post_taken_at_timestamp', 'post_type')
-    fields = ['post_taken_at_timestamp', 'post_type']
+    readonly_fields = ('post_taken_at_timestamp',
+                       'post_type', 'post_thumb_image')
+    fields = ['post_taken_at_timestamp', 'post_type',
+              'post_thumb_image']
     extra = 0
     max_num = 50
     ordering = ['-post_taken_at_timestamp']
@@ -71,7 +73,8 @@ class StorePostInline(admin.StackedInline):
 
 class StoreRankingInline(admin.StackedInline):
     model = models.StoreRanking
-    readonly_fields = ['follower', 'following', 'post_num', 'store_score',
+    readonly_fields = ['follower', 'following', 'post_num',
+                       'store_score',
                        'post_total_score', 'date', 'ranking',
                        'ranking_changed']
     fields = ['ranking', 'ranking_changed',
@@ -115,13 +118,18 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             'name',
             'description'
         ]}),
-        (_("Url Infomation"), {'fields': (('facebook_url', 'shopee_url'),)}),
+        (_("Url Infomation"),
+         {'fields': (('facebook_url', 'shopee_url'),)}),
         (_("Instagram Numbers"), {'fields': (
             ('post_num', 'follower', 'following'),
         )}),
-        (_("Images"), {'fields': (
+        (_("Tags"), {'fields': (
             ("category", "region", 'age'),
             ("primary_style", "secondary_style"),
+        )}),
+        (_("Images"), {'fields': (
+            ("recent_post_1", "recent_post_2",
+             'recent_post_3'),
         )}),
     ]
     list_display = ["instagram_link",
