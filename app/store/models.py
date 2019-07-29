@@ -3,7 +3,6 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from django.utils.translation import ugettext_lazy as _
-from product.models import Product
 
 
 class TimeStampedModel(models.Model):
