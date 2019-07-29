@@ -13,4 +13,4 @@ class ProductCategoryListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = models.Product.objects.all()
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+        return queryset.filter(category__name=self.kwargs['product_category'])
