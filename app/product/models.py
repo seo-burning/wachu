@@ -51,5 +51,8 @@ class Product(TimeStampedModel):
     size = models.ManyToManyField(
         ProductSize, blank=True)
 
+    post = models.ForeignKey(
+        'store.StorePost', on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         return self.name

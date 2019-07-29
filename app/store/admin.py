@@ -4,8 +4,16 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from store import models
+from product.models import Product
 from publish.models import PostGroup
 from core.models import ExportCsvMixin
+
+
+class ProductInline(admin.StackedInline):
+    model = Product
+    fields = ['name', 'category', 'store']
+    raw_id_fields = ['store']
+    extra = 1
 
 
 @admin.register(models.UserFavoritePost)
@@ -202,14 +210,14 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
-    inlines = [PostImageInline, PostGroupInline]
+    inlines = [ProductInline, PostImageInline, PostGroupInline]
     model = models.StorePost
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
                        'post_taken_at_timestamp',
                        'post_url', 'store')
     fields = ['is_active', 'post_score', 'post_description',
-              'post_url', 'product', 'store']
+              'post_url', 'store']
     ordering = ['post_taken_at_timestamp']
     actions = ['make_activate',
                'make_deactivate']

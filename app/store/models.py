@@ -185,8 +185,6 @@ class StorePost(TimeStampedModel):
         related_name='favorite_posts'
     )
 
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-
     def __str__(self):
         return mark_safe('<img src="{url}" \
         width="300" height="300" border="1" />'.format(
