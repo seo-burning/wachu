@@ -138,7 +138,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     "insta_id", 'profile_thumb', 'follower',
                     "primary_style", "secondary_style", "age"]
     list_filter = ['is_active', 'is_updated']
-    list_editable = ["primary_style", "secondary_style", "age"]
     list_display_links = ["insta_id"]
     list_select_related = (
         'primary_style', 'secondary_style', 'age'
