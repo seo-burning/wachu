@@ -27,11 +27,16 @@ class PostGroupAdmin(admin.ModelAdmin):
 
 class PostGroupInline(admin.TabularInline):
     model = models.MainPagePublish.main_section_post_group_list.through
+    fields = ['post_group_name', 'post_group_ordering']
+    readonly_fields = ['post_group_name', 'post_group_ordering']
     extra = 0
     max_num = 50
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    def post_group_name(self, instance):
+        return instance.postgroup.title
+
+    def post_group_ordering(self, instance):
+        return instance.postgroup.ordering
 
 
 @admin.register(models.MainPagePublish)

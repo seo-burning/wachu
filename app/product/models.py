@@ -25,7 +25,7 @@ class ProductColor(TimeStampedModel):
 
 
 class ProductTag(TimeStampedModel):
-    name = models.CharField(_('Product Tag'), max_length=255)
+    name = models.CharField(_('Product Tag'), max_length=255, unique=True)
 
     def __str__(self):
         return self.name
