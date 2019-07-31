@@ -12,7 +12,7 @@ class PostGroup(TimeStampedModel):
                                        symmetrical=False,
                                        related_name="post_set")
     published_page = models.ForeignKey(
-        'MainPagePublish', on_delete=models.CASCADE, null=True, blank=True,)
+        'MainPagePublish', on_delete=models.SET_NULL, null=True, blank=True,)
 
     def __str__(self):
         return self.title

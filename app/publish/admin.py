@@ -32,11 +32,15 @@ class PostGroupAdmin(admin.ModelAdmin):
 
 class PostGroupInline(admin.StackedInline):
     model = models.PostGroup
-    fields = ['ordering', 'title']
+    show_change_link = True
+    fields = ['ordering', 'title', ]
     readonly_fields = ['title']
     extra = 0
     max_num = 15
     ordering = ['ordering']
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(models.MainPagePublish)
