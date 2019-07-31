@@ -11,6 +11,8 @@ class PostGroup(TimeStampedModel):
     post_list = models.ManyToManyField(StorePost, blank=True,
                                        symmetrical=False,
                                        related_name="post_set")
+    published_page = models.ForeignKey(
+        'MainPagePublish', on_delete=models.CASCADE, null=True, blank=True,)
 
     def __str__(self):
         return self.title
@@ -19,11 +21,6 @@ class PostGroup(TimeStampedModel):
 class MainPagePublish(TimeStampedModel):
     is_published = models.BooleanField(default=False)
     date = models.DateField(_('Published Date'))
-    top_section_post_group = models.ForeignKey(
-        PostGroup, on_delete=models.CASCADE)
-    main_section_post_group_list = models.ManyToManyField(
-        PostGroup, blank=True,
-        symmetrical=False, related_name="post_group_set")
 
     def __str__(self):
         return self.date.strftime("%Y-%m-%d")

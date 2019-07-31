@@ -21,25 +21,31 @@ class StorePostInline(admin.TabularInline):
 @admin.register(models.PostGroup)
 class PostGroupAdmin(admin.ModelAdmin):
     inlines = [StorePostInline]
-    fields = ['title', 'ordering']
+    fields = ['title', 'ordering', 'published_page']
+    list_display = ['published_page', 'title', 'post_number']
+    list_display_links = ['title']
     extra = 0
 
+    def post_number(self, instance):
+        return len(instance.post_list.all())
 
-class PostGroupInline(admin.TabularInline):
-    model = models.MainPagePublish.main_section_post_group_list.through
-    fields = ['post_group_name', 'post_group_ordering']
-    readonly_fields = ['post_group_name', 'post_group_ordering']
+
+class PostGroupInline(admin.StackedInline):
+    model = models.PostGroup
+    fields = ['ordering', 'title']
+    readonly_fields = ['title']
     extra = 0
-    max_num = 50
-
-    def post_group_name(self, instance):
-        return instance.postgroup.title
-
-    def post_group_ordering(self, instance):
-        return instance.postgroup.ordering
+    max_num = 15
+    ordering = ['ordering']
 
 
 @admin.register(models.MainPagePublish)
 class MainPagePublishAdmin(admin.ModelAdmin):
     inlines = [PostGroupInline, ]
-    fields = ['is_published', 'date', 'top_section_post_group']
+    fields = ['is_published', 'date', ]
+    list_display = ['is_published', 'date', 'post_group_number']
+    list_display_links = ['date']
+    ordering = ['date']
+
+    def post_group_number(self, instance):
+        return len(instance.postgroup_set.all())

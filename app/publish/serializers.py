@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
 from store.models import StorePost, Store, PostImage
+
+from django.db.models import Prefetch
+
 from publish import models
 
 # TODO Need to 최적화 (Nested Serializer)
@@ -53,41 +56,32 @@ class PostGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PostGroup
-        fields = ('title', 'post_list',)
+        fields = ('ordering', 'title', 'post_list',)
 
 
 class MainPagePublishSerializer(serializers.ModelSerializer):
-    top_section_post_group = PostGroupSerializer(many=False)
-    main_section_post_group_list = PostGroupSerializer(many=True)
+    postgroup_set = PostGroupSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.MainPagePublish
-        fields = ('top_section_post_group', 'main_section_post_group_list',)
+        fields = ('date', 'postgroup_set',)
 
 # https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
-        queryset = queryset.select_related(
-            'top_section_post_group',
-        )
+        queryset = queryset.prefetch_related(Prefetch(
+            'postgroup_set',
+            queryset=models.PostGroup.objects.order_by('ordering')))
         queryset = queryset.prefetch_related(
-            'top_section_post_group__post_list',
-            'top_section_post_group__post_list__post_image_set',
-            'top_section_post_group__post_list__store',
-            'top_section_post_group__post_list__store__category',
-            'top_section_post_group__post_list__store__primary_style',
-            'top_section_post_group__post_list__store__secondary_style',
-            'top_section_post_group__post_list__store__age',
-            'main_section_post_group_list',
-            'main_section_post_group_list__post_list',
-            'main_section_post_group_list__post_list__post_image_set',
-            'main_section_post_group_list__post_list__store',
-            'main_section_post_group_list__post_list__store__category',
-            'main_section_post_group_list__post_list__store__primary_style',
-            'main_section_post_group_list__post_list__store__secondary_style',
-            'main_section_post_group_list__post_list__store__age',
+            'postgroup_set__post_list',
+            'postgroup_set__post_list__post_image_set',
+            'postgroup_set__post_list__store',
+            'postgroup_set__post_list__store__category',
+            'postgroup_set__post_list__store__primary_style',
+            'postgroup_set__post_list__store__secondary_style',
+            'postgroup_set__post_list__store__age',
         )
 
         return queryset
