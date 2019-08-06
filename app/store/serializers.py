@@ -58,7 +58,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Store
-        fields = ('pk', 'insta_id',
+        fields = ('pk', 'is_new_post', 'insta_id',
                   'current_ranking',
                   'current_ranking_changed',
                   'insta_url',
@@ -73,7 +73,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'recent_post_1',
                   'recent_post_2',
                   'recent_post_3')
-        read_only_fields = ('insta_id',
+        read_only_fields = ('insta_id', 'pk', 'is_new_post',
                             'current_ranking',
                             'current_ranking_changed',
                             'insta_url',

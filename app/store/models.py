@@ -64,6 +64,7 @@ class Store(TimeStampedModel):
     """Store object"""
     is_active = models.BooleanField(default=False)
     is_updated = models.BooleanField(default=False)
+    is_new_post = models.BooleanField(default=False)
 
     insta_id = models.CharField(_("Instagram ID"), max_length=255)
     insta_url = models.URLField(

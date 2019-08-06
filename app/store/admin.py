@@ -93,6 +93,7 @@ class StoreRankingInline(admin.StackedInline):
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     inlines = [StoreRankingInline, StorePostInline, ]
     readonly_fields = (
+        'is_new_post',
         'insta_id',
         'insta_url',
         'current_ranking',
@@ -106,18 +107,18 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         'post_num',
         'description',)
     fieldsets = [
-        (_("User Profile"), {'fields': [
-            'is_active',
-            'is_updated',
-            'current_ranking',
-            'current_ranking_changed',
-            'instagram_link',
-            'profile_image_shot',
-            'insta_id',
-            'insta_url',
-            'name',
-            'description'
-        ]}),
+        (_("User Profile"), {'fields': ['is_new_post',
+                                        'is_active',
+                                        'is_updated',
+                                        'current_ranking',
+                                        'current_ranking_changed',
+                                        'instagram_link',
+                                        'profile_image_shot',
+                                        'insta_id',
+                                        'insta_url',
+                                        'name',
+                                        'description'
+                                        ]}),
         (_("Url Infomation"),
          {'fields': (('facebook_url', 'shopee_url'),)}),
         (_("Instagram Numbers"), {'fields': (

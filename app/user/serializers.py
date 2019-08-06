@@ -51,11 +51,16 @@ class FavoritePostSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Serializer for the users object"""
+    get_user_favorite_stores_count = serializers.IntegerField(
+        source='favorite_stores.count', read_only=True)
+    get_user_favorite_posts_count = serializers.IntegerField(
+        source='favorite_posts.count', read_only=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'password', 'name')
+        fields = ('id', 'email', 'password', 'name',
+                  'get_user_favorite_stores_count',
+                  'get_user_favorite_posts_count')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 6}}
 
     def create(self, validated_data):
@@ -70,8 +75,17 @@ class UserSerializer(serializers.ModelSerializer):
         if password:
             user.set_password(password)
             user.save()
-
         return user
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(
+            'favorite_posts',
+            'favorite_stores',
+        )
+        return queryset
 
 
 class AuthTokenSerializer(serializers.Serializer):
