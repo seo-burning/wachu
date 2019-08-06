@@ -57,6 +57,9 @@ class UserManager(BaseUserManager):
         return user
 
 
+GENDER_CHOICES_FIELD = [('female', 'female'), ('male', 'male')]
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
@@ -64,6 +67,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     age = models.IntegerField(null=True)
     height = models.IntegerField(blank=True, null=True)
     weight = models.IntegerField(blank=True, null=True)
+    gender = models.CharField(
+        max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
