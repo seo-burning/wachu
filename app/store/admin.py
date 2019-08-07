@@ -29,7 +29,7 @@ class StoreCategoryInline(admin.TabularInline):
 
 class PostImageInline(admin.StackedInline):
     model = models.PostImage
-    fields = ['post_image_shot', ]
+    fields = ['post_image_shot', 'post_image_type']
     readonly_fields = ['post_image_shot', ]
     extra = 0
 

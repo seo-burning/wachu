@@ -111,4 +111,5 @@ static/
 
 #crawling
 ic.py
+ic_update.py
 app/crawling

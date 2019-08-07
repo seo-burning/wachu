@@ -141,7 +141,12 @@ class StoreRanking(TimeStampedModel):
         return ("{}, {}".format(self.date, self.store))
 
 
+POST_IMAGE_TYPE = (('P', _('Picture')), ('V', _('Video')))
+
+
 class PostImage(TimeStampedModel):
+    post_image_type = models.CharField(
+        max_length=25, choices=POST_IMAGE_TYPE, null=True)
     source = models.CharField(_('URL Source'), max_length=1024, null=True)
     source_thumb = models.CharField(
         _('Thumb Small Link'), max_length=1024, null=True)
