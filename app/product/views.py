@@ -11,6 +11,6 @@ class ProductCategoryListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.Product.objects.all()
+        queryset = models.Product.objects.all().order_by('-pk')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.filter(category__name=self.kwargs['product_category'])
