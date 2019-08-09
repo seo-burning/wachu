@@ -50,6 +50,18 @@ class FavoritePostSerializer(serializers.ModelSerializer):
         fields = ('store_post', 'user')
 
 
+class UserBasicInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('gender', 'age')
+
+
+class UserAdditionalInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('height', 'weight')
+
+
 class UserSerializer(serializers.ModelSerializer):
     get_user_favorite_stores_count = serializers.IntegerField(
         source='favorite_stores.count', read_only=True)

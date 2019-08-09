@@ -27,17 +27,6 @@ class CreateTokenView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
-class ManageUserView(generics.RetrieveUpdateAPIView):
-    """Manage the authenticated user"""
-    serializer_class = serializers.UserSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_object(self):
-        """Retrieve and return authenticated user"""
-        return self.request.user
-
-
 class FavoriteListView(generics.RetrieveAPIView):
     serializer_class = serializers.FavoriteSerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -87,3 +76,36 @@ class FavoritePostCreateView(generics.CreateAPIView):
     serializer_class = serializers.FavoritePostSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
+
+
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    """Manage the authenticated user"""
+    serializer_class = serializers.UserSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
+
+
+class UserBasicInfoUpdateView(generics.RetrieveUpdateAPIView):
+    """Update user basic infomation"""
+    serializer_class = serializers.UserBasicInfoSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
+
+
+class UserAdditionalInfoUpdateView(generics.RetrieveUpdateAPIView):
+    """Update user basic infomation"""
+    serializer_class = serializers.UserAdditionalInfoSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
