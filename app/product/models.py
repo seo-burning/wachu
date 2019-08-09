@@ -52,7 +52,7 @@ class Product(TimeStampedModel):
         ProductSize, blank=True)
 
     post = models.ForeignKey(
-        'store.StorePost', on_delete=models.SET_NULL, null=True)
+        'store.StorePost', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

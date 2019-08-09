@@ -134,6 +134,10 @@ class StoreRanking(TimeStampedModel):
     follower = models.IntegerField(_("Instagram Follower"), null=True)
     following = models.IntegerField(_("Instagram Following"), null=True)
     post_num = models.IntegerField(_("Instagram Number of posts"), null=True)
+
+    store_view_count = models.IntegerField(
+        _("Store View Count of the day"), null=True)
+
     ranking = models.IntegerField(null=True)
     ranking_changed = models.IntegerField(null=True)
 
