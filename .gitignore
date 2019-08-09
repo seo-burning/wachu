@@ -112,4 +112,5 @@ static/
 #crawling
 ic.py
 ic_update.py
+ic_ranking.py
 app/crawling
