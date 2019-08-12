@@ -109,3 +109,14 @@ class UserAdditionalInfoUpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+
+
+class UserNameUpdateView(generics.RetrieveUpdateAPIView):
+    """Update user basic infomation"""
+    serializer_class = serializers.UserNameSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user

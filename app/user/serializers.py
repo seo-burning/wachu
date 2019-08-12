@@ -62,6 +62,12 @@ class UserAdditionalInfoSerializer(serializers.ModelSerializer):
         fields = ('height', 'weight')
 
 
+class UserNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('name',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     get_user_favorite_stores_count = serializers.IntegerField(
         source='favorite_stores.count', read_only=True)
