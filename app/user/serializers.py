@@ -53,7 +53,7 @@ class FavoritePostSerializer(serializers.ModelSerializer):
 class UserBasicInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('gender', 'age', 'name')
+        fields = ('gender', 'age',)
 
 
 class UserAdditionalInfoSerializer(serializers.ModelSerializer):
