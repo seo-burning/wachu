@@ -84,7 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserPushToken(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    push_token = models.CharField(max_length=255)
+    push_token = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.push_token
