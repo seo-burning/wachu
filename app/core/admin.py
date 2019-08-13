@@ -30,4 +30,5 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.Notice)
+admin.site.register(models.UserPushToken)
 admin.site.register(models.User, UserAdmin)

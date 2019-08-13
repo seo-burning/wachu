@@ -87,7 +87,7 @@ class UserPushToken(TimeStampedModel):
     push_token = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.user
+        return self.push_token
 
 
 class Notice(TimeStampedModel):
