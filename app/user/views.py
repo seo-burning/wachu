@@ -21,6 +21,16 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = serializers.UserSerializer
 
 
+class CreatUserPushToken(generics.CreateAPIView):
+    """Create a new user"""
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.PushTokenSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
 class CreateTokenView(ObtainAuthToken):
     """Create a new auth token for user"""
     serializer_class = serializers.AuthTokenSerializer

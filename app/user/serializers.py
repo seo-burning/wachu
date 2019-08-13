@@ -4,6 +4,7 @@ from store.models import UserFavoriteStore, Store, UserFavoritePost
 from rest_framework import serializers
 from publish.serializers import StorePostSerializer
 
+from core.models import UserPushToken
 # TODO SELECT_RELATED
 
 
@@ -131,3 +132,9 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class PushTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPushToken
+        fields = ('push_token',)
