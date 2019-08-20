@@ -8,8 +8,13 @@ from django.contrib.auth import get_user_model
 from user import serializers
 from allauth.socialaccount.providers.facebook.views \
     import FacebookOAuth2Adapter
-from rest_auth.registration.views import SocialLoginView
+from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, UserFavoritePost
+
+
+class FacebookLoginConnect(SocialConnectView):
+    adapter_class = FacebookOAuth2Adapter
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class FacebookLogin(SocialLoginView):

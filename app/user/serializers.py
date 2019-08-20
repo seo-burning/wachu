@@ -138,3 +138,9 @@ class PushTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPushToken
         fields = ('push_token',)
+
+
+class FacebookPhoneNumberAccountCreateSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ()

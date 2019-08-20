@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    # 'drf_yasg',
+    'rest_auth.registration',
 
     'core',
     'pick',
@@ -208,16 +208,16 @@ SOCIALACCOUNT_PROVIDERS = {
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+# ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 SOCIALACCOUNT_STORE_TOKENS = True
 
 
 # SITE_ID with your domain site in /admin/sites/
 SITE_ID = 3
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 REST_FRAMEWORK = {
@@ -227,4 +227,3 @@ REST_FRAMEWORK = {
 
 
 # https://www.oipapio.com/question-6018776
-ACCOUNT_EMAIL_VERIFICATION = 'none'

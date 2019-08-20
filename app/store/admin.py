@@ -94,7 +94,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     inlines = [StoreRankingInline, StorePostInline, ]
     readonly_fields = (
         'is_new_post',
-        'insta_id',
         'insta_url',
         'current_ranking',
         'current_ranking_changed',
