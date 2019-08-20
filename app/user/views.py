@@ -14,6 +14,7 @@ from store.models import UserFavoriteStore, UserFavoritePost
 
 class FacebookLoginConnect(SocialConnectView):
     adapter_class = FacebookOAuth2Adapter
+    authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
 
