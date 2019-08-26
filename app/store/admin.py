@@ -211,7 +211,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     instagram_link.allow_tags = True
 
 
-class CustomFilter(admin.SimpleListFilter):
+class PostRankingFilter(admin.SimpleListFilter):
     title = 'Ranking Filter'
     parameter_name = 'store__current_ranking'
 
@@ -252,7 +252,7 @@ class StorePostAdmin(admin.ModelAdmin):
     ordering = ['post_taken_at_timestamp']
     actions = ['make_activate',
                'make_deactivate']
-    list_filter = (CustomFilter, 'is_updated')
+    list_filter = (PostRankingFilter, 'is_updated')
     list_per_page = 10
 
     def make_activate(self, request, queryset):

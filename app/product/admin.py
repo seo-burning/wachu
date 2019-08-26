@@ -5,7 +5,21 @@ from product import models
 
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['is_active', 'name']
+    list_filter = ['is_active', ]
+    actions = ['make_activate', 'make_deactivate']
+
+    def make_activate(self, request, queryset):
+        updated_count = queryset.update(is_active=True)
+        self.message_user(
+            request, '{}건의 상품을 Activated 상태로 변경'.format(updated_count))
+    make_activate.short_description = '지정 상품을 Activate 상태로 변경'
+
+    def make_deactivate(self, request, queryset):
+        updated_count = queryset.update(is_active=False)
+        self.message_user(
+            request, '{}건의 상품을 Deavtivate 상태로 변경'.format(updated_count))
+    make_deactivate.short_description = '지정 상품을 Deactivate 상태로 변경'
 
 
 @admin.register(models.ProductColor)

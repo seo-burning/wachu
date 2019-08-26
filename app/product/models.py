@@ -39,6 +39,7 @@ class ProductSize(TimeStampedModel):
 
 
 class Product(TimeStampedModel):
+    is_active = models.BooleanField(default=False)
     store = models.ForeignKey('store.Store', on_delete=models.CASCADE)
     name = models.CharField(_('Product Model'), max_length=255)
     category = models.ForeignKey(
