@@ -211,6 +211,34 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     instagram_link.allow_tags = True
 
 
+class CustomFilter(admin.SimpleListFilter):
+    title = 'Ranking Filter'
+    parameter_name = 'store__current_ranking'
+
+    def lookups(self, request, model_admin):
+        return(
+            ('store__current_ranking <= 200', 'store__current_ranking <= 200'),
+            ('store__current_ranking <= 400', 'store__current_ranking <= 400'),
+            ('store__current_ranking <= 600', 'store__current_ranking <= 600'),
+            ('store__current_ranking <= 800', 'store__current_ranking <= 800'),
+            ('store__current_ranking <= 1000',
+             'store__current_ranking <= 1000'),
+
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'store__current_ranking <= 200':
+            return queryset.filter(store__current_ranking__lte=200)
+        elif self.value() == 'store__current_ranking <= 400':
+            return queryset.filter(store__current_ranking__lte=400)
+        elif self.value() == 'store__current_ranking <= 600':
+            return queryset.filter(store__current_ranking__lte=600)
+        elif self.value() == 'store__current_ranking <= 800':
+            return queryset.filter(store__current_ranking__lte=800)
+        elif self.value() == 'store__current_ranking <= 1000':
+            return queryset.filter(store__current_ranking__lte=1000)
+
+
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
     inlines = [ProductInline, PostImageInline, PostGroupInline]
@@ -224,7 +252,8 @@ class StorePostAdmin(admin.ModelAdmin):
     ordering = ['post_taken_at_timestamp']
     actions = ['make_activate',
                'make_deactivate']
-    list_per_page = 1000
+    list_filter = (CustomFilter, 'is_updated')
+    list_per_page = 10
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)

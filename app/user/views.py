@@ -3,6 +3,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework import status
+from allauth.account.adapter import get_adapter
 
 from django.contrib.auth import get_user_model
 from user import serializers
@@ -15,7 +16,10 @@ from store.models import UserFavoriteStore, UserFavoritePost
 class FacebookLoginConnect(SocialConnectView):
     adapter_class = FacebookOAuth2Adapter
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+
+    def process_login(self):
+        print(self.request)
+        get_adapter(self.request).login(self.request, self.request.user)
 
 
 class FacebookLogin(SocialLoginView):

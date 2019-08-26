@@ -167,6 +167,7 @@ POST_TYPE = (('SP', _('Single Picture')),
 
 class StorePost(TimeStampedModel):
     is_active = models.BooleanField(default=True)
+    is_updated = models.BooleanField(default=False)
 
     post_id = models.CharField(max_length=25)
     post_type = models.CharField(max_length=25, choices=POST_TYPE, null=True)
