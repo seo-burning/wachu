@@ -241,10 +241,11 @@ class StorePostAdmin(admin.ModelAdmin):
                        'post_url', 'store')
     fields = ['is_active', 'post_score', 'post_description',
               'post_url', 'store']
-    ordering = ['post_taken_at_timestamp', 'store__current_ranking']
+    ordering = ['post_taken_at_timestamp', ]
     actions = ['make_activate',
                'make_deactivate']
     list_filter = (PostRankingFilter, 'is_updated')
+    list_display = ['__str__', 'store', 'get_store_ranking']
     list_per_page = 10
 
     def make_activate(self, request, queryset):
@@ -252,6 +253,9 @@ class StorePostAdmin(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 포스팅을 Activated 상태로 변경'.format(updated_count))
     make_activate.short_description = '지정 스토어를 Activate 상태로 변경'
+
+    def get_store_ranking(self, obj):
+        return obj.store.current_ranking
 
     def make_deactivate(self, request, queryset):
         updated_count = queryset.update(is_active=False)
