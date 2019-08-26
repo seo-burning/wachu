@@ -63,14 +63,6 @@ class StorePostInline(admin.StackedInline):
         return False
 
 
-# class StoreSurveyInline(admin.StackedInline):
-#     model = models.StoreSurvey
-#     readonly_fields = ['updated_at']
-#     fields = ['title', 'updated_at',
-#               'contact_status', 'reaction_rate', 'content']
-#     extra = 0
-
-
 class StoreRankingInline(admin.StackedInline):
     model = models.StoreRanking
     readonly_fields = ['follower', 'following', 'post_num',
@@ -249,7 +241,7 @@ class StorePostAdmin(admin.ModelAdmin):
                        'post_url', 'store')
     fields = ['is_active', 'post_score', 'post_description',
               'post_url', 'store']
-    ordering = ['post_taken_at_timestamp']
+    ordering = ['post_taken_at_timestamp', 'store__current_ranking']
     actions = ['make_activate',
                'make_deactivate']
     list_filter = (PostRankingFilter, 'is_updated')

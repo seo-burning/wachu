@@ -5,8 +5,10 @@ from product import models
 
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    fields = ['is_active', 'name']
-    list_filter = ['is_active', ]
+    fields = [
+        # 'is_active',
+        'name', ]
+    # list_filter = ['is_active', ]
     actions = ['make_activate', 'make_deactivate']
 
     def make_activate(self, request, queryset):
