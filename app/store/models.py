@@ -61,6 +61,9 @@ class Age(models.Model):
 
 
 class Store(TimeStampedModel):
+    class Meta:
+        ordering = ('current_ranking',)
+
     """Store object"""
     is_active = models.BooleanField(default=False)
     is_updated = models.BooleanField(default=False)

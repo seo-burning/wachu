@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+
 from store import models
 from product.models import Product
 from publish.models import PostGroup
@@ -241,7 +242,7 @@ class StorePostAdmin(admin.ModelAdmin):
                        'post_url', 'store')
     fields = ['is_active', 'post_score', 'post_description',
               'post_url', 'store']
-    ordering = ['post_taken_at_timestamp', ]
+    ordering = ['post_taken_at_timestamp', 'store']
     actions = ['make_activate',
                'make_deactivate']
     list_filter = (PostRankingFilter, 'is_updated')
