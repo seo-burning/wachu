@@ -1,0 +1,330 @@
+
+import sys
+import os
+import django
+import json
+import requests
+from bs4 import BeautifulSoup
+from random import choice
+import pymsteams  # https://pypi.org/project/pymsteams/
+import time
+import datetime
+from store_point_logic import calculate_post_point, calculate_store_point
+import multiprocessing as mp
+from functools import partial
+
+PROJECT_ROOT = os.getcwd()
+sys.path.append(os.path.dirname(PROJECT_ROOT))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
+django.setup()
+from store.models import Store, StorePost, StoreRanking, PostImage
+
+_user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
+]
+
+
+# dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
+dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
+# dateInfo = '2019-07-22'
+
+
+class InstagramScraper:
+
+    def __init__(self, user_agents=None, proxy=None):
+        self.user_agents = user_agents
+        self.proxy = proxy
+
+    def __random_agent(self):
+        if self.user_agents and isinstance(self.user_agents, list):
+            return choice(self.user_agents)
+        return choice(_user_agents)
+
+    def __request_url(self, url):
+        try:
+            response = requests.get(url, headers={'User-Agent': self.__random_agent()},
+                                    proxies={'http': self.proxy, 'https': self.proxy})
+            response.raise_for_status()
+        except requests.HTTPError as e:
+            deactivated_account.append(url)
+            print(e)
+            pass
+        except requests.RequestException:
+            raise requests.RequestException
+        else:
+            return response.text
+
+    @staticmethod
+    def extract_json_data(html):
+        soup = BeautifulSoup(html, 'html.parser')
+        body = soup.find('body')
+        script_tag = body.find('script')
+        raw_string = script_tag.text.strip().replace(
+            'window._sharedData =', '').replace(';', '')
+        return json.loads(raw_string)
+
+    def profile_page_metrics(self, profile_url):
+        results = {}
+        try:
+            response = self.__request_url(profile_url)
+            json_data = self.extract_json_data(response)
+            metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']
+        except Exception as e:
+            deactivated_account.append(profile_url)
+            pass
+        else:
+            for key, value in metrics.items():
+                if value and isinstance(value, dict):
+                    value = value['count']
+                    results[key] = value
+                elif value:
+                    results[key] = value
+        return results
+
+    def profile_page_recent_posts(self, profile_url):
+        results = []
+        try:
+            response = self.__request_url(profile_url)
+            json_data = self.extract_json_data(response)
+            metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']["edges"]
+        except Exception as e:
+            print("Failed in Get Posts {} {}".format(profile_url, e))
+            post_error_account.append(profile_url)
+            pass
+        else:
+            for node in metrics:
+                node = node.get('node')
+                if node and isinstance(node, dict):
+                    results.append(node)
+        return results
+
+    def get_content_from_post_page(self, request_url):
+        results = []
+        try:
+            response = self.__request_url(request_url)
+            json_data = self.extract_json_data(response)
+            metrics = json_data['entry_data']['PostPage'][0]['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
+        except Exception as e:
+            print("Failed in Get Single Posts {} {}".format(request_url, e))
+            post_error_account.append(request_url)
+        else:
+            for node in metrics:
+                node = node.get('node')
+                if node and isinstance(node, dict):
+                    results.append(node)
+        return results
+
+    def get_video_from_post_page(self, request_url):
+        results = []
+        try:
+            response = self.__request_url(request_url)
+            json_data = self.extract_json_data(response)
+            metrics = json_data['entry_data']['PostPage'][0]['graphql']['shortcode_media']
+        except Exception as e:
+            print("Failed in Get Posts'  video{} {}".format(request_url, e))
+            post_error_account.append(request_url)
+        return metrics
+
+    def insert_insta(self, url, created_account, updated_account, deactivated_account, post_error_account, post_0_account):
+        results = {}
+        results = self.profile_page_metrics(url)
+        result_post = []
+        result_post = self.profile_page_recent_posts(url)
+
+        profile_description = ''
+        email = ''
+        phone = ''
+        post_num = ''
+        follow = ''
+        follower = ''
+        username = ''
+        fullname = ''
+        profile_image = ''
+        facebook_url = ''
+
+        if 'username' in results.keys():
+            username = results['username']
+
+        if 'full_name' in results.keys():
+            fullname = results['full_name']
+
+        if 'edge_follow' in results.keys():
+            follow = results['edge_follow']
+
+        if 'edge_followed_by' in results.keys():
+            follower = results['edge_followed_by']
+
+        if 'edge_owner_to_timeline_media' in results.keys():
+            post_num = results['edge_owner_to_timeline_media']
+
+        if 'biography' in results.keys():
+            profile_description = results['biography']
+
+        if 'business_phone_number' in results.keys():
+            phone = results['business_phone_number']
+
+        if 'business_email' in results.keys():
+            email = results['business_email']
+
+        if 'external_url' in results.keys():
+            facebook_url = results['external_url']
+
+        if 'profile_pic_url_hd' in results.keys():
+            profile_image = results['profile_pic_url_hd']
+
+        if username:
+            obj_store, is_created = Store.objects.get_or_create(
+                insta_id=username)
+            obj_store.is_updated = True
+            obj_store.name = fullname
+            obj_store.follower = follower
+            obj_store.following = follow
+            obj_store.post_num = post_num
+            obj_store.description = profile_description + "\n" + facebook_url
+            obj_store.phone = phone
+            obj_store.email = email
+            obj_store.insta_url = 'http://www.instagram.com/' + username + '/'
+            obj_store.profile_image = profile_image
+
+            post_saved = 0
+            post_score_sum = 0
+            is_new_post = False
+            if len(result_post) > 0:
+                for i, post in enumerate(result_post):
+                    post_url = ''
+                    post_like = 0
+                    post_commnet = 0
+                    post_description = ''
+                    post_taken_at_timestamp = 0
+                    post_score = 0
+                    try:
+                        post_id = post['id']
+                        post_url = 'https://www.instagram.com/p/' + \
+                            post['shortcode']
+                        post_like = post['edge_liked_by']['count']
+                        post_comment = post['edge_media_to_comment']['count']
+                        post_taken_at_timestamp = post['taken_at_timestamp']
+                        post_thumb_image = post['thumbnail_src']
+                        if i == 0:
+                            obj_store.recent_post_1 = post_thumb_image
+                        elif i == 1:
+                            obj_store.recent_post_2 = post_thumb_image
+                        elif i == 2:
+                            obj_store.recent_post_3 = post_thumb_image
+                        if 'edge_media_to_caption' in post:
+                            try:
+                                post_description = post['edge_media_to_caption']['edges'][0]['node']['text']
+                            except:
+                                pass
+                        obj_post, post_is_created = StorePost.objects.get_or_create(
+                            post_id=post_id, store=obj_store)
+                        obj_post.post_like = post_like
+                        obj_post.post_url = post_url
+                        obj_post.post_description = post_description
+                        obj_post.post_comment = post_comment
+                        obj_post.post_taken_at_timestamp = post_taken_at_timestamp
+                        obj_post.post_thumb_image = post_thumb_image
+                        if post_is_created == True:
+                            print('{} - #{} new post'.format(obj_store.insta_id, i))
+                            is_new_post = True
+                            if post['__typename'] == 'GraphSidecar':
+                                obj_post.post_type = 'MP'
+                                post_images = self.get_content_from_post_page(
+                                    post_url)
+                                obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
+                                obj_post.save()
+                                for image in post_images:
+                                    obj_image, image_is_created = PostImage.objects.get_or_create(
+                                        source=image['display_url'],
+                                        source_thumb=image['display_resources'][0]['src'],
+                                        store_post=obj_post,
+                                        post_image_type='P')
+                                    if image['__typename'] == 'GraphVideo':
+                                        print('Video Post')
+                                        obj_image.post_image_type = 'V'
+                                        obj_image.source = image['video_url']
+                                        obj_image.save()
+
+                            elif post['__typename'] == 'GraphVideo':
+                                obj_post.post_type = 'V'
+                                post_video = self.get_video_from_post_page(
+                                    post_url)
+                                obj_post.video_source = post_video['video_url']
+                                obj_post.view_count = post_video['video_view_count']
+                            elif post['__typename'] == 'GraphImage':
+                                obj_post.post_type = 'SP'
+                                obj_image, image_is_created = PostImage.objects.get_or_create(
+                                    source=post['thumbnail_src'],
+                                    source_thumb=post['thumbnail_resources'][4]['src'],
+                                    store_post=obj_post)
+                            else:
+                                print('Unknown Type')
+
+                        obj_post.post_score = calculate_post_point(
+                            post_like, post_comment, post_taken_at_timestamp)
+                        obj_post.save()
+                        post_saved = post_saved + 1
+                        post_score_sum = post_score_sum + obj_post.post_score
+                    except IndexError as e:
+                        print('E', end='')
+                        post_error_account.append(obj_store.insta_url)
+                        pass
+
+            else:
+                post_0_account.append(obj_store.insta_url)
+                print("Fail to Find post. Account may be Private")
+            obj_store_ranking, ranking_is_created = StoreRanking.objects.get_or_create(
+                store=obj_store, date=dateInfo
+            )
+            obj_store.is_new_post = is_new_post
+            obj_store.save()
+
+            obj_store_ranking.post_total_score = post_score_sum
+            obj_store_ranking.follower = follower
+            obj_store_ranking.following = follow
+            obj_store_ranking.post_num = post_num
+            obj_store_ranking.store_score = calculate_store_point(
+                post_score_sum, follower, follow, post_num)
+            obj_store_ranking.save()
+
+            if (is_created):
+                created_account.append(obj_store.insta_url)
+                print("C - {} (id:{} / {} post saved.)".format(username,
+                                                               obj_store.id, post_saved))
+            elif (is_created == False):
+                updated_account.append(obj_store.insta_url)
+                print("U - {} (id:{} / {} post saved.)".format(username,
+                                                               obj_store.id, post_saved))
+            time.sleep(1)
+
+
+if __name__ == '__main__':
+    print('start scrapying')
+    start_time = time.time()
+
+    created_account = []
+    updated_account = []
+    deactivated_account = []
+    post_error_account = []
+    post_0_account = []
+
+    pool = mp.Pool(processes=6)
+
+    print('get crawlinglist')
+    with open('crawling/account_list.txt', 'r') as f:
+        content = f.readlines()
+    store_list = Store.objects.all().filter(
+        is_active=True).order_by('current_ranking')[350:]
+    print(len(store_list))
+    content = ['https://www.instagram.com/' +
+               x.insta_id + '/' for x in store_list]
+    obj = InstagramScraper()
+
+    pk = 0
+    for url in content:
+        pk = pk + 1
+        print("#{}".format(pk))
+        obj.insert_insta(url, created_account, updated_account,
+                         deactivated_account, post_error_account, post_0_account)
+
+    print("--- %s seconds ---" % (time.time() - start_time))

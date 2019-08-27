@@ -103,14 +103,14 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-#dev
-docker-compose-dev.yml
+# #dev
+# docker-compose-dev.yml
 
 #staicfile
 static/
 
-#crawling
-ic.py
-ic_update.py
-ic_ranking.py
+# crawling
+# ic.py
+# ic_update.py
+# ic_ranking.py
 app/crawling
