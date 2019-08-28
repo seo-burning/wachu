@@ -21,7 +21,8 @@ class StorePostInline(admin.TabularInline):
 @admin.register(models.PostGroup)
 class PostGroupAdmin(admin.ModelAdmin):
     inlines = [StorePostInline]
-    fields = ['title', 'ordering', 'published_page']
+    fields = ['title', 'ordering', 'cover_picture',
+              'published_page', 'published_banner']
     list_display = ['published_page', 'title', 'post_number']
     list_display_links = ['title']
     extra = 0
@@ -45,6 +46,18 @@ class PostGroupInline(admin.StackedInline):
 
 @admin.register(models.MainPagePublish)
 class MainPagePublishAdmin(admin.ModelAdmin):
+    inlines = [PostGroupInline, ]
+    fields = ['is_published', 'date', ]
+    list_display = ['is_published', 'date', 'post_group_number']
+    list_display_links = ['date']
+    ordering = ['date']
+
+    def post_group_number(self, instance):
+        return len(instance.postgroup_set.all())
+
+
+@admin.register(models.BannerPublish)
+class BannerPublishAdmin(admin.ModelAdmin):
     inlines = [PostGroupInline, ]
     fields = ['is_published', 'date', ]
     list_display = ['is_published', 'date', 'post_group_number']
