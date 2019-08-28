@@ -19,18 +19,20 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
 django.setup()
 from store.models import Store, StorePost, StoreRanking, PostImage
 
+
 _user_agents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36'
 ]
 
 
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-# dateInfo = '2019-07-22'
+dateInfo = '2019-08-27'
 
 
 class InstagramScraper:
-
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.proxy = proxy
@@ -42,11 +44,12 @@ class InstagramScraper:
 
     def __request_url(self, url):
         try:
-            response = requests.get(url, headers={'User-Agent': self.__random_agent()},
+            response = requests.get(url, headers={'user-agent': self.__random_agent(),
+                                                  'Authorization': 'vtbDlvxTrEFCaJ8vTeB7d7lIpc7gPwLW',
+                                                  },
                                     proxies={'http': self.proxy, 'https': self.proxy})
             response.raise_for_status()
         except requests.HTTPError as e:
-            deactivated_account.append(url)
             print(e)
             pass
         except requests.RequestException:
@@ -86,6 +89,7 @@ class InstagramScraper:
         try:
             response = self.__request_url(profile_url)
             json_data = self.extract_json_data(response)
+            # print(json_data)
             metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']["edges"]
         except Exception as e:
             print("Failed in Get Posts {} {}".format(profile_url, e))
@@ -127,6 +131,7 @@ class InstagramScraper:
 
     def insert_insta(self, url, created_account, updated_account, deactivated_account, post_error_account, post_0_account):
         results = {}
+        print(url)
         results = self.profile_page_metrics(url)
         result_post = []
         result_post = self.profile_page_recent_posts(url)
@@ -227,6 +232,7 @@ class InstagramScraper:
                         if post_is_created == True:
                             print('{} - #{} new post'.format(obj_store.insta_id, i))
                             is_new_post = True
+                            obj_post.is_updated = True
                             if post['__typename'] == 'GraphSidecar':
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
@@ -308,19 +314,24 @@ if __name__ == '__main__':
     post_error_account = []
     post_0_account = []
 
-    pool = mp.Pool(processes=6)
-
     print('get crawlinglist')
     with open('crawling/account_list.txt', 'r') as f:
         content = f.readlines()
     store_list = Store.objects.all().filter(
-        is_active=True).order_by('current_ranking')[350:]
+        is_active=True).order_by('current_ranking')[459:]
     print(len(store_list))
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
     obj = InstagramScraper()
 
     pk = 0
+    store_post_list = StorePost.objects.all().filter(is_updated=True)
+    print(len(store_post_list))
+
+    for store_post in store_post_list:
+        store_post.is_updated = False
+        store_post.save()
+
     for url in content:
         pk = pk + 1
         print("#{}".format(pk))
