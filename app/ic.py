@@ -12,6 +12,8 @@ import datetime
 from store_point_logic import calculate_post_point, calculate_store_point
 import multiprocessing as mp
 from functools import partial
+from time import sleep
+import random
 
 PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
@@ -29,7 +31,7 @@ _user_agents = [
 
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-dateInfo = '2019-08-27'
+# dateInfo = '2019-09-01'
 
 
 class InstagramScraper:
@@ -133,8 +135,10 @@ class InstagramScraper:
         results = {}
         print(url)
         results = self.profile_page_metrics(url)
+        sleep(2+random.random()*10)
         result_post = []
         result_post = self.profile_page_recent_posts(url)
+        sleep(2+random.random()*10)
 
         profile_description = ''
         email = ''
@@ -237,6 +241,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
                                     post_url)
+                                sleep(1+random.random()*10)
                                 obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
                                 obj_post.save()
                                 for image in post_images:
@@ -255,6 +260,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'V'
                                 post_video = self.get_video_from_post_page(
                                     post_url)
+                                sleep(1+random.random()*10)
                                 obj_post.video_source = post_video['video_url']
                                 obj_post.view_count = post_video['video_view_count']
                             elif post['__typename'] == 'GraphImage':
@@ -306,6 +312,7 @@ class InstagramScraper:
 
 if __name__ == '__main__':
     print('start scrapying')
+    print(dateInfo)
     start_time = time.time()
 
     created_account = []
@@ -318,24 +325,26 @@ if __name__ == '__main__':
     with open('crawling/account_list.txt', 'r') as f:
         content = f.readlines()
     store_list = Store.objects.all().filter(
-        is_active=True).order_by('current_ranking')[459:]
+        is_active=True).order_by('current_ranking')[482:]
     print(len(store_list))
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
     obj = InstagramScraper()
 
     pk = 0
-    store_post_list = StorePost.objects.all().filter(is_updated=True)
-    print(len(store_post_list))
+    # store_post_list = StorePost.objects.all().filter(is_updated=True)
+    # print(len(store_post_list))
 
-    for store_post in store_post_list:
-        store_post.is_updated = False
-        store_post.save()
+    # for store_post in store_post_list:
+    #     store_post.is_updated = False
+    #     store_post.save()
+    print("changed to not updated --- %s seconds ---" % (time.time() - start_time))
 
     for url in content:
         pk = pk + 1
         print("#{}".format(pk))
         obj.insert_insta(url, created_account, updated_account,
                          deactivated_account, post_error_account, post_0_account)
+        time.sleep(5)
 
     print("--- %s seconds ---" % (time.time() - start_time))

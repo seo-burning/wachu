@@ -141,6 +141,7 @@ class InstagramScraper:
                     print('video updated')
                     post_video = self.get_video_from_post_page(
                         post_url)
+                    time.sleep(1)
                     obj_post.post_thumb_image = post_video['display_resources'][0]['src']
                     obj_post.video_source = post_video['video_url']
                     obj_post.view_count = post_video['video_view_count']
@@ -150,6 +151,7 @@ class InstagramScraper:
                     for obj_old_post in obj_post.post_image_set.all():
                         obj_old_post.delete()
                     post_images = self.get_content_from_post_page(post_url)
+                    time.sleep(1)
                     obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
                     obj_post.save()
                     for image in post_images:
@@ -173,7 +175,7 @@ if __name__ == '__main__':
     start_time = time.time()
     with open('crawling/update_result.txt','w') as f:
         obj = InstagramScraper()
-        for obj_store in Store.objects.all().order_by('current_ranking'):
+        for obj_store in Store.objects.all().filter(is_active=True).order_by('current_ranking')[672:]:
             print('update #{} {}'.format(
                 obj_store.current_ranking, obj_store.insta_id))
             f.write('update #{} {}\n'.format(
