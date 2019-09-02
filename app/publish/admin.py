@@ -22,6 +22,7 @@ class StorePostInline(admin.TabularInline):
 class PostGroupAdmin(admin.ModelAdmin):
     inlines = [StorePostInline]
     fields = ['title', 'ordering', 'cover_picture',
+              'list_thumb_picture',
               'published_page', 'published_banner',
               'published_magazine']
     list_display = ['published_page', 'published_banner',

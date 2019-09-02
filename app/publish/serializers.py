@@ -56,7 +56,8 @@ class PostGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PostGroup
-        fields = ('ordering', 'title', 'post_list', 'cover_picture')
+        fields = ('ordering', 'title', 'post_list',
+                  'cover_picture', 'list_thumb_picture')
 
 
 class MainPagePublishSerializer(serializers.ModelSerializer):

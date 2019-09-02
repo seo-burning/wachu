@@ -10,6 +10,8 @@ class PostGroup(TimeStampedModel):
     title = models.CharField(_('Post Group Title'), max_length=50)
     cover_picture = models.ImageField(
         blank=True, upload_to='post-group-cover/%Y/%m')
+    list_thumb_picture = models.ImageField(
+        blank=True, upload_to='post-group-list-thumb/%Y/%m')
     post_list = models.ManyToManyField(StorePost, blank=True,
                                        symmetrical=False,
                                        related_name="post_set")
