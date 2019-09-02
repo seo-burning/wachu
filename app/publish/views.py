@@ -29,6 +29,17 @@ class BannerPublishView(generics.ListAPIView):
         return queryset
 
 
+class MagazinePublishView(generics.ListAPIView):
+    serializer_class = serializers.MagazinePublishSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = models.MagazinePublish.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
+
+
 class TestPostSerializer(generics.ListAPIView):
     serializer_class = serializers.StorePostSerializer
     authentication_classes = (TokenAuthentication,)

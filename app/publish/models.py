@@ -17,6 +17,8 @@ class PostGroup(TimeStampedModel):
         'MainPagePublish', on_delete=models.SET_NULL, null=True, blank=True,)
     published_banner = models.ForeignKey(
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
+    published_magazine = models.ForeignKey(
+        'MagazinePublish', on_delete=models.SET_NULL, null=True, blank=True,)
 
     def __str__(self):
         return self.title
@@ -31,6 +33,14 @@ class MainPagePublish(TimeStampedModel):
 
 
 class BannerPublish(TimeStampedModel):
+    is_published = models.BooleanField(default=False)
+    date = models.DateField(_('Published Date'))
+
+    def __str__(self):
+        return self.date.strftime("%Y-%m-%d")
+
+
+class MagazinePublish(TimeStampedModel):
     is_published = models.BooleanField(default=False)
     date = models.DateField(_('Published Date'))
 

@@ -56,7 +56,7 @@ class PostGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PostGroup
-        fields = ('ordering', 'title', 'post_list', 'cover_image')
+        fields = ('ordering', 'title', 'post_list', 'cover_picture')
 
 
 class MainPagePublishSerializer(serializers.ModelSerializer):
@@ -92,6 +92,34 @@ class BannerPublishSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BannerPublish
+        fields = ('date', 'postgroup_set',)
+
+# https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(Prefetch(
+            'postgroup_set',
+            queryset=models.PostGroup.objects.order_by('ordering')))
+        queryset = queryset.prefetch_related(
+            'postgroup_set__post_list',
+            'postgroup_set__post_list__post_image_set',
+            'postgroup_set__post_list__store',
+            'postgroup_set__post_list__store__category',
+            'postgroup_set__post_list__store__primary_style',
+            'postgroup_set__post_list__store__secondary_style',
+            'postgroup_set__post_list__store__age',
+        )
+
+        return queryset
+
+
+class MagazinePublishSerializer(serializers.ModelSerializer):
+    postgroup_set = PostGroupSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = models.MagazinePublish
         fields = ('date', 'postgroup_set',)
 
 # https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
