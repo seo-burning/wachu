@@ -17,6 +17,16 @@ class StoreView(generics.ListAPIView):
         return queryset.filter(is_active=True)
 
 
+class StoreListView(generics.ListAPIView):
+    serializer_class = serializers.StoreListSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = Store.objects.all().filter(is_active=True)
+        return queryset
+
+
 class StorePostView(generics.ListAPIView):
     serializer_class = serializers.StorePostSerializer
     authentication_classes = (TokenAuthentication,)

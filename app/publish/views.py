@@ -24,7 +24,8 @@ class BannerPublishView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.BannerPublish.objects.all()
+        queryset = models.BannerPublish.objects.all().filter(
+            is_published=True).order_by('-date')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
@@ -35,7 +36,8 @@ class MagazinePublishView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.MagazinePublish.objects.all()
+        queryset = models.MagazinePublish.objects.all().filter(
+            is_published=True).order_by('-date')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 

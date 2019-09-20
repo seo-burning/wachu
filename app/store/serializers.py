@@ -100,3 +100,23 @@ class StoreSerializer(serializers.ModelSerializer):
         queryset = queryset.prefetch_related('category')
         queryset = queryset.prefetch_related('region')
         return queryset
+
+
+class StoreListSerializer(serializers.ModelSerializer):
+    """Serailizer for Store objects"""
+
+    class Meta:
+        model = Store
+        fields = (
+            'is_new_post',
+            'insta_id',
+            'current_ranking',
+            'recent_post_1',
+            'recent_post_2',
+            'recent_post_3')
+        read_only_fields = ('is_new_post',
+                            'insta_id',
+                            'current_ranking',
+                            'recent_post_1',
+                            'recent_post_2',
+                            'recent_post_3')
