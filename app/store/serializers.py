@@ -55,12 +55,12 @@ class StoreSerializer(serializers.ModelSerializer):
     primary_style = serializers.StringRelatedField(many=False)
     secondary_style = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
+    favorite_users_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Store
         fields = ('pk', 'is_new_post', 'insta_id',
                   'current_ranking',
-                  'current_ranking_changed',
                   'insta_url',
                   'profile_image',
                   'region',
@@ -72,10 +72,11 @@ class StoreSerializer(serializers.ModelSerializer):
                   'shopee_url',
                   'recent_post_1',
                   'recent_post_2',
-                  'recent_post_3')
+                  'recent_post_3',
+                  'favorite_users_count'
+                  )
         read_only_fields = ('insta_id', 'pk', 'is_new_post',
                             'current_ranking',
-                            'current_ranking_changed',
                             'insta_url',
                             'profile_image',
                             'region',
@@ -87,7 +88,8 @@ class StoreSerializer(serializers.ModelSerializer):
                             'shopee_url'
                             'recent_post_1',
                             'recent_post_2',
-                            'recent_post_3')
+                            'recent_post_3',
+                            'favorite_users_count')
 
     # https://trameltonis.com/en/blog/optimizing-slow-django-rest-framework-performance/
     @staticmethod
@@ -99,7 +101,11 @@ class StoreSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('age')
         queryset = queryset.prefetch_related('category')
         queryset = queryset.prefetch_related('region')
+        queryset = queryset.prefetch_related('favorite_users')
         return queryset
+
+    def get_favorite_users_count(self, obj):
+        return obj.favorite_users.count()
 
 
 class StoreListSerializer(serializers.ModelSerializer):
