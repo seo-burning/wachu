@@ -11,8 +11,11 @@ class ProductCategoryListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        color = self.request.query_params.get('color')
-        color_filter = color.split(',')
+        try:
+            color = self.request.query_params.get('color')
+            color_filter = color.split(',')
+        except:
+            color_filter = []
         print(color_filter)
         queryset = models.Product.objects.all().order_by('-pk')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
