@@ -14,6 +14,9 @@ class ProductCategoryListView(generics.ListAPIView):
         queryset = models.Product.objects.all().order_by('-pk')
         queryset = queryset.filter(
             category__name=self.kwargs['product_category'])
+        sub_category = self.request.query_params.get('sub-category')
+        if (sub_category):
+            queryset = queryset.filter(sub_category__name=sub_category)
         color = self.request.query_params.get('color')
         if (color):
             color_filter = color.split(',')
