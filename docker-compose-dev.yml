@@ -11,15 +11,15 @@ services:
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000 --settings=app.settings.dev"
     environment:
-      - DB_HOST=dabi-db-production.cfogderjsi0l.ap-southeast-1.rds.amazonaws.com
-      - DB_NAME=dabi
-      - DB_USER=dabi_master
-      - DB_PORT=5432
-      - DB_PASS=burnb0706
-      # - DB_HOST=db
-      # - DB_NAME=app
-      # - DB_USER=postgres
-      # - DB_PASS=supersecretpassword
+      # - DB_HOST=dabi-db-production.cfogderjsi0l.ap-southeast-1.rds.amazonaws.com
+      # - DB_NAME=dabi
+      # - DB_USER=dabi_master
+      # - DB_PORT=5432
+      # - DB_PASS=burnb0706
+      - DB_HOST=db
+      - DB_NAME=app
+      - DB_USER=postgres
+      - DB_PASS=supersecretpassword
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       - AWS_STORAGE_BUCKET_NAME=$AWS_STORAGE_BUCKET_NAME

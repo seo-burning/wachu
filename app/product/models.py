@@ -17,6 +17,15 @@ class ProductCategory(TimeStampedModel):
         return self.name
 
 
+class ProductSubCategory(TimeStampedModel):
+    name = models.CharField(_('Product SubCategory'), max_length=255)
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class ProductColor(TimeStampedModel):
     name = models.CharField(_('Product Color'), max_length=255)
 
@@ -44,6 +53,8 @@ class Product(TimeStampedModel):
     name = models.CharField(_('Product Model'), max_length=255)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    sub_category = models.ForeignKey(
+        ProductSubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     color = models.ManyToManyField(
         ProductColor, blank=True)
     tag = models.ManyToManyField(

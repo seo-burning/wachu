@@ -6,5 +6,6 @@ exclude =
   settings
   ic.py
   ic_update.py
+  ic_video.py
   ic_ranking.py
   checking_list.py

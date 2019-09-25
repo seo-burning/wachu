@@ -1,4 +1,5 @@
 
+from store.models import Store, StorePost, StoreRanking, PostImage
 import sys
 import os
 import django
@@ -15,23 +16,45 @@ from functools import partial
 from time import sleep
 import random
 
+from ic_video import video_update_credential, video_file_update_with_video_source
+
+
 PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
+
+
 django.setup()
-from store.models import Store, StorePost, StoreRanking, PostImage
 
 
 _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36'
+    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
 ]
 
 
+def get_proxies():
+    url = 'https://free-proxy-list.net/'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    proxy_list = soup.find('tbody')
+    proxies = set()
+    for rows in proxy_list.find_all('tr')[:5]:
+        proxies.add(rows.find_all('td')[0].text +
+                    ':'+rows.find_all('td')[1].text)
+    return proxies
+
+
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
-dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-# dateInfo = '2019-09-01'
+# dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
+dateInfo = '2019-09-14'
 
 
 class InstagramScraper:
@@ -44,11 +67,16 @@ class InstagramScraper:
             return choice(self.user_agents)
         return choice(_user_agents)
 
+    def __random_proxies(self):
+        if self.proxy and isinstance(self.proxy, list):
+            print('execute')
+            return choice(self.proxy)
+        proxies = get_proxies()
+        return random.sample(get_proxies(), 1)[0]
+
     def __request_url(self, url):
         try:
-            response = requests.get(url, headers={'user-agent': self.__random_agent(),
-                                                  'Authorization': 'vtbDlvxTrEFCaJ8vTeB7d7lIpc7gPwLW',
-                                                  },
+            response = requests.get(url, headers={'user-agent': self.__random_agent(), },
                                     proxies={'http': self.proxy, 'https': self.proxy})
             response.raise_for_status()
         except requests.HTTPError as e:
@@ -91,7 +119,6 @@ class InstagramScraper:
         try:
             response = self.__request_url(profile_url)
             json_data = self.extract_json_data(response)
-            # print(json_data)
             metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']["edges"]
         except Exception as e:
             print("Failed in Get Posts {} {}".format(profile_url, e))
@@ -135,10 +162,10 @@ class InstagramScraper:
         results = {}
         print(url)
         results = self.profile_page_metrics(url)
-        sleep(2+random.random()*10)
+        sleep(2+random.random()*5)
         result_post = []
         result_post = self.profile_page_recent_posts(url)
-        sleep(2+random.random()*10)
+        sleep(2+random.random()*5)
 
         profile_description = ''
         email = ''
@@ -214,12 +241,7 @@ class InstagramScraper:
                         post_comment = post['edge_media_to_comment']['count']
                         post_taken_at_timestamp = post['taken_at_timestamp']
                         post_thumb_image = post['thumbnail_src']
-                        if i == 0:
-                            obj_store.recent_post_1 = post_thumb_image
-                        elif i == 1:
-                            obj_store.recent_post_2 = post_thumb_image
-                        elif i == 2:
-                            obj_store.recent_post_3 = post_thumb_image
+
                         if 'edge_media_to_caption' in post:
                             try:
                                 post_description = post['edge_media_to_caption']['edges'][0]['node']['text']
@@ -241,7 +263,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
                                     post_url)
-                                sleep(1+random.random()*10)
+                                sleep(2+random.random()*5)
                                 obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
                                 obj_post.save()
                                 for image in post_images:
@@ -260,18 +282,25 @@ class InstagramScraper:
                                 obj_post.post_type = 'V'
                                 post_video = self.get_video_from_post_page(
                                     post_url)
-                                sleep(1+random.random()*10)
-                                obj_post.video_source = post_video['video_url']
+                                sleep(2+random.random()*5)
+                                video_file_update_with_video_source(
+                                    obj_post, post_video['video_url'], post_video['thumbnail_src'])
                                 obj_post.view_count = post_video['video_view_count']
                             elif post['__typename'] == 'GraphImage':
                                 obj_post.post_type = 'SP'
                                 obj_image, image_is_created = PostImage.objects.get_or_create(
                                     source=post['thumbnail_src'],
                                     source_thumb=post['thumbnail_resources'][4]['src'],
-                                    store_post=obj_post)
+                                    store_post=obj_post,
+                                    post_image_type='P')
                             else:
                                 print('Unknown Type')
-
+                        if i == 0:
+                            obj_store.recent_post_1 = obj_post.post_thumb_image
+                        elif i == 1:
+                            obj_store.recent_post_2 = obj_post.post_thumb_image
+                        elif i == 2:
+                            obj_store.recent_post_3 = obj_post.post_thumb_image
                         obj_post.post_score = calculate_post_point(
                             post_like, post_comment, post_taken_at_timestamp)
                         obj_post.save()
@@ -313,6 +342,7 @@ class InstagramScraper:
 if __name__ == '__main__':
     print('start scrapying')
     print(dateInfo)
+
     start_time = time.time()
 
     created_account = []
@@ -324,13 +354,15 @@ if __name__ == '__main__':
     print('get crawlinglist')
     with open('crawling/account_list.txt', 'r') as f:
         content = f.readlines()
+    all_store_ranking_objs_for_today = StoreRanking.objects.filter(
+        date=dateInfo).filter(store__is_active=True)
+    print(len(all_store_ranking_objs_for_today))
     store_list = Store.objects.all().filter(
-        is_active=True).order_by('current_ranking')[482:]
+        is_active=True).order_by('current_ranking')[525:]
     print(len(store_list))
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
     obj = InstagramScraper()
-
     pk = 0
     # store_post_list = StorePost.objects.all().filter(is_updated=True)
     # print(len(store_post_list))
@@ -338,13 +370,14 @@ if __name__ == '__main__':
     # for store_post in store_post_list:
     #     store_post.is_updated = False
     #     store_post.save()
-    print("changed to not updated --- %s seconds ---" % (time.time() - start_time))
+    print("changed to not updated --- %s seconds ---" %
+          (time.time() - start_time))
 
     for url in content:
         pk = pk + 1
         print("#{}".format(pk))
         obj.insert_insta(url, created_account, updated_account,
                          deactivated_account, post_error_account, post_0_account)
-        time.sleep(5)
+        # time.sleep(20)
 
     print("--- %s seconds ---" % (time.time() - start_time))

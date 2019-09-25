@@ -8,6 +8,11 @@ class ProductCategoryAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
+@admin.register(models.ProductSubCategory)
+class ProductSubCategoryAdmin(admin.ModelAdmin):
+    fields = ['name', 'category']
+
+
 @admin.register(models.ProductColor)
 class ProductColor(admin.ModelAdmin):
     fields = ['name']
@@ -25,10 +30,11 @@ class ProductTag(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    fields = ['is_active', 'name', 'category', 'tag', 'store', 'color']
+    fields = ['is_active', 'name', 'category',
+              'sub_category', 'tag', 'store', 'color']
     raw_id_fields = ['store']
-    list_display = ['is_active', '__str__', 'category']
-    list_filter = ['is_active', 'category']
+    list_display = ['is_active', '__str__', 'category', 'sub_category']
+    list_filter = ['is_active', 'category', 'sub_category']
     actions = ['make_activate', 'make_deactivate']
 
     def make_activate(self, request, queryset):

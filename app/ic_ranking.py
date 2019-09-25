@@ -18,7 +18,7 @@ from store.models import Store, StorePost, StoreRanking, PostImage
 
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-# dateInfo = '2019-09-01'
+dateInfo = '2019-09-10'
 
 
 def calculate_ranking(store_ranking_obj, all_store_ranking_objs_for_today):
