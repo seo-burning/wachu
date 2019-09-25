@@ -25,7 +25,7 @@ class ProductTag(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    fields = ['is_active', 'name', 'category', 'tag', 'store']
+    fields = ['is_active', 'name', 'category', 'tag', 'store', 'color']
     raw_id_fields = ['store']
     list_display = ['is_active', '__str__', 'category']
     list_filter = ['is_active', 'category']

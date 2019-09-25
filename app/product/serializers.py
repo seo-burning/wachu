@@ -1,7 +1,27 @@
 from rest_framework import serializers
 
 from product import models
-from publish.serializers import StorePostSerializer
+from publish.serializers import PostImageSerializer
+from store.models import StorePost
+
+
+class StorePostSerializer(serializers.ModelSerializer):
+    post_image_set = PostImageSerializer(read_only=True, many=True)
+    store = serializers.PrimaryKeyRelatedField(read_only=True, many=False)
+
+    class Meta:
+        model = StorePost
+        fields = ('pk', 'post_url', 'post_type', 'post_thumb_image',
+                  'video_source',
+                  'post_description', 'post_image_set', 'store')
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.select_related('store')
+        queryset = queryset.prefetch_related('post_image_set')
+        return queryset
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -10,7 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ('pk', 'name', 'tag', 'post')
+        fields = ('pk', 'name', 'tag', 'post', 'color')
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -19,10 +39,5 @@ class ProductSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('post')
         queryset = queryset.prefetch_related('tag',
                                              'post__post_image_set',
-                                             'post__store',
-                                             'post__store__category',
-                                             'post__store__primary_style',
-                                             'post__store__secondary_style',
-                                             'post__store__age',
-                                             )
+                                             'color')
         return queryset

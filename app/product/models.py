@@ -51,7 +51,6 @@ class Product(TimeStampedModel):
     price = models.PositiveIntegerField(null=True, blank=True)
     size = models.ManyToManyField(
         ProductSize, blank=True)
-
     post = models.ForeignKey(
         'store.StorePost', on_delete=models.CASCADE)
 
