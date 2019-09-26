@@ -68,6 +68,12 @@ class ProductTag(TimeStampedModel):
     def __str__(self):
         return self.name
 
+class ProductStyle(TimeStampedModel):
+    name = models.CharField(_('Product Style'), max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Product(TimeStampedModel):
     is_active = models.BooleanField(default=False)
@@ -98,6 +104,10 @@ class Product(TimeStampedModel):
         null=True, blank=True)
     color = models.ManyToManyField(
         ProductColor, blank=True)
+        
+    style= models.ForeignKey(
+        ProductStyle, on_delete=models.SET_NULL,
+        null=True, blank=True)
 
     tag = models.ManyToManyField(
         ProductTag, blank=True)
