@@ -45,17 +45,17 @@ class ProductTagAdmin(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    fields = ['ic_checked',
+    fields = ['is_checked',
               'is_active', 'name', 'category',
               'sub_category', 'length', 'sleeve_length',
               'material', 'detail',
               'tag', 'store', 'color', 'post']
     raw_id_fields = ['store', 'post']
-    list_display = ['__str__', 'ic_checked', 'is_active',
+    list_display = ['__str__', 'is_checked', 'is_active',
                     'store', 'category', 'sub_category',
                     'length', 'sleeve_length',
                     'material', 'detail']
-    list_filter = ['ic_checked', 'is_active',
+    list_filter = ['is_checked', 'is_active',
                    'category', 'sub_category',
                    'length', 'sleeve_length',
                    'material', 'detail']
