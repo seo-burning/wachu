@@ -63,13 +63,16 @@ class ProductColor(TimeStampedModel):
 
 
 class ProductTag(TimeStampedModel):
-    name = models.CharField(_('Product Tag'), max_length=255, unique=True)
+    name = models.CharField(_('Product Tag'),
+                            max_length=255, unique=True)
 
     def __str__(self):
         return self.name
 
+
 class ProductStyle(TimeStampedModel):
-    name = models.CharField(_('Product Style'), max_length=255, unique=True)
+    name = models.CharField(_('Product Style'),
+                            max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -80,7 +83,8 @@ class Product(TimeStampedModel):
     is_checked = models.BooleanField(default=False)
     store = models.ForeignKey('store.Store',
                               on_delete=models.CASCADE)
-    name = models.CharField(_('Product Name'), max_length=255, blank=True)
+    name = models.CharField(_('Product Name'),
+                            max_length=255, blank=True)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL,
 
@@ -104,8 +108,8 @@ class Product(TimeStampedModel):
         null=True, blank=True)
     color = models.ManyToManyField(
         ProductColor, blank=True)
-        
-    style= models.ForeignKey(
+
+    style = models.ForeignKey(
         ProductStyle, on_delete=models.SET_NULL,
         null=True, blank=True)
 
