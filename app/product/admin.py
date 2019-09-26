@@ -13,28 +13,49 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'category']
 
 
-@admin.register(models.ProductColor)
-class ProductColor(admin.ModelAdmin):
+@admin.register(models.ProductLength)
+class ProductLengthAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
-@admin.register(models.ProductSize)
-class ProductSize(admin.ModelAdmin):
+@admin.register(models.ProductSleeveLength)
+class ProductSleeveLengthAdmin(admin.ModelAdmin):
+    fields = ['name']
+
+
+@admin.register(models.ProductMaterial)
+class ProductMaterialAdmin(admin.ModelAdmin):
+    fields = ['name']
+
+
+@admin.register(models.ProductDetail)
+class ProductDetailAdmin(admin.ModelAdmin):
+    fields = ['name']
+
+
+@admin.register(models.ProductColor)
+class ProductColorAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
 @admin.register(models.ProductTag)
-class ProductTag(admin.ModelAdmin):
+class ProductTagAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
     fields = ['is_active', 'name', 'category',
-              'sub_category', 'tag', 'store', 'color']
-    raw_id_fields = ['store']
-    list_display = ['is_active', '__str__', 'category', 'sub_category']
-    list_filter = ['is_active', 'category', 'sub_category']
+              'sub_category', 'length', 'sleeve_length',
+              'material', 'detail', 'tag', 'store', 'color', 'post']
+    raw_id_fields = ['store', 'post']
+    list_display = ['__str__', 'is_active',
+                    'store', 'category', 'sub_category',
+                    'length', 'sleeve_length',
+                    'material', 'detail']
+    list_filter = ['is_active', 'category', 'sub_category',
+                   'length', 'sleeve_length',
+                   'material', 'detail']
     actions = ['make_activate', 'make_deactivate']
 
     def make_activate(self, request, queryset):
