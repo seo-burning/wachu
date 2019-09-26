@@ -71,6 +71,7 @@ class ProductTag(TimeStampedModel):
 
 class Product(TimeStampedModel):
     is_active = models.BooleanField(default=False)
+    ic_checked = models.BooleanField(default=False)
     store = models.ForeignKey('store.Store',
                               on_delete=models.CASCADE)
     name = models.CharField(_('Product Name'), max_length=255, blank=True)
