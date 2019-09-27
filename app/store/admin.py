@@ -123,7 +123,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                                         'description'
                                         ]}),
         (_("Url Infomation"),
-         {'fields': (('facebook_url', 'facebook_id', 'shopee_url'),)}),
+         {'fields': (('facebook_url', 'facebook_id',
+                      'facebook_numeric_id'),)}),
         (_("Instagram Numbers"), {'fields': (
             ('post_num', 'follower', 'following'),
         )}),

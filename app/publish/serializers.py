@@ -19,7 +19,7 @@ class StoreSerializer(serializers.ModelSerializer):
         model = Store
         fields = ('pk', 'insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style', 'category',
-                  'facebook_url', 'facebook_id', 'profile_image')
+                  'facebook_numeric_id', 'facebook_id', 'profile_image')
 
 
 class PostImageSerializer(serializers.ModelSerializer):
