@@ -20,6 +20,17 @@ class ProductInline(admin.StackedInline):
 @admin.register(models.UserFavoritePost)
 class FavoritePost(admin.ModelAdmin):
     model = models.UserFavoritePost
+    list_display = ['store_post', 'user']
+    list_filter = ['user']
+    actions = ['export_as_csv']
+
+
+@admin.register(models.UserFavoriteStore)
+class FavoriteStoreAdmin(admin.ModelAdmin, ExportCsvMixin):
+    model = models.UserFavoriteStore
+    list_display = ['store', 'user']
+    list_filter = ['user']
+    actions = ['export_as_csv']
 
 
 class StoreCategoryInline(admin.TabularInline):
@@ -112,7 +123,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                                         'description'
                                         ]}),
         (_("Url Infomation"),
-         {'fields': (('facebook_url', 'shopee_url'),)}),
+         {'fields': (('facebook_url', 'facebook_id', 'shopee_url'),)}),
         (_("Instagram Numbers"), {'fields': (
             ('post_num', 'follower', 'following'),
         )}),

@@ -13,7 +13,7 @@ class StoreSerializer(serializers.ModelSerializer):
         model = Store
         fields = ('insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style',
-                  'facebook_url', 'shopee_url', 'profile_image')
+                  'facebook_url', 'facebook_id', 'profile_image')
 
 
 class ChuPickRatingSerializer(serializers.ModelSerializer):

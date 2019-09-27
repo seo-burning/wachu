@@ -100,6 +100,7 @@ class Store(TimeStampedModel):
 
     # Additional Information Fields ( updated by admin user )
     facebook_url = models.URLField(null=True, blank=True, max_length=500)
+    facebook_id = models.CharField(max_length=255, blank=True)
     shopee_url = models.URLField(null=True, blank=True, max_length=500)
 
     # Ranking Info

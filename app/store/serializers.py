@@ -13,7 +13,7 @@ class StoreInlineSerializer(serializers.ModelSerializer):
         model = Store
         fields = ('insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style', 'category',
-                  'facebook_url', 'shopee_url', 'profile_image',
+                  'facebook_url', 'facebook_id', 'profile_image',
                   'recent_post_1',
                   'recent_post_2',
                   'recent_post_3')
@@ -69,7 +69,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'secondary_style',
                   'age',
                   'facebook_url',
-                  'shopee_url',
+                  'facebook_id',
                   'recent_post_1',
                   'recent_post_2',
                   'recent_post_3',
@@ -85,7 +85,7 @@ class StoreSerializer(serializers.ModelSerializer):
                             'secondary_style',
                             'age',
                             'facebook_url',
-                            'shopee_url'
+                            'facebook_id',
                             'recent_post_1',
                             'recent_post_2',
                             'recent_post_3',
