@@ -101,7 +101,7 @@ class StoreRankingInline(admin.StackedInline):
 # https://medium.com/@hakibenita/things-you-must-know-about-django-admin-as-your-app-gets-bigger-6be0b0ee9614
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
-    inlines = [StoreRankingInline, StorePostInline, ]
+    inlines = [StorePostInline, ]
     readonly_fields = (
         'is_new_post',
         'insta_url',
@@ -280,7 +280,7 @@ class StorePostAdmin(admin.ModelAdmin):
                        'post_description',
                        'post_taken_at_timestamp',
                        'post_url', 'store', 'get_store_pk')
-    fieldsets = [(_('status'), {'fields': ['is_active', 'is_updated']}),
+    fieldsets = [(_('status'), {'fields': ['is_active', 'is_product']}),
                  (_('Post Info'), {'fields': ['post_score',
                                               'post_like',
                                               'post_description',
@@ -290,15 +290,15 @@ class StorePostAdmin(admin.ModelAdmin):
     ordering = ['post_taken_at_timestamp', 'store', ]
     actions = ['make_activate',
                'make_deactivate']
-    list_filter = (PostRelatedProductFilter, )
+    list_filter = (PostRelatedProductFilter, 'is_active', 'is_product')
     list_display = ['store', '__str__',
                     'related_product',
                     'is_active',
-                    'is_updated',
+                    'is_product',
                     ]
     list_display_links = ['store', '__str__',
                           'is_active',
-                          'is_updated',
+                          'is_product',
                           ]
     search_fields = ('store__insta_id',)
     list_per_page = 10
