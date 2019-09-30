@@ -26,11 +26,13 @@ from publish.serializers import StorePostSerializer
 class ProductSerializer(serializers.ModelSerializer):
     tag = serializers.StringRelatedField(many=True)
     sub_category = serializers.StringRelatedField(many=False)
+    style = serializers.StringRelatedField(many=False)
     post = StorePostSerializer(many=False)
 
     class Meta:
         model = models.Product
-        fields = ('pk', 'name', 'tag', 'post', 'color', 'sub_category')
+        fields = ('pk', 'name', 'tag',  'style',
+                  'post', 'color', 'sub_category')
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -38,6 +40,7 @@ class ProductSerializer(serializers.ModelSerializer):
         # select_related for "to-one" relationships
         queryset = queryset.select_related(
             'post',
+            'style',
             'sub_category',
             'post__store',
             'post__store__age',

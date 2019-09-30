@@ -147,7 +147,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     'current_ranking',
                     'current_ranking_changed',
                     "insta_id", 'profile_thumb',
-                    'follower', 'post_num', 'post_product_num',
+                    'follower', 'post_num',
+                    'post_product_num', 'need_to_update',
                     "primary_style", "secondary_style", "age"]
     list_filter = ['is_active', 'is_updated']
     list_display_links = ["insta_id"]
@@ -168,9 +169,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                 q.save()
         self.message_user(
             request, '분류되지 않은 {}의 계정을 deactivate로 변경'.format(num))
-
-    def post_product_num(self, obj):
-        return obj.store_post_set.all().filter(product__gte=1).count()
 
     def make_deactivate_under_5000(self, request, queryset):
         num = 0
@@ -222,6 +220,26 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         return format_html(
             '<a href="%s" target="_blank">%s</a>' % (obj.insta_url, 'Insta')
         )
+
+    def post_product_num(self, obj):
+        product_num = obj.store_post_set.all().filter(product__gte=1).count()
+        return format_html(
+            '<a href="https://www.wachu.shop/\
+                admin/product/product/?q=%s">%s</a>'
+            % (obj.insta_id, product_num)
+        )
+
+    def need_to_update(self, obj):
+        product_num = obj.store_post_set.all().filter(
+            product__isnull=True, is_product=True).count()
+        return format_html(
+            '<a style="color: red" href="https:\
+                //www.wachu.shop/admin/store/storepost/\
+                    ?is_product__exact=1&\
+                        product=related_product_not_exist&q=%s">%s</a>'
+            % (obj.insta_id, product_num)
+        )
+
     instagram_link.short_description = "Link"
     instagram_link.allow_tags = True
 
