@@ -12,7 +12,13 @@ from core.models import ExportCsvMixin
 
 class ProductInline(admin.StackedInline):
     model = Product
-    fields = ['name', 'category', 'store', 'tag']
+    fields = ['is_active',
+              'store',
+              'category',
+              'sub_category',
+              'style',
+              'color'
+              ]
     raw_id_fields = ['store']
     extra = 1
 
@@ -272,6 +278,9 @@ class StorePostAdmin(admin.ModelAdmin):
                        'post_url', 'store', 'get_store_pk')
     fieldsets = [(_('status'), {'fields': ['is_active', 'is_updated']}),
                  (_('Post Info'), {'fields': ['post_score',
+                                              'post_like',
+                                              'post_description',
+                                              'post_taken_at_timestamp',
                                               'post_url', ]}),
                  (_('Store Info'), {'fields': ['store', 'get_store_pk']}), ]
     ordering = ['post_taken_at_timestamp', 'store', ]

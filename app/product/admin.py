@@ -50,41 +50,29 @@ class ProductTagAdmin(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    fields = ['is_checked',
-              'is_active',
-              'name',
-              'category',
-              'style',
-              'sub_category',
-              'length',
-              'sleeve_length',
-              'material',
-              'detail',
-              'tag',
-              'store',
-              'color',
-              'post']
+    fields = [
+        'is_active',
+        'category',
+        'sub_category',
+        'style',
+        'color',
+        'store',
+        'post']
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
-                    'is_checked',
                     'is_active',
                     'store',
                     'category',
                     'sub_category',
                     'style',
-                    'length',
-                    'sleeve_length',
-                    'material',
-                    'detail']
-    list_filter = ['is_checked',
-                   'is_active',
-                   'category',
-                   'sub_category',
-                   'style',
-                   'length',
-                   'sleeve_length',
-                   'material',
-                   'detail']
+                    ]
+    search_fields = ['store__insta_id']
+    list_filter = [
+        'is_active',
+        'category',
+        'sub_category',
+        'style',
+    ]
     actions = ['make_activate', 'make_deactivate']
 
     def make_activate(self, request, queryset):
