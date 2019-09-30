@@ -92,11 +92,11 @@ class Store(TimeStampedModel):
         Region, blank=True, symmetrical=False, related_name="regions_set")
 
     primary_style = models.ForeignKey(
-        Primary_Style, on_delete=models.CASCADE, null=True, blank=True)
+        Primary_Style, on_delete=models.SET_NULL, null=True, blank=True)
     secondary_style = models.ForeignKey(
-        Secondary_Style, on_delete=models.CASCADE, null=True, blank=True)
+        Secondary_Style, on_delete=models.SET_NULL, null=True, blank=True)
     age = models.ForeignKey(
-        Age, on_delete=models.CASCADE, null=True, blank=True)
+        Age, on_delete=models.SET_NULL, null=True, blank=True)
 
     # Additional Information Fields ( updated by admin user )
     facebook_url = models.URLField(null=True, blank=True, max_length=500)

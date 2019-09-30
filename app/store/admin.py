@@ -223,20 +223,20 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def post_product_num(self, obj):
         product_num = obj.store_post_set.all().filter(product__gte=1).count()
-        return format_html(
-            '<a href="https://www.wachu.shop/\
-                admin/product/product/?q=%s">%s</a>'
-            % (obj.insta_id, product_num)
-        )
+        return format_html('<a href="https://www.wachu.shop/'
+                           'admin/product/product/?q=%s">%s</a>'
+                           % (obj.insta_id, product_num)
+                           )
 
     def need_to_update(self, obj):
         product_num = obj.store_post_set.all().filter(
             product__isnull=True, is_product=True).count()
         return format_html(
-            '<a style="color: red" href="https:\
-                //www.wachu.shop/admin/store/storepost/\
-                    ?is_product__exact=1&\
-                        product=related_product_not_exist&q=%s">%s</a>'
+            '<a style="color: red" href="'
+            'https://www.wachu.shop/admin/store/'
+            'storepost/?is_product__exact=1'
+            '&product=related_product_not_exist'
+            '&q=%s">%s</a>'
             % (obj.insta_id, product_num)
         )
 
