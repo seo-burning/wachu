@@ -297,14 +297,16 @@ class StorePostAdmin(admin.ModelAdmin):
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
                        'post_taken_at_timestamp',
-                       'post_url', 'store', 'get_store_pk')
+                       'post_url', 'store', 'get_store_pk',
+                       'get_store_category_style')
     fieldsets = [(_('status'), {'fields': ['is_active', 'is_product']}),
                  (_('Post Info'), {'fields': ['post_score',
                                               'post_like',
                                               'post_description',
                                               'post_taken_at_timestamp',
                                               'post_url', ]}),
-                 (_('Store Info'), {'fields': ['store', 'get_store_pk']}), ]
+                 (_('Store Info'), {'fields': ['store', 'get_store_pk',
+                                               'get_store_category_style']}), ]
     ordering = ['post_taken_at_timestamp', 'store', ]
     actions = ['make_activate',
                'make_deactivate']
@@ -329,6 +331,19 @@ class StorePostAdmin(admin.ModelAdmin):
 
     def get_store_pk(self, obj):
         return obj.store.pk
+
+    def get_store_category_style(self, obj):
+        category = ''
+        primary_style = ''
+        secondary_style = ''
+        if obj.store.category:
+            category = obj.store.category.name
+        if obj.store.primary_style:
+            primary_style = obj.store.primary_style.name
+        if obj.store.secondary_style:
+            secondary_style = obj.store.secondary_style.name
+        return "category: {} /////// style: {} & {}"\
+            .format(category, primary_style, secondary_style)
 
     def related_product(self, obj):
         return obj.product_set.all().count()
