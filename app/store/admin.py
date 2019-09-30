@@ -244,6 +244,24 @@ class PostRankingFilter(admin.SimpleListFilter):
             return queryset.filter(store__current_ranking__lte=1000)
 
 
+class PostRelatedProductFilter(admin.SimpleListFilter):
+    title = 'Ranking Filter'
+    parameter_name = 'product'
+
+    def lookups(self, request, model_admin):
+        return(
+            ('related_product_not_exist', 'related_product_not_exist'),
+            ('related_product exist', 'related_product exist'),
+
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'related_product exist':
+            return queryset.filter(product__gt=0)
+        elif self.value() == 'related_product_not_exist':
+            return queryset.filter(product__isnull=True)
+
+
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
     inlines = [ProductInline, PostImageInline, PostGroupInline]
@@ -251,14 +269,25 @@ class StorePostAdmin(admin.ModelAdmin):
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
                        'post_taken_at_timestamp',
-                       'post_url', 'store')
-    fields = ['is_active', 'post_score', 'post_description',
-              'post_url', 'store']
-    ordering = ['post_taken_at_timestamp', 'store']
+                       'post_url', 'store', 'get_store_pk')
+    fieldsets = [(_('status'), {'fields': ['is_active', 'is_updated']}),
+                 (_('Post Info'), {'fields': ['post_score',
+                                              'post_url', ]}),
+                 (_('Store Info'), {'fields': ['store', 'get_store_pk']}), ]
+    ordering = ['post_taken_at_timestamp', 'store', ]
     actions = ['make_activate',
                'make_deactivate']
-    list_filter = (PostRankingFilter, 'is_updated')
-    list_display = ['__str__', 'store', 'get_store_ranking']
+    list_filter = (PostRelatedProductFilter, )
+    list_display = ['store', '__str__',
+                    'related_product',
+                    'is_active',
+                    'is_updated',
+                    ]
+    list_display_links = ['store', '__str__',
+                          'is_active',
+                          'is_updated',
+                          ]
+    search_fields = ('store__insta_id',)
     list_per_page = 10
 
     def make_activate(self, request, queryset):
@@ -267,8 +296,11 @@ class StorePostAdmin(admin.ModelAdmin):
             request, '{}건의 포스팅을 Activated 상태로 변경'.format(updated_count))
     make_activate.short_description = '지정 스토어를 Activate 상태로 변경'
 
-    def get_store_ranking(self, obj):
-        return obj.store.current_ranking
+    def get_store_pk(self, obj):
+        return obj.store.pk
+
+    def related_product(self, obj):
+        return obj.product_set.all().count()
 
     def make_deactivate(self, request, queryset):
         updated_count = queryset.update(is_active=False)
