@@ -87,7 +87,6 @@ class Product(TimeStampedModel):
                             max_length=255, blank=True)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL,
-
         null=True, blank=True)
     sub_category = models.ForeignKey(
         ProductSubCategory, on_delete=models.SET_NULL,

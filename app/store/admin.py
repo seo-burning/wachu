@@ -12,7 +12,7 @@ from core.models import ExportCsvMixin
 
 class ProductInline(admin.StackedInline):
     model = Product
-    fields = ['is_active',
+    fields = [
               'store',
               'category',
               'sub_category',
@@ -230,7 +230,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def need_to_update(self, obj):
         product_num = obj.store_post_set.all().filter(
-            product__isnull=True, is_product=True).count()
+            product__isnull=True, is_product='P').count()
         return format_html(
             '<a style="color: red" href="'
             'https://www.wachu.shop/admin/store/'
@@ -340,13 +340,13 @@ class StorePostAdmin(admin.ModelAdmin):
         updated_count = queryset.update(is_product='N')
         self.message_user(
             request, '{}건의 포스팅을 Not Product 로 분류'.format(updated_count))
-    make_activate.short_description = 'Not Product 로 분류'
+    categorize_not_product.short_description = 'Not Product 로 분류'
 
     def categorize_product_etc(self, request, queryset):
         updated_count = queryset.update(is_product='E')
         self.message_user(
             request, '{}건의 포스팅을 Product ETC 로 분류'.format(updated_count))
-    make_activate.short_description = 'Product ETC 로 분류'
+    categorize_product_etc.short_description = 'Product ETC 로 분류'
 
     def get_store_pk(self, obj):
         return obj.store.pk

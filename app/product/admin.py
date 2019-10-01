@@ -73,7 +73,8 @@ class Product(admin.ModelAdmin):
         'sub_category',
         'style',
     ]
-    actions = ['make_activate', 'make_deactivate']
+    actions = ['make_activate', 'make_deactivate',
+               'categorize_bag', 'categorize_jewelry', 'categorize_shoes']
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
@@ -86,3 +87,24 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품을 Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = '지정 상품을 Deactivate 상태로 변경'
+
+    def categorize_bag(self, request, queryset):
+        category_bag = models.ProductCategory.objects.get(name='bag')
+        updated_count = queryset.update(category=category_bag)
+        self.message_user(
+            request, '{}건의 상품을 Bag으로 분류'.format(updated_count))
+    categorize_bag.short_description = '상품을 Bag으로 분류'
+
+    def categorize_jewelry(self, request, queryset):
+        category_jewelry = models.ProductCategory.objects.get(name='jewelry')
+        updated_count = queryset.update(category=category_jewelry)
+        self.message_user(
+            request, '{}건의 상품을 jewelry으로 분류'.format(updated_count))
+    categorize_jewelry.short_description = '상품을 jewelry으로 분류'
+
+    def categorize_shoes(self, request, queryset):
+        category_shoes = models.ProductCategory.objects.get(name='shoes')
+        updated_count = queryset.update(category=category_shoes)
+        self.message_user(
+            request, '{}건의 상품을 shoes으로 분류'.format(updated_count))
+    categorize_shoes.short_description = '상품을 shoes으로 분류'
