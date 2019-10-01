@@ -169,10 +169,14 @@ class PostImage(TimeStampedModel):
 POST_TYPE = (('SP', _('Single Picture')),
              ('MP', _('Multiple Picture')), ('V', _('Video')))
 
+PRODUCT_TYPE = (('P', _('Product')),
+                ('E', _('Prodcut Etc')), ('N', _('NOT Product')))
+
 
 class StorePost(TimeStampedModel):
     is_active = models.BooleanField(default=True)
-    is_product = models.BooleanField(default=True)
+    is_product = models.CharField(
+        max_length=25, choices=PRODUCT_TYPE, default='P')
 
     post_id = models.CharField(max_length=25)
     post_type = models.CharField(max_length=25, choices=POST_TYPE, null=True)

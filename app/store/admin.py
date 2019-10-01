@@ -234,7 +234,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         return format_html(
             '<a style="color: red" href="'
             'https://www.wachu.shop/admin/store/'
-            'storepost/?is_product__exact=1'
+            'storepost/?is_product__exact=P'
             '&product=related_product_not_exist'
             '&q=%s">%s</a>'
             % (obj.insta_id, product_num)
@@ -307,9 +307,10 @@ class StorePostAdmin(admin.ModelAdmin):
                                               'post_url', ]}),
                  (_('Store Info'), {'fields': ['store', 'get_store_pk',
                                                'get_store_category_style']}), ]
-    ordering = ['post_taken_at_timestamp', 'store', ]
+    ordering = ['-post_taken_at_timestamp', 'store', ]
     actions = ['make_activate',
-               'make_deactivate']
+               'make_deactivate', 'categorize_not_product',
+               'categorize_product_etc']
     list_filter = (PostRelatedProductFilter, 'is_active', 'is_product')
     list_display = ['store', '__str__',
                     'related_product',
@@ -327,7 +328,25 @@ class StorePostAdmin(admin.ModelAdmin):
         updated_count = queryset.update(is_active=True)
         self.message_user(
             request, '{}건의 포스팅을 Activated 상태로 변경'.format(updated_count))
-    make_activate.short_description = '지정 스토어를 Activate 상태로 변경'
+    make_activate.short_description = 'Activate 상태로 변경'
+
+    def make_deactivate(self, request, queryset):
+        updated_count = queryset.update(is_active=False)
+        self.message_user(
+            request, '{}건의 포스팅을 Deavtivate 상태로 변경'.format(updated_count))
+    make_deactivate.short_description = 'Deactivate 상태로 변경'
+
+    def categorize_not_product(self, request, queryset):
+        updated_count = queryset.update(is_product='N')
+        self.message_user(
+            request, '{}건의 포스팅을 Not Product 로 분류'.format(updated_count))
+    make_activate.short_description = 'Not Product 로 분류'
+
+    def categorize_product_etc(self, request, queryset):
+        updated_count = queryset.update(is_product='E')
+        self.message_user(
+            request, '{}건의 포스팅을 Product ETC 로 분류'.format(updated_count))
+    make_activate.short_description = 'Product ETC 로 분류'
 
     def get_store_pk(self, obj):
         return obj.store.pk
@@ -347,12 +366,6 @@ class StorePostAdmin(admin.ModelAdmin):
 
     def related_product(self, obj):
         return obj.product_set.all().count()
-
-    def make_deactivate(self, request, queryset):
-        updated_count = queryset.update(is_active=False)
-        self.message_user(
-            request, '{}건의 포스팅을 Deavtivate 상태로 변경'.format(updated_count))
-    make_deactivate.short_description = '지정 스토어를 Deactivate 상태로 변경'
 
 
 @admin.register(models.Region)
