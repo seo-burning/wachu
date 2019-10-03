@@ -24,6 +24,14 @@ class ProductCategoryListView(generics.ListAPIView):
         if (color):
             color_filter = color.split(',')
             queryset = queryset.filter(color__name__in=color_filter)
+        style = self.request.query_params.get('style')
+        if (style):
+            style_filter = style.split(',')
+            queryset = queryset.filter(style__name__in=style_filter)
+        region = self.request.query_params.get('region')
+        if (region):
+            region_filter = region.split(',')
+            queryset = queryset.filter(store__region__name__in=region_filter)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 

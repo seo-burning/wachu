@@ -13,12 +13,12 @@ from core.models import ExportCsvMixin
 class ProductInline(admin.StackedInline):
     model = Product
     fields = [
-              'store',
-              'category',
-              'sub_category',
-              'style',
-              'color'
-              ]
+        'store',
+        'category',
+        'sub_category',
+        'style',
+        'color'
+    ]
     raw_id_fields = ['store']
     extra = 1
 
@@ -322,7 +322,7 @@ class StorePostAdmin(admin.ModelAdmin):
                           'is_product',
                           ]
     search_fields = ('store__insta_id',)
-    list_per_page = 10
+    list_per_page = 30
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
