@@ -235,6 +235,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             '<a style="color: red" href="'
             'https://www.wachu.shop/admin/store/'
             'storepost/?is_product__exact=P'
+            '&is_active=1'
             '&product=related_product_not_exist'
             '&q=%s">%s</a>'
             % (obj.insta_id, product_num)

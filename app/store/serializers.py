@@ -8,6 +8,7 @@ class StoreInlineSerializer(serializers.ModelSerializer):
     secondary_style = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
     category = serializers.StringRelatedField(many=True)
+    favorite_users_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Store
@@ -16,7 +17,10 @@ class StoreInlineSerializer(serializers.ModelSerializer):
                   'facebook_numeric_id', 'facebook_id', 'profile_image',
                   'recent_post_1',
                   'recent_post_2',
-                  'recent_post_3')
+                  'recent_post_3', 'favorite_users_count')
+
+    def get_favorite_users_count(self, obj):
+        return obj.favorite_users.count()
 
 
 class PostImageSerializer(serializers.ModelSerializer):

@@ -14,12 +14,17 @@ class StoreSerializer(serializers.ModelSerializer):
     secondary_style = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
     category = serializers.StringRelatedField(many=True)
+    favorite_users_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Store
         fields = ('pk', 'insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style', 'category',
-                  'facebook_numeric_id', 'facebook_id', 'profile_image')
+                  'facebook_numeric_id', 'facebook_id', 'profile_image',
+                  'favorite_users_count')
+
+    def get_favorite_users_count(self, obj):
+        return obj.favorite_users.count()
 
 
 class LinkingBannerSerializer(serializers.ModelSerializer):
