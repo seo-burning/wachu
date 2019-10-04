@@ -14,6 +14,7 @@ class MainPagePublishView(generics.ListAPIView):
     def get_queryset(self):
         queryset = models.MainPagePublish.objects.all().filter(
             is_published=True).order_by('-date')
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
 

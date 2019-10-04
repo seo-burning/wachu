@@ -67,12 +67,38 @@ class PostGroupSerializer(serializers.ModelSerializer):
                   'cover_picture', 'list_thumb_picture')
 
 
+class PostTagGroupSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField(many=False)
+    sub_category = serializers.StringRelatedField(many=False)
+    color = serializers.StringRelatedField(many=False)
+    style = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = models.PostTagGroup
+        fields = ('__str__', 'category', 'sub_category',
+                  'color', 'style')
+
+
 class MainPagePublishSerializer(serializers.ModelSerializer):
-    posttaggroup_set = serializers.StringRelatedField(many=True)
+    posttaggroup_set = PostTagGroupSerializer(many=True)
 
     class Meta:
         model = models.MainPagePublish
-        fields = ('posttaggroup_set')
+        fields = ('posttaggroup_set',)
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(
+            'posttaggroup_set',
+            'posttaggroup_set__category',
+            'posttaggroup_set__sub_category',
+            'posttaggroup_set__color',
+            'posttaggroup_set__style',
+        )
+
+        return queryset
 
 # https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
 
