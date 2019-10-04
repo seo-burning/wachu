@@ -31,6 +31,23 @@ class PostTagGroupAdmin(admin.ModelAdmin):
                           'style', 'product_number']
 
 
+class PostTagGroupInline(admin.StackedInline):
+    model = models.PostTagGroup
+    show_change_link = True
+    list_display = ['__str__', 'ordering', 'published_banner',
+                    'category', 'sub_category', 'color',
+                    'style', 'product_number']
+    list_display_links = ['__str__', 'ordering', 'published_banner',
+                          'category', 'sub_category', 'color',
+                          'style', 'product_number']
+    extra = 0
+    max_num = 15
+    ordering = ['ordering']
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(models.LinkingBanner)
 class LinkingBannerAdmin(admin.ModelAdmin):
     fields = ['title', 'ordering', 'list_thumb_picture',
@@ -86,6 +103,7 @@ class PostGroupInline(admin.StackedInline):
 
 @admin.register(models.MainPagePublish)
 class MainPagePublishAdmin(admin.ModelAdmin):
+    inlines = [PostTagGroupInline]
     fields = ['is_published', 'date', ]
     list_display = ['is_published', 'date']
     list_display_links = ['date']
