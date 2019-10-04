@@ -22,6 +22,13 @@ class StoreSerializer(serializers.ModelSerializer):
                   'facebook_numeric_id', 'facebook_id', 'profile_image')
 
 
+class LinkingBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.LinkingBanner
+        fields = ('ordering', 'title', 'list_thumb_picture', 'cover_picture',
+                  'link_url')
+
+
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
@@ -90,10 +97,11 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
 
 class BannerPublishSerializer(serializers.ModelSerializer):
     postgroup_set = PostGroupSerializer(read_only=True, many=True)
+    linkingbanner_set = LinkingBannerSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.BannerPublish
-        fields = ('date', 'postgroup_set',)
+        fields = ('date', 'postgroup_set', 'linkingbanner_set')
 
 # https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
     @staticmethod

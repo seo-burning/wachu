@@ -25,13 +25,25 @@ class PostGroupAdmin(admin.ModelAdmin):
               'list_thumb_picture',
               'published_page', 'published_banner',
               'published_magazine']
-    list_display = ['published_page', 'published_banner',
+    list_display = ['__str__', 'published_page', 'published_banner',
                     'published_magazine', 'title', 'post_number']
-    list_display_links = ['title']
+    list_display_links = ['__str__', 'title']
     extra = 0
 
     def post_number(self, instance):
         return len(instance.post_list.all())
+
+
+@admin.register(models.LinkingBanner)
+class LinkingBannerAdmin(admin.ModelAdmin):
+    fields = ['title', 'ordering', 'list_thumb_picture',
+              'cover_picture',
+              'link_url',
+              'published_banner']
+    list_display = ['__str__', 'title',
+                    'published_banner']
+    list_display_links = ['__str__', 'title']
+    extra = 0
 
 
 class LinkingBannerInline(admin.StackedInline):
