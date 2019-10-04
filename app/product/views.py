@@ -15,8 +15,9 @@ class ProductCategoryListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = models.Product.objects.all().order_by('-pk')
-        queryset = queryset.filter(
-            category__name=self.kwargs['product_category'])
+        category = self.kwargs['product_category']
+        if (category != 'all'):
+            queryset = queryset.filter(category__name=category)
         sub_category = self.request.query_params.get('sub-category')
         if (sub_category):
             queryset = queryset.filter(sub_category__name=sub_category)
@@ -48,6 +49,7 @@ class ProductSearchListView(generics.ListAPIView):
         if(q):
             q_filter = q.split(',')
         queryset = queryset.filter(Q(color__name__in=q_filter) | Q(
-            sub_category__name__in=q_filter) | Q(category__name__in=q_filter))
+            sub_category__name__in=q_filter) | Q(category__name__in=q_filter)
+            | Q(style__name__in=q_filter))
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset

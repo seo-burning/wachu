@@ -18,20 +18,17 @@ class StorePostInline(admin.TabularInline):
         ))
 
 
-@admin.register(models.PostGroup)
-class PostGroupAdmin(admin.ModelAdmin):
-    inlines = [StorePostInline]
-    fields = ['title', 'ordering', 'cover_picture',
-              'list_thumb_picture',
-              'published_page', 'published_banner',
-              'published_magazine']
-    list_display = ['__str__', 'published_page', 'published_banner',
-                    'published_magazine', 'title', 'post_number']
-    list_display_links = ['__str__', 'title']
-    extra = 0
-
-    def post_number(self, instance):
-        return len(instance.post_list.all())
+@admin.register(models.PostTagGroup)
+class PostTagGroupAdmin(admin.ModelAdmin):
+    fields = ['ordering', 'published_banner', 'category',
+              'sub_category', 'color',
+              'style', 'product_number']
+    list_display = ['__str__', 'ordering', 'published_banner',
+                    'category', 'sub_category', 'color',
+                    'style', 'product_number']
+    list_display_links = ['__str__', 'ordering', 'published_banner',
+                          'category', 'sub_category', 'color',
+                          'style', 'product_number']
 
 
 @admin.register(models.LinkingBanner)
@@ -59,6 +56,21 @@ class LinkingBannerInline(admin.StackedInline):
         return False
 
 
+@admin.register(models.PostGroup)
+class PostGroupAdmin(admin.ModelAdmin):
+    inlines = [StorePostInline]
+    fields = ['title', 'ordering', 'cover_picture',
+              'list_thumb_picture', 'published_banner',
+              'published_magazine']
+    list_display = ['__str__', 'published_banner',
+                    'published_magazine', 'title', 'post_number']
+    list_display_links = ['__str__', 'title']
+    extra = 0
+
+    def post_number(self, instance):
+        return len(instance.post_list.all())
+
+
 class PostGroupInline(admin.StackedInline):
     model = models.PostGroup
     show_change_link = True
@@ -74,14 +86,10 @@ class PostGroupInline(admin.StackedInline):
 
 @admin.register(models.MainPagePublish)
 class MainPagePublishAdmin(admin.ModelAdmin):
-    inlines = [PostGroupInline, ]
     fields = ['is_published', 'date', ]
-    list_display = ['is_published', 'date', 'post_group_number']
+    list_display = ['is_published', 'date']
     list_display_links = ['date']
     ordering = ['date']
-
-    def post_group_number(self, instance):
-        return len(instance.postgroup_set.all())
 
 
 @admin.register(models.BannerPublish)

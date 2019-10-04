@@ -3,9 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 from core.models import TimeStampedModel
 from store.models import StorePost
 from django.utils.safestring import mark_safe
-
+from product import models as p_models
 
 # Create your models here.
+
+
 class PostGroup(TimeStampedModel):
     ordering = models.IntegerField(default=999, null=True)
     title = models.CharField(_('Post Group Title'), max_length=50)
@@ -16,18 +18,13 @@ class PostGroup(TimeStampedModel):
     post_list = models.ManyToManyField(StorePost, blank=True,
                                        symmetrical=False,
                                        related_name="post_set")
-    published_page = models.ForeignKey(
-        'MainPagePublish', on_delete=models.SET_NULL, null=True, blank=True,)
     published_banner = models.ForeignKey(
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
     published_magazine = models.ForeignKey(
         'MagazinePublish', on_delete=models.SET_NULL, null=True, blank=True,)
 
     def __str__(self):
-        return mark_safe('<img src="{url}" \
-        width="300" height="300" border="1" />'.format(
-            url=self.list_thumb_picture
-        ))
+        return self.title
 
 
 class LinkingBanner(TimeStampedModel):
@@ -44,8 +41,46 @@ class LinkingBanner(TimeStampedModel):
     def __str__(self):
         return mark_safe('<img src="{url}" \
         width="300" height="300" border="1" />'.format(
-            url=self.list_thumb_picture
+            url=self.list_thumb_picture.url
         ))
+
+
+class PostTagGroup(TimeStampedModel):
+    ordering = models.IntegerField(default=999, null=True)
+    category = models.ForeignKey(
+        p_models.ProductCategory, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    sub_category = models.ForeignKey(
+        p_models.ProductSubCategory, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    color = models.ForeignKey(
+        p_models.ProductColor, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    style = models.ForeignKey(
+        p_models.ProductStyle, on_delete=models.SET_NULL,
+        null=True, blank=True)
+
+    product_number = models.IntegerField(default=10)
+
+    published_banner = models.ForeignKey(
+        'MainPagePublish', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        category = 'all/?'
+        sub_category = ''
+        color = ''
+        style = ''
+        product_number = 'limit=' + str(self.product_number)
+        if (self.category):
+            category = self.category.name + '/?'
+        if (self.sub_category):
+            sub_category = 'sub-category='+self.sub_category.name+'&'
+        if (self.color):
+            color = 'color='+self.color.name + '&'
+        if (self.style):
+            style = 'style='+self.style.name + '&'
+        return ('https://www.wachu.shop/api/product/category/' +
+                category+sub_category+color+style+product_number)
 
 
 class MainPagePublish(TimeStampedModel):
