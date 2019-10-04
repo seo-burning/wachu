@@ -32,7 +32,13 @@ class LinkingBanner(TimeStampedModel):
     title = models.CharField(_('Post Group Title'), max_length=50)
     list_thumb_picture = models.ImageField(
         blank=True, upload_to='post-group-list-thumb/%Y/%m')
-    cover_picture = models.ImageField(
+    cover_picture_1 = models.ImageField(
+        blank=True, upload_to='post-group-cover/%Y/%m')
+    cover_picture_2 = models.ImageField(
+        blank=True, upload_to='post-group-cover/%Y/%m')
+    cover_picture_3 = models.ImageField(
+        blank=True, upload_to='post-group-cover/%Y/%m')
+    cover_picture_4 = models.ImageField(
         blank=True, upload_to='post-group-cover/%Y/%m')
     link_url = models.URLField(null=True, blank=True, max_length=500)
     published_banner = models.ForeignKey(

@@ -51,7 +51,11 @@ class PostTagGroupInline(admin.StackedInline):
 @admin.register(models.LinkingBanner)
 class LinkingBannerAdmin(admin.ModelAdmin):
     fields = ['title', 'ordering', 'list_thumb_picture',
-              'cover_picture',
+              'cover_picture_1',
+              'cover_picture_2',
+              'cover_picture_3',
+              'cover_picture_4',
+
               'link_url',
               'published_banner']
     list_display = ['__str__', 'title',

@@ -25,7 +25,11 @@ class StoreSerializer(serializers.ModelSerializer):
 class LinkingBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.LinkingBanner
-        fields = ('ordering', 'title', 'list_thumb_picture', 'cover_picture',
+        fields = ('ordering', 'title', 'list_thumb_picture',
+                  'cover_picture_1',
+                  'cover_picture_2',
+                  'cover_picture_3',
+                  'cover_picture_4',
                   'link_url')
 
 
