@@ -26,6 +26,19 @@ class PostGroup(TimeStampedModel):
         return self.title
 
 
+class LinkingBanner(TimeStampedModel):
+    ordering = models.IntegerField(default=999, null=True)
+    title = models.CharField(_('Post Group Title'), max_length=50)
+    list_thumb_picture = models.ImageField(
+        blank=True, upload_to='post-group-list-thumb/%Y/%m')
+    cover_picture = models.ImageField(
+        blank=True, upload_to='post-group-cover/%Y/%m')
+    link_url = models.URLField(null=True, blank=True, max_length=500)
+
+    def __str__(self):
+        return self.title
+
+
 class MainPagePublish(TimeStampedModel):
     is_published = models.BooleanField(default=False)
     date = models.DateField(_('Published Date'))
