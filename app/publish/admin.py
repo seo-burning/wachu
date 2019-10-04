@@ -34,11 +34,24 @@ class PostGroupAdmin(admin.ModelAdmin):
         return len(instance.post_list.all())
 
 
+class LinkingBannerInline(admin.StackedInline):
+    model = models.LinkingBanner
+    show_change_link = True
+    fields = ['ordering', 'title', '__str__']
+    readonly_fields = ['title', '__str__']
+    extra = 0
+    max_num = 15
+    ordering = ['ordering']
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 class PostGroupInline(admin.StackedInline):
     model = models.PostGroup
     show_change_link = True
-    fields = ['ordering', 'title', ]
-    readonly_fields = ['title']
+    fields = ['ordering', 'title', '__str__']
+    readonly_fields = ['title', '__str__']
     extra = 0
     max_num = 15
     ordering = ['ordering']
@@ -61,7 +74,7 @@ class MainPagePublishAdmin(admin.ModelAdmin):
 
 @admin.register(models.BannerPublish)
 class BannerPublishAdmin(admin.ModelAdmin):
-    inlines = [PostGroupInline, ]
+    inlines = [PostGroupInline, LinkingBannerInline]
     fields = ['is_published', 'date', ]
     list_display = ['is_published', 'date', 'post_group_number']
     list_display_links = ['date']
