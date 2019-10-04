@@ -27,19 +27,21 @@ class ProductSerializer(serializers.ModelSerializer):
     tag = serializers.StringRelatedField(many=True)
     sub_category = serializers.StringRelatedField(many=False)
     style = serializers.StringRelatedField(many=False)
+    category = serializers.StringRelatedField(many=False)
+    color = serializers.StringRelatedField(many=True)
     post = StorePostSerializer(many=False)
 
     class Meta:
         model = models.Product
         fields = ('pk', 'name', 'tag',  'style',
-                  'post', 'color', 'sub_category')
+                  'post', 'color', 'sub_category', 'category')
 
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
         queryset = queryset.select_related(
-            'post',
+            'post', 'category',
             'style',
             'sub_category',
             'post__store',
