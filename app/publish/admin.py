@@ -22,13 +22,13 @@ class StorePostInline(admin.TabularInline):
 class PostTagGroupAdmin(admin.ModelAdmin):
     fields = ['ordering', 'published_banner', 'category',
               'sub_category', 'color',
-              'style', 'product_number']
+              'style', 'store', 'product_number']
     list_display = ['__str__', 'ordering', 'published_banner',
                     'category', 'sub_category', 'color',
-                    'style', 'product_number']
+                    'style', 'store', 'product_number']
     list_display_links = ['__str__', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color',
-                          'style', 'product_number']
+                          'style', 'store', 'product_number']
 
 
 class PostTagGroupInline(admin.StackedInline):
