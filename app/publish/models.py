@@ -4,7 +4,7 @@ from core.models import TimeStampedModel
 from store.models import StorePost
 from django.utils.safestring import mark_safe
 from product import models as p_models
-
+from store.models import Store
 # Create your models here.
 
 
@@ -65,7 +65,8 @@ class PostTagGroup(TimeStampedModel):
     style = models.ForeignKey(
         p_models.ProductStyle, on_delete=models.SET_NULL,
         null=True, blank=True)
-
+    store = models.ForeignKey(
+        Store, on_delete=models.SET_NULL, null=True, blank=True)
     product_number = models.IntegerField(default=10)
 
     published_banner = models.ForeignKey(
@@ -76,6 +77,7 @@ class PostTagGroup(TimeStampedModel):
         sub_category = ''
         color = ''
         style = ''
+        store = ''
         product_number = 'limit=' + str(self.product_number)
         if (self.category):
             category = self.category.name + '/?'
@@ -85,8 +87,10 @@ class PostTagGroup(TimeStampedModel):
             color = 'color='+self.color.name + '&'
         if (self.style):
             style = 'style='+self.style.name + '&'
+        if (self.store):
+            store = 'store='+self.store.pk + '&'
         return ('https://www.wachu.shop/api/product/category/' +
-                category+sub_category+color+style+product_number)
+                category+sub_category+color+style+store+product_number)
 
 
 class MainPagePublish(TimeStampedModel):

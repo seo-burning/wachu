@@ -33,6 +33,9 @@ class ProductCategoryListView(generics.ListAPIView):
         if (region):
             region_filter = region.split(',')
             queryset = queryset.filter(store__region__name__in=region_filter)
+        store = self.request.query_params.get('store')
+        if (store):
+            queryset = queryset.filter(store__pk=store)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 

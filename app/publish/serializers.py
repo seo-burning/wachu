@@ -81,11 +81,12 @@ class PostTagGroupSerializer(serializers.ModelSerializer):
     sub_category = serializers.StringRelatedField(many=False)
     color = serializers.StringRelatedField(many=False)
     style = serializers.StringRelatedField(many=False)
+    store = serializers.StringRelatedField(many=False)
 
     class Meta:
         model = models.PostTagGroup
         fields = ('__str__', 'category', 'sub_category',
-                  'color', 'style')
+                  'color', 'style', 'store')
 
 
 class MainPagePublishSerializer(serializers.ModelSerializer):
@@ -101,6 +102,7 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(
             'posttaggroup_set',
+            'posttaggroup_set__store',
             'posttaggroup_set__category',
             'posttaggroup_set__sub_category',
             'posttaggroup_set__color',
@@ -154,7 +156,7 @@ class MagazinePublishSerializer(serializers.ModelSerializer):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(Prefetch(
-            'postgroup_set',
+            '       ',
             queryset=models.PostGroup.objects.order_by('ordering')))
         queryset = queryset.prefetch_related(
             'postgroup_set__post_list',

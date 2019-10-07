@@ -36,13 +36,14 @@ class PostTagGroupInline(admin.StackedInline):
     show_change_link = True
     list_display = ['__str__', 'ordering', 'published_banner',
                     'category', 'sub_category', 'color',
-                    'style', 'product_number']
+                    'style', 'store', 'product_number']
     list_display_links = ['__str__', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color',
-                          'style', 'product_number']
+                          'style', 'store', 'product_number']
     extra = 0
     max_num = 15
     ordering = ['ordering']
+    raw_id_fields = ['store', ]
 
     def has_delete_permission(self, request, obj=None):
         return False
