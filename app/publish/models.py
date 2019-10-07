@@ -52,6 +52,9 @@ class LinkingBanner(TimeStampedModel):
 
 
 class PostTagGroup(TimeStampedModel):
+    class Meta:
+        ordering = ('ordering',)
+
     ordering = models.IntegerField(default=999, null=True)
     category = models.ForeignKey(
         p_models.ProductCategory, on_delete=models.SET_NULL,
