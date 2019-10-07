@@ -29,6 +29,7 @@ class PostTagGroupAdmin(admin.ModelAdmin):
     list_display_links = ['__str__', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color',
                           'style', 'store', 'product_number']
+    raw_id_fields = ['store', ]
 
 
 class PostTagGroupInline(admin.StackedInline):
@@ -43,7 +44,6 @@ class PostTagGroupInline(admin.StackedInline):
     extra = 0
     max_num = 15
     ordering = ['ordering']
-    raw_id_fields = ['store', ]
 
     def has_delete_permission(self, request, obj=None):
         return False

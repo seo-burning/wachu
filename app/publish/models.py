@@ -88,7 +88,7 @@ class PostTagGroup(TimeStampedModel):
         if (self.style):
             style = 'style='+self.style.name + '&'
         if (self.store):
-            store = 'store='+self.store.pk + '&'
+            store = 'store='+str(self.store.pk) + '&'
         return ('https://www.wachu.shop/api/product/category/' +
                 category+sub_category+color+style+store+product_number)
 
