@@ -1,5 +1,4 @@
 
-from store.models import Store, StorePost, StoreRanking, PostImage
 import sys
 import os
 import django
@@ -25,6 +24,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
 
 
 django.setup()
+from store.models import Store, StorePost, StoreRanking, PostImage
 
 
 _user_agents = [
@@ -53,8 +53,6 @@ def get_proxies():
 
 
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
-# dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-dateInfo = '2019-09-14'
 
 
 class InstagramScraper:
@@ -224,6 +222,7 @@ class InstagramScraper:
 
             post_saved = 0
             post_score_sum = 0
+            new_post = 0
             is_new_post = False
             if len(result_post) > 0:
                 for i, post in enumerate(result_post):
@@ -259,6 +258,7 @@ class InstagramScraper:
                             print('{} - #{} new post'.format(obj_store.insta_id, i))
                             is_new_post = True
                             obj_post.is_updated = True
+                            new_post = new_post + 1
                             if post['__typename'] == 'GraphSidecar':
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
@@ -336,12 +336,12 @@ class InstagramScraper:
                 updated_account.append(obj_store.insta_url)
                 print("U - {} (id:{} / {} post saved.)".format(username,
                                                                obj_store.id, post_saved))
+            return new_post
             time.sleep(1)
 
 
 if __name__ == '__main__':
     print('start scrapying')
-    print(dateInfo)
 
     start_time = time.time()
 
@@ -350,34 +350,44 @@ if __name__ == '__main__':
     deactivated_account = []
     post_error_account = []
     post_0_account = []
-
-    print('get crawlinglist')
-    with open('crawling/account_list.txt', 'r') as f:
-        content = f.readlines()
+    dateInfo = input('date info input : ')
+    if dateInfo:
+        print(dateInfo)
+    else:
+        dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
+        print(dateInfo)
+    store_list = Store.objects.all().filter(
+        is_active=True).order_by('current_ranking')
+    print("total active store: #{}".format(len(store_list)))
     all_store_ranking_objs_for_today = StoreRanking.objects.filter(
         date=dateInfo).filter(store__is_active=True)
-    print(len(all_store_ranking_objs_for_today))
-    store_list = Store.objects.all().filter(
-        is_active=True).order_by('current_ranking')[525:]
-    print(len(store_list))
+    print("already exist data: #{}".format(
+        len(all_store_ranking_objs_for_today)))
+    start_num = len(all_store_ranking_objs_for_today)
+    print("start crwaling from: #{}".format(start_num))
+    # with open('crawling/account_list.txt', 'r') as f:
+    #     content = f.readlines()
+    #     content = ['https://www.instagram.com/' +
+    #         x.split('\n')[0] + '/' for x in content]
+    #     print(content)
+    store_list = store_list[start_num:]
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
     obj = InstagramScraper()
-    pk = 0
-    # store_post_list = StorePost.objects.all().filter(is_updated=True)
-    # print(len(store_post_list))
-
-    # for store_post in store_post_list:
-    #     store_post.is_updated = False
-    #     store_post.save()
+    pk = start_num
     print("changed to not updated --- %s seconds ---" %
           (time.time() - start_time))
 
+    total_new_post = 0
     for url in content:
         pk = pk + 1
-        print("#{}".format(pk))
-        obj.insert_insta(url, created_account, updated_account,
-                         deactivated_account, post_error_account, post_0_account)
-        # time.sleep(20)
+        print("ranking #{}".format(pk))
+        new_post = obj.insert_insta(url, created_account, updated_account,
+                                    deactivated_account, post_error_account, post_0_account)
+        if new_post == None:
+            new_post = 0
+        total_new_post = total_new_post + new_post
+        print("save new post : #{} // total : #{}".format(new_post, total_new_post))
 
+    print(total_new_post)
     print("--- %s seconds ---" % (time.time() - start_time))

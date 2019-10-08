@@ -29,8 +29,8 @@ def create_presigned_url(bucket_name, object_name, expiration=604800):
     """
 
     # Generate a presigned URL for the S3 object
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS5DY7GS4A', 
-    aws_secret_access_key='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')
+    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RSQB24EN2B', 
+    aws_secret_access_key='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')
     try:
         response = s3_client.generate_presigned_url('get_object',
                                                     Params={'Bucket': bucket_name,
@@ -74,8 +74,8 @@ def video_file_update(obj_post):
     file_root = './crawling/'+store_name + '_' + object_name
     with open(file_root, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS5DY7GS4A', 
-    aws_secret_access_key='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', config=Config(signature_version='s3v4'))
+    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RSQB24EN2B', 
+    aws_secret_access_key='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', config=Config(signature_version='s3v4'))
     with open(file_root, 'rb') as f:
         s3_client.upload_fileobj(f, 'wachu', '{media}/{video}/{store}/{file_name}'.format(media='media', video='video',store=store_name, file_name=object_name))
     video_source = "https://s3.console.aws.amazon.com/s3/object/wachu/media/video/{store}/{file_name}".format(store=store_name, file_name=object_name)
@@ -102,8 +102,8 @@ def video_file_update_with_video_source(obj_post,video_source,video_thumbnail):
     with open(thumb_file_root, 'wb') as out_file:
         shutil.copyfileobj(response_thumb.raw, out_file)
 
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS5DY7GS4A', 
-    aws_secret_access_key='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', config=Config(signature_version='s3v4'))
+    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RSQB24EN2B', 
+    aws_secret_access_key='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', config=Config(signature_version='s3v4'))
 
 
     with open(file_root, 'rb') as f:
@@ -143,21 +143,24 @@ import multiprocessing as mp
 from functools import partial
 
 
-def video_update_credential(obj_store):
-    obj_list = StorePost.objects.all().filter(store=obj_store, post_type='V')
-    for i, obj_post in enumerate(obj_list):
-        video_file_update_credential(obj_post)
+def video_update_credential(obj_post):
+    post_image_obj_list = PostImage.objects.all().filter(store_post=obj_post, post_image_type='V')
+    if len(post_image_obj_list) > 0:
+        print(post_image_obj_list)
 
+    
 if __name__ == '__main__':
     print('start scrapying')
     print('setup multiprocessing')
     # pool = mp.Pool(processes=6)
     store_obj_list = Store.objects.all().filter(is_active=True).order_by('current_ranking')
-    # pool.map(partial(video_update_credential),store_obj_list)\
     i=0
     for store_obj in store_obj_list:
         i = i + 1
         print(i, store_obj)
-        video_update_credential(store_obj)
+        obj_post_list = StorePost.objects.all().filter(store=store_obj)
+        # pool.map(partial(video_update_credential),obj_post_list)
+        for obj_post in obj_post_list:
+            video_file_update_credential(obj_post)
 
     pool.close()

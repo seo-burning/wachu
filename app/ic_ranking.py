@@ -13,12 +13,9 @@ PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
 django.setup()
+
 from store.models import Store, StorePost, StoreRanking, PostImage
 
-
-# dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
-dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-dateInfo = '2019-09-10'
 
 
 def calculate_ranking(store_ranking_obj, all_store_ranking_objs_for_today):
@@ -43,7 +40,12 @@ def calculate_ranking(store_ranking_obj, all_store_ranking_objs_for_today):
 if __name__ == '__main__':
     print('calculating Ranking')
     start_time = time.time()
-
+    dateInfo = input('date info input : ')
+    if dateInfo:
+        print(dateInfo)
+    else:
+        dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
+        print(dateInfo)
     print('setup multiprocessing')
     pool = mp.Pool(processes=6)
 

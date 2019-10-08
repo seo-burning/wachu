@@ -156,7 +156,7 @@ class MagazinePublishSerializer(serializers.ModelSerializer):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(Prefetch(
-            '       ',
+            'postgroup_set',
             queryset=models.PostGroup.objects.order_by('ordering')))
         queryset = queryset.prefetch_related(
             'postgroup_set__post_list',
