@@ -1,16 +1,36 @@
 from django.contrib import admin
 from product import models
+from django.utils.html import format_html
+
 # Register your models here.
 
 
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     fields = ['name']
+    list_display = ['name', 'product_num']
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(category=obj).count()
+        return format_html('<a href="https://www.wachu.shop/'
+                           'admin/product/product/'
+                           '?category__id__exact=%s">%s</a>'
+                           % (obj.pk, product_num)
+                           )
 
 
 @admin.register(models.ProductSubCategory)
 class ProductSubCategoryAdmin(admin.ModelAdmin):
-    fields = ['name', 'category']
+    fields = ['name']
+    list_display = ['name', 'product_num']
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(sub_category=obj).count()
+        return format_html('<a href="https://www.wachu.shop/'
+                           'admin/product/product/'
+                           '?sub_category__id__exact=%s">%s</a>'
+                           % (obj.pk, product_num)
+                           )
 
 
 @admin.register(models.ProductLength)
@@ -36,11 +56,24 @@ class ProductDetailAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
     fields = ['name']
+    list_display = ['name', 'product_num']
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(color=obj).count()
+        return product_num
 
 
 @admin.register(models.ProductStyle)
 class ProductStyleAdmin(admin.ModelAdmin):
     fields = ['name']
+    list_display = ['name', 'product_num']
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(style=obj).count()
+        return format_html('<a href="https://www.wachu.shop/'
+                           'admin/product/product/?style__id__exact=%s">%s</a>'
+                           % (obj.pk, product_num)
+                           )
 
 
 @admin.register(models.ProductTag)

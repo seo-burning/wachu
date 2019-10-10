@@ -41,7 +41,7 @@ class LinkingBannerSerializer(serializers.ModelSerializer):
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
-        fields = ('source_thumb',)
+        fields = ('source_thumb', 'post_image_type', 'source')
 
 
 class StorePostSerializer(serializers.ModelSerializer):
