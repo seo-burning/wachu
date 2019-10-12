@@ -20,3 +20,6 @@ pymsteams
 
 #debug
 django-debug-toolbar
+
+#admin
+django-grappelli

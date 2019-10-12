@@ -37,7 +37,6 @@ from django.views.generic import TemplateView
 #     permission_classes=(permissions.AllowAny,),
 # )
 
-
 urlpatterns = [
     # url(r'^swagger(?P<format>\.json|\.yaml)$',
     #     schema_view.without_ui(cache_timeout=0), name='schema-json'),
@@ -47,6 +46,7 @@ urlpatterns = [
     # url(r'^redoc/$', schema_view.with_ui('redoc',
     #                                      cache_timeout=0),
     #     name='schema-redoc'),
+    path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     url(r'^accounts/', include('allauth.urls')),
     path('', TemplateView.as_view(template_name='index.html')),
     path('privacy-policy/',

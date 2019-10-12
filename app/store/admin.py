@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
-
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Count
+from django.db.models.functions import TruncDay
+import json
 
 from store import models
 from product.models import Product
@@ -20,6 +23,8 @@ class ProductInline(admin.StackedInline):
         'color'
     ]
     raw_id_fields = ['store']
+    classes = ('grp-collapse grp-open',)
+    inline_classes = ('grp-collapse grp-open',)
     extra = 1
 
 
@@ -50,6 +55,8 @@ class PostImageInline(admin.StackedInline):
     fields = ['post_image_shot', 'post_image_type']
     readonly_fields = ['post_image_shot', ]
     extra = 0
+    classes = ('grp-collapse grp-open',)
+    inline_classes = ('grp-collapse grp-open',)
 
     def post_image_shot(self, obj):
         return mark_safe('<img src="{url}" \
@@ -367,6 +374,22 @@ class StorePostAdmin(admin.ModelAdmin):
 
     def related_product(self, obj):
         return obj.product_set.all().count()
+
+    def changelist_view(self, request, extra_context=None):
+        # Aggregate new subscribers per day
+        chart_data = (
+            models.StorePost.objects.annotate(date=TruncDay("created_at"))
+            .values("date")
+            .annotate(y=Count("id"))
+            .order_by("-date")
+        )
+
+        # Serialize and attach the chart data to the template context
+        as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
+        extra_context = extra_context or {"chart_data": as_json}
+
+        # Call the superclass changelist_view to render the page
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 @admin.register(models.Region)

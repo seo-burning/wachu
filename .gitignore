@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # #dev
-# docker-compose-dev.yml
+docker-compose-dev.yml
 
 #staicfile
 static/

@@ -61,7 +61,7 @@ class UserManager(BaseUserManager):
 GENDER_CHOICES_FIELD = [('female', 'female'), ('male', 'male')]
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)

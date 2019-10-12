@@ -16,14 +16,14 @@ services:
       - DB_USER=dabi_master
       - DB_PORT=5432
       - DB_PASS=burnb0706
-      - DB_HOST=db
-      - DB_NAME=app
-      - DB_USER=postgres
-      - DB_PASS=supersecretpassword
-      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-      - AWS_STORAGE_BUCKET_NAME=$AWS_STORAGE_BUCKET_NAME
-      - AWS_S3_REGION_NAME=$AWS_S3_REGION_NAME
+      # - DB_HOST=db
+      # - DB_NAME=app
+      # - DB_USER=postgres
+      # - DB_PASS=supersecretpassword
+      - AWS_ACCESS_KEY_ID=''
+      - AWS_SECRET_ACCESS_KEY=''
+      - AWS_STORAGE_BUCKET_NAME=''
+      - AWS_S3_REGION_NAME=''
     depends_on:
       - db
 

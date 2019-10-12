@@ -55,13 +55,18 @@ ALLOWED_HOSTS = ['www.wachu.shop', '*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'grappelli.dashboard',
+
+    'grappelli',
+    'django.contrib.admin',
+
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
 
     'allauth',
     'allauth.account',
@@ -106,7 +111,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
+
             ],
         },
     },
@@ -228,3 +233,9 @@ REST_FRAMEWORK = {
 
 
 # https://www.oipapio.com/question-6018776
+
+
+GRAPPELLI_ADMIN_TITLE = "DABI ADMIN"
+GRAPPELLI_INDEX_DASHBOARD = {
+    'django.contrib.admin.site': 'app.dashboard.CustomIndexDashboard',
+}
