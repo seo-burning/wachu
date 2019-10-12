@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from core.models import TimeStampedModel
 from store.models import StorePost
-from django.utils.safestring import mark_safe
 from product import models as p_models
 from store.models import Store
 # Create your models here.
