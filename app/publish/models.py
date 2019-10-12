@@ -45,10 +45,7 @@ class LinkingBanner(TimeStampedModel):
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
 
     def __str__(self):
-        return mark_safe('<img src="{url}" \
-        width="300" height="300" border="1" />'.format(
-            url=self.list_thumb_picture.url
-        ))
+        return self.title
 
 
 class PostTagGroup(TimeStampedModel):
