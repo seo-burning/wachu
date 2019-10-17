@@ -11,6 +11,7 @@ from allauth.socialaccount.providers.facebook.views \
     import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, UserFavoritePost
+from core.models import UserPushToken
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -39,6 +40,14 @@ class CreatUserPushToken(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class UserPushTokenListView(generics.ListAPIView):
+    """Create a new user"""
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.PushTokenSerializer
+    queryset = UserPushToken.objects.all()
 
 
 class CreateTokenView(ObtainAuthToken):

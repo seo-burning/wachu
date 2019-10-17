@@ -9,6 +9,8 @@ urlpatterns = [
     path('rest_auth/register/', include('rest_auth.registration.urls')),
     path('create/', views.CreateUserView.as_view(), name='create'),
     path('token/', views.CreateTokenView.as_view(), name='token'),
+    path('push_token/', views.UserPushTokenListView.as_view(),
+         name='push_token'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('me/basic/', views.UserBasicInfoUpdateView.as_view(),
          name='basic_info_update'),
