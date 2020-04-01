@@ -36,8 +36,8 @@ deploy: # 배포
     bucket: wachu # AWS CodeDeploy가 다운로드 받은 버킷
     key: wachu.zip # 해당 버킷에 저장되어 있는 파일 이름
     bundle_type: zip # 버킷에 저장되어 있는 파일의 확장자
-    application: wachu-travis-ci # AWS 배포 애플리케이션
-    deployment_group: wachu-travisci-deploy-group # AWS 배포 애플리케이션에 만들어져 있는 배포 그룹
+    application: dabi-code-deploy # AWS 배포 애플리케이션
+    deployment_group: dabi-code-deploy-group # AWS 배포 애플리케이션에 만들어져 있는 배포 그룹
     region: ap-southeast-1
     wait-until-deployed: true
     on:
