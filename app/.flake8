@@ -1,11 +1,11 @@
 [flake8]
 exclude =
-  migrations
+  migrations,
   __pycache__,
   manage.py,
-  settings
-  ic.py
-  ic_update.py
-  ic_video.py
-  ic_ranking.py
-  checking_list.py
+  settings,
+  ic.py,
+  ic_update.py,
+  ic_video.py,
+  ic_ranking.py,
+  checking_list.py,

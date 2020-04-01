@@ -82,6 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
 
 
 class UserPushToken(TimeStampedModel):
+    is_active = models.BooleanField(default=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     push_token = models.CharField(max_length=255, unique=True)
