@@ -14,7 +14,8 @@ class StoreInlineSerializer(serializers.ModelSerializer):
         model = Store
         fields = ('pk', 'insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style', 'category',
-                  'facebook_numeric_id', 'shopee_url', 'facebook_id', 'profile_image',
+                  'facebook_numeric_id', 'shopee_url', 'facebook_id',
+                  'profile_image',
                   'current_review_rating',
                   'recent_post_1',
                   'recent_post_2',
