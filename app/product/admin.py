@@ -94,6 +94,7 @@ class Product(admin.ModelAdmin):
         'style',
         'color',
         'store',
+        'price',
         'post']
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
@@ -101,6 +102,7 @@ class Product(admin.ModelAdmin):
                     'store',
                     'category',
                     'sub_category',
+                    'price',
                     'style',
                     ]
     search_fields = ['store__insta_id']

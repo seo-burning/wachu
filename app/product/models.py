@@ -112,6 +112,8 @@ class Product(TimeStampedModel):
         ProductStyle, on_delete=models.SET_NULL,
         null=True, blank=True)
 
+    price = models.IntegerField(default=0)
+
     tag = models.ManyToManyField(
         ProductTag, blank=True)
     post = models.ForeignKey(

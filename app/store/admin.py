@@ -20,7 +20,8 @@ class ProductInline(admin.StackedInline):
         'category',
         'sub_category',
         'style',
-        'color'
+        'color',
+        'price'
     ]
     raw_id_fields = ['store']
     classes = ('grp-collapse grp-open',)

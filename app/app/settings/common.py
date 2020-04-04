@@ -57,9 +57,9 @@ ALLOWED_HOSTS = ['www.wachu.shop', '*']
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'grappelli.dashboard',
+    # 'grappelli.dashboard',
 
-    'grappelli',
+    # 'grappelli',
     'django.contrib.admin',
 
     'django.contrib.sessions',
