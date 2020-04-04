@@ -105,15 +105,28 @@ class StoreRankingInline(admin.StackedInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
+@admin.register(models.StoreAddress)
+class StoreAddressAdmin(admin.ModelAdmin):
+    model = models.StoreAddress
+
+
+class StoreAddressInline(admin.StackedInline):
+    model = models.StoreAddress
+    fields = ['address',
+              'contact_number', 'region']
+    extra = 1
+
 # https://medium.com/@hakibenita/things-you-must-know-about-django-admin-as-your-app-gets-bigger-6be0b0ee9614
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
-    inlines = [StorePostInline, ]
+    inlines = [StoreAddressInline]  # StorePostInline,
     readonly_fields = (
         'is_new_post',
         'insta_url',
         'current_ranking',
         'current_ranking_changed',
+        'current_review_rating',
         'instagram_link',
         'profile_image',
         'profile_image_shot',
@@ -128,6 +141,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                                         'is_updated',
                                         'current_ranking',
                                         'current_ranking_changed',
+                                        'current_review_rating',
                                         'instagram_link',
                                         'profile_image_shot',
                                         'insta_id',
@@ -137,12 +151,12 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                                         ]}),
         (_("Url Infomation"),
          {'fields': (('facebook_url', 'facebook_id',
-                      'facebook_numeric_id'),)}),
+                      'facebook_numeric_id', ),)}),
         (_("Instagram Numbers"), {'fields': (
             ('post_num', 'follower', 'following'),
         )}),
         (_("Tags"), {'fields': (
-            ("category", "region", 'age'),
+            ("category", 'age'),
             ("primary_style", "secondary_style"),
         )}),
         (_("Images"), {'fields': (
@@ -152,14 +166,12 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     ]
     list_display = ["instagram_link",
                     'current_ranking',
-                    'current_ranking_changed',
                     "insta_id", 'profile_thumb',
                     'follower', 'post_num',
-                    'post_product_num', 'need_to_update',
-                    "primary_style", "secondary_style", "age"]
+                    'post_product_num', 'need_to_update', ]
     list_filter = ['is_active', 'is_updated']
     list_display_links = ["insta_id"]
-    search_fields = ["insta_id", "region__name",
+    search_fields = ["insta_id",
                      "primary_style__name", "secondary_style__name", ]
     actions = ['export_as_csv', 'make_activate',
                'make_deactivate', 'make_deactivate_under_5000',
@@ -425,4 +437,11 @@ class Secondary_StyleAdmin(admin.ModelAdmin):
 class AgeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+    )
+
+
+@admin.register(models.StoreReview)
+class StoreReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        'review',
     )

@@ -88,8 +88,6 @@ class Store(TimeStampedModel):
     # Categorizing Fields ( updated by admin user )
     category = models.ManyToManyField(
         Category, blank=True, symmetrical=False, related_name="categorys_set")
-    region = models.ManyToManyField(
-        Region, blank=True, symmetrical=False, related_name="regions_set")
 
     primary_style = models.ForeignKey(
         Primary_Style, on_delete=models.SET_NULL, null=True, blank=True)
@@ -106,6 +104,8 @@ class Store(TimeStampedModel):
 
     # Ranking Info
     current_ranking = models.IntegerField(null=True)
+    current_review_rating = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0)
     current_ranking_changed = models.IntegerField(null=True)
 
     # Favorite info
@@ -139,6 +139,8 @@ class StoreRanking(TimeStampedModel):
     follower = models.IntegerField(_("Instagram Follower"), null=True)
     following = models.IntegerField(_("Instagram Following"), null=True)
     post_num = models.IntegerField(_("Instagram Number of posts"), null=True)
+    review_rating = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0)
 
     store_view_count = models.IntegerField(
         _("Store View Count of the day"), null=True)
@@ -151,6 +153,33 @@ class StoreRanking(TimeStampedModel):
 
 
 POST_IMAGE_TYPE = (('P', _('Picture')), ('V', _('Video')))
+
+
+class StoreAddress(TimeStampedModel):
+    address = models.CharField(
+        max_length=250, null=True)
+    store = models.ForeignKey(
+        'Store', on_delete=models.CASCADE, related_name='store_address_set')
+    contact_number = models.CharField(
+        max_length=250, null=True)
+    region = models.ForeignKey(
+        Region, on_delete=models.CASCADE, related_name="store_address_set")
+
+    def __str__(self):
+        return self.address
+
+
+class StoreReview(TimeStampedModel):
+    review = models.CharField(
+        max_length=500, null=True)
+    store = models.ForeignKey(
+        'Store', on_delete=models.CASCADE, related_name='store_review_set')
+    rating = models.IntegerField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.review
 
 
 class PostImage(TimeStampedModel):
@@ -214,34 +243,3 @@ class StorePost(TimeStampedModel):
         width="300" height="300" border="1" />'.format(
             url=self.post_thumb_image
         ))
-
-
-CONTACT_STATUS_CHOICES = (
-    ('NONE', _('연락안함')),
-    ('DM', _('DM 보냄, 답장대기중')),
-    ('CM', _('연락중')),
-)
-
-REACT_RATE_CHOICES = (
-    (1, '매우 부정적'),
-    (2, '부정적'),
-    (3, '의견 없음'),
-    (4, '긍정적'),
-    (5, '매우 긍정적'),
-)
-
-
-class StoreSurvey(TimeStampedModel):
-    title = models.CharField(max_length=25)
-    store = models.ForeignKey(
-        Store, on_delete=models.CASCADE, related_name='store_survey',
-        default=None)
-    contact_status = models.CharField(
-        max_length=25, choices=CONTACT_STATUS_CHOICES)
-    content = models.TextField(
-        _("Survey Content"), blank=True, null=True)
-    reaction_rate = models.IntegerField(
-        choices=REACT_RATE_CHOICES, blank=True, null=True)
-
-    def __str__(self):
-        return self.title
