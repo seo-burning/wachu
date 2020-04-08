@@ -161,9 +161,11 @@ class StoreAddress(TimeStampedModel):
     store = models.ForeignKey(
         'Store', on_delete=models.CASCADE, related_name='store_address_set')
     contact_number = models.CharField(
-        max_length=250, null=True)
+        max_length=250, null=True, blank=True)
     region = models.ForeignKey(
         Region, on_delete=models.CASCADE, related_name="store_address_set")
+    X_axis = models.CharField(max_length=250)
+    Y_axis = models.CharField(max_length=250)
 
     def __str__(self):
         return self.address
