@@ -226,12 +226,6 @@ SOCIALACCOUNT_STORE_TOKENS = True
 SITE_ID = 3
 
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 20
-}
-
-
 # https://www.oipapio.com/question-6018776
 
 

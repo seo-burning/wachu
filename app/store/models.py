@@ -160,7 +160,9 @@ class StoreAddress(TimeStampedModel):
         max_length=250, null=True)
     store = models.ForeignKey(
         'Store', on_delete=models.CASCADE, related_name='store_address_set')
-    contact_number = models.CharField(
+    google_map_url = models.CharField(
+        max_length=250, null=True, blank=True)
+    contact = models.CharField(
         max_length=250, null=True, blank=True)
     region = models.ForeignKey(
         Region, on_delete=models.CASCADE, related_name="store_address_set")

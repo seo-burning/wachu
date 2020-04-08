@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from store import serializers
-from store.models import Store, StorePost
+from store.models import Store, StorePost, StoreAddress
 
 
 class StoreView(generics.ListAPIView):
@@ -38,3 +38,13 @@ class StorePostView(generics.ListAPIView):
         return queryset.filter(
             store__insta_id=self.kwargs['store_insta_id'])\
             .filter(is_active=True)
+
+
+class StoreAddressListView(generics.ListAPIView):
+    serializer_class = serializers.StoreAddressSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = StoreAddress.objects.all()
+        return queryset

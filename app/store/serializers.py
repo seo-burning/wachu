@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from store.models import Store, StorePost, PostImage
+from store.models import Store, StorePost, PostImage, StoreAddress
 
 
 class StoreInlineSerializer(serializers.ModelSerializer):
@@ -26,9 +26,18 @@ class StoreInlineSerializer(serializers.ModelSerializer):
 
 
 class PostImageSerializer(serializers.ModelSerializer):
+    region = serializers.StringRelatedField(many=False)
+
     class Meta:
         model = PostImage
         fields = ('source_thumb', 'post_image_type', 'source')
+
+
+class StoreAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreAddress
+        fields = ('address', 'region', 'google_map_url',
+                  'X_axis', 'Y_axis')
 
 
 class StorePostSerializer(serializers.ModelSerializer):

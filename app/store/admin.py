@@ -116,7 +116,7 @@ class StoreAddressAdmin(admin.ModelAdmin):
 class StoreAddressInline(admin.StackedInline):
     model = models.StoreAddress
     fields = ['address',
-              'contact_number', 'region', 'X_axis', 'Y_axis']
+              'google_map_url', 'region', 'X_axis', 'Y_axis', 'contact']
     extra = 1
 
 # https://medium.com/@hakibenita/things-you-must-know-about-django-admin-as-your-app-gets-bigger-6be0b0ee9614
