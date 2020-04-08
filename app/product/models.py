@@ -27,7 +27,7 @@ class ProductSubCategory(TimeStampedModel):
         return self.name
 
 
-class ProductLength(TimeStampedModel):
+class ProductSize(TimeStampedModel):
     name = models.CharField(_('Product Length'), max_length=255)
 
     def __str__(self):
@@ -92,9 +92,8 @@ class Product(TimeStampedModel):
         ProductSubCategory, on_delete=models.SET_NULL,
         null=True, blank=True)
 
-    length = models.ForeignKey(
-        ProductLength, on_delete=models.SET_NULL,
-        null=True, blank=True)
+    size = models.ManyToManyField(
+        ProductSize, blank=True)
     sleeve_length = models.ForeignKey(
         ProductSleeveLength, on_delete=models.SET_NULL,
         null=True, blank=True)

@@ -37,8 +37,8 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
                            )
 
 
-@admin.register(models.ProductLength)
-class ProductLengthAdmin(admin.ModelAdmin):
+@admin.register(models.ProductSize)
+class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
@@ -95,6 +95,7 @@ class Product(admin.ModelAdmin):
         'color',
         'store',
         'price',
+        'size'
         'post']
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
