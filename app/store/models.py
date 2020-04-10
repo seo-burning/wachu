@@ -60,11 +60,13 @@ class Age(models.Model):
         return self.name
 
 
-STORE_TYPE = (('IF', _('INS FB')),
-              ('IF(P)', _('INS FB w/P')),
-              ('IH', _('INS HP')),
-              ('IS', _('INS SHP')),
-              ('IFS', _('INS FB SHP')),
+STORE_TYPE = (('IF', _('-')),
+              ('IF(P)', _('INS w/P')),
+              ('IPFH', _('INS w/P HP')),
+              ('IH', _('HP')),
+              ('IS', _('Shopee')),
+              ('IFSH', _('Shopee HP')),
+              ('IF(P)SH', _('INS w/P SH')),
               )
 
 

@@ -47,6 +47,12 @@ class FavoriteStoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ['export_as_csv']
 
 
+@admin.register(models.PostImage)
+class PostImageAdmin(admin.ModelAdmin):
+    model = models.PostImage
+    search_fields = ["store_post__store__insta_id", 'source_thumb']
+
+
 class StoreCategoryInline(admin.TabularInline):
     model = models.Store.category.through
     extra = 0
