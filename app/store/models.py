@@ -60,10 +60,19 @@ class Age(models.Model):
         return self.name
 
 
+STORE_TYPE = (('IF', _('INS FB')),
+              ('IF(P)', _('INS FB w/P')),
+              ('IH', _('INS HP')),
+              ('IS', _('INS SHP')),
+              ('IFS', _('INS FB SHP')),
+              )
+
+
 class Store(TimeStampedModel):
     class Meta:
         ordering = ('current_ranking',)
-
+    store_type = models.CharField(
+        max_length=25, choices=STORE_TYPE, default='IF', null=True)
     """Store object"""
     is_active = models.BooleanField(default=False)
     is_updated = models.BooleanField(default=False)

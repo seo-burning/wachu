@@ -142,6 +142,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         (_("User Profile"), {'fields': ['is_new_post',
                                         'is_active',
                                         'is_updated',
+                                        'store_type',
                                         'current_ranking',
                                         'current_ranking_changed',
                                         'current_review_rating',
@@ -168,11 +169,12 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         )}),
     ]
     list_display = ["instagram_link",
+                    "store_type",
                     'current_ranking',
                     "insta_id", 'profile_thumb',
                     'follower', 'post_num',
                     'post_product_num', 'need_to_update', ]
-    list_filter = ['is_active', 'is_updated']
+    list_filter = ['is_active', 'is_updated', 'store_type']
     list_display_links = ["insta_id"]
     search_fields = ["insta_id",
                      "primary_style__name", "secondary_style__name", ]
