@@ -92,6 +92,9 @@ class Product(TimeStampedModel):
         ProductSubCategory, on_delete=models.SET_NULL,
         null=True, blank=True)
 
+    thumb_image_pk = models.IntegerField(
+        _('Product Thumb Image'), default=1)
+
     size = models.ManyToManyField(
         ProductSize, blank=True)
     sleeve_length = models.ForeignKey(
@@ -119,7 +122,12 @@ class Product(TimeStampedModel):
         'store.StorePost', on_delete=models.CASCADE)
 
     def __str__(self):
+        if self.thumb_image_pk == 1:
+            thumb_image = self.post.post_thumb_image
+        else:
+            thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
+
         return mark_safe('<img src="{url}" \
         width="300" height="300" border="1" />'.format(
-            url=self.post.post_thumb_image
+            url=thumb_image
         ))

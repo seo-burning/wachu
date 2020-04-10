@@ -19,6 +19,7 @@ class ProductInline(admin.StackedInline):
         'store',
         'category',
         'sub_category',
+        'thumb_image_pk',
         'style',
         'color',
         'price',
@@ -244,7 +245,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def post_product_num(self, obj):
         product_num = obj.store_post_set.all().filter(product__gte=1).count()
-        return format_html('<a href="https://www.wachu.shop/'
+        return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/?q=%s">%s</a>'
                            % (obj.insta_id, product_num)
                            )
@@ -254,7 +255,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             product__isnull=True, is_product='P').count()
         return format_html(
             '<a style="color: red" href="'
-            'https://www.wachu.shop/admin/store/'
+            'http://dabivn.com/admin/store/'
             'storepost/?is_product__exact=P'
             '&is_active=1'
             '&product=related_product_not_exist'

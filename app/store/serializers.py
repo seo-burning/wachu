@@ -34,10 +34,24 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class StoreAddressSerializer(serializers.ModelSerializer):
+    store = StoreInlineSerializer(many=False)
+
     class Meta:
         model = StoreAddress
-        fields = ('address', 'region', 'google_map_url',
+        fields = ('store', 'address', 'region', 'google_map_url',
                   'X_axis', 'Y_axis')
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.select_related('store')
+        queryset = queryset.select_related('store__age')
+        queryset = queryset.select_related('store__secondary_style')
+        queryset = queryset.select_related('store__primary_style')
+        queryset = queryset.prefetch_related('store__category')
+        queryset = queryset.prefetch_related('post_image_set')
+        return queryset
 
 
 class StorePostSerializer(serializers.ModelSerializer):

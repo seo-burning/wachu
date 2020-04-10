@@ -16,7 +16,7 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(category=obj).count()
-        return format_html('<a href="https://www.wachu.shop/'
+        return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/'
                            '?category__id__exact=%s">%s</a>'
                            % (obj.pk, product_num)
@@ -30,7 +30,7 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(sub_category=obj).count()
-        return format_html('<a href="https://www.wachu.shop/'
+        return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/'
                            '?sub_category__id__exact=%s">%s</a>'
                            % (obj.pk, product_num)
@@ -74,7 +74,7 @@ class ProductStyleAdmin(admin.ModelAdmin):
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(style=obj).count()
-        return format_html('<a href="https://www.wachu.shop/'
+        return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/?style__id__exact=%s">%s</a>'
                            % (obj.pk, product_num)
                            )
@@ -87,16 +87,6 @@ class ProductTagAdmin(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    fields = [
-        'is_active',
-        'category',
-        'sub_category',
-        'style',
-        'color',
-        'store',
-        'price',
-        'size'
-        'post']
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
                     'is_active',

@@ -34,7 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = ('pk', 'name', 'tag',  'style',
-                  'post', 'color', 'sub_category', 'price', 'category')
+                  'post', 'color', 'sub_category', 'price', 'category', 'thumb_image_pk')
 
     @staticmethod
     def setup_eager_loading(queryset):
