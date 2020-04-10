@@ -65,6 +65,7 @@ STORE_TYPE = (('IF', _('-')),
               ('IPFH', _('INS w/P HP')),
               ('IH', _('HP')),
               ('IS', _('Shopee')),
+              ('IS(P)', _('Shopee w/P')),
               ('IFSH', _('Shopee HP')),
               ('IF(P)SH', _('INS w/P SH')),
               )
@@ -112,6 +113,7 @@ class Store(TimeStampedModel):
     facebook_id = models.CharField(max_length=255, blank=True)
     facebook_numeric_id = models.CharField(max_length=255, blank=True)
     shopee_url = models.URLField(null=True, blank=True, max_length=500)
+    homepage_url = models.URLField(null=True, blank=True, max_length=500)
 
     # Ranking Info
     current_ranking = models.IntegerField(null=True)
