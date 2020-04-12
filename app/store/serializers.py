@@ -26,8 +26,6 @@ class StoreInlineSerializer(serializers.ModelSerializer):
 
 
 class PostImageSerializer(serializers.ModelSerializer):
-    region = serializers.StringRelatedField(many=False)
-
     class Meta:
         model = PostImage
         fields = ('source_thumb', 'post_image_type', 'source')

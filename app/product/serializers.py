@@ -4,25 +4,6 @@ from product import models
 from publish.serializers import StorePostSerializer
 
 
-# class StorePostSerializer(serializers.ModelSerializer):
-#     post_image_set = PostImageSerializer(read_only=True, many=True)
-#     store = serializers.PrimaryKeyRelatedField(read_only=True, many=False)
-
-#     class Meta:
-#         model = StorePost
-#         fields = ('pk', 'post_url', 'post_type', 'post_thumb_image',
-#                   'video_source',
-#                   'post_description', 'post_image_set', 'store')
-
-#     @staticmethod
-#     def setup_eager_loading(queryset):
-#         """ Perform necessary eager loading of data. """
-#         # select_related for "to-one" relationships
-#         queryset = queryset.select_related('store')
-#         queryset = queryset.prefetch_related('post_image_set')
-#         return queryset
-
-
 class ProductSerializer(serializers.ModelSerializer):
     tag = serializers.StringRelatedField(many=True)
     sub_category = serializers.StringRelatedField(many=False)

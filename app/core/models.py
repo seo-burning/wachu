@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,\
 
 import csv
 from django.http import HttpResponse
+from user.models import UserFavoriteProduct
+from product.models import Product
 
 
 class ExportCsvMixin:
@@ -72,6 +74,12 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    favorite_products = models.ManyToManyField(
+        Product,
+        through=UserFavoriteProduct,
+        related_name='favorite_products'
+    )
 
     objects = UserManager()
 

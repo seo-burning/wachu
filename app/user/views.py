@@ -12,6 +12,7 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, UserFavoritePost
 from core.models import UserPushToken
+from .models import UserFavoriteProduct
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -72,7 +73,7 @@ class FavoriteListView(generics.RetrieveAPIView):
 
 
 class FavoriteProductListView(generics.RetrieveAPIView):
-    serializer_class = serializers.FavoriteProductSerializer
+    serializer_class = serializers.FavoriteProductListSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -98,14 +99,14 @@ class FavoriteStoreView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class FavoritePostView(generics.DestroyAPIView):
-    queryset = UserFavoritePost.objects.all()
+class FavoriteProductView(generics.DestroyAPIView):
+    queryset = UserFavoriteProduct.objects.all()
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def destroy(self, request, *args, **kwargs):
         data = self.queryset.filter(
-            store_post=kwargs['pk'], user=request.user)
+            product=kwargs['pk'], user=request.user)
         data.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -116,8 +117,8 @@ class FavoriteStoreCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class FavoritePostCreateView(generics.CreateAPIView):
-    serializer_class = serializers.FavoritePostSerializer
+class FavoriteProductCreateView(generics.CreateAPIView):
+    serializer_class = serializers.FavoriteProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
