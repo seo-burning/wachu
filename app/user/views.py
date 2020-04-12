@@ -10,7 +10,7 @@ from user import serializers
 from allauth.socialaccount.providers.facebook.views \
     import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
-from store.models import UserFavoriteStore, UserFavoritePost
+from store.models import UserFavoriteStore
 from core.models import UserPushToken
 from .models import UserFavoriteProduct
 
