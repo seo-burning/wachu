@@ -39,6 +39,29 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return queryset
 
 
+class FavoriteProductSerializer(serializers.ModelSerializer):
+    favorite_posts = StorePostSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('favorite_posts',)
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(
+            'favorite_posts',
+            'favorite_posts__post_image_set',
+            'favorite_posts__store',
+            'favorite_posts__store__category',
+            'favorite_posts__store__primary_style',
+            'favorite_posts__store__secondary_style',
+            'favorite_posts__store__age',
+        )
+        return queryset
+
+
 class FavoriteStoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFavoriteStore

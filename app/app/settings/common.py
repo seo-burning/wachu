@@ -116,6 +116,11 @@ TEMPLATES = [
         },
     },
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    )
+}
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
@@ -206,10 +211,10 @@ SOCIALACCOUNT_PROVIDERS = {
             'updated_time',
         ],
         'EXCHANGE_TOKEN': True,
-        'LOCALE_FUNC': lambda request: 'ko_KR',
+        'LOCALE_FUNC': 'path.to.callable',
         'VERIFIED_EMAIL': False,
-        'VERSION': 'v2.9',
-    }
+        'VERSION': 'v2.12',
+    },
 }
 
 LOGIN_REDIRECT_URL = "/"
@@ -223,7 +228,7 @@ SOCIALACCOUNT_STORE_TOKENS = True
 
 
 # SITE_ID with your domain site in /admin/sites/
-SITE_ID = 3
+SITE_ID = 9
 
 
 # https://www.oipapio.com/question-6018776

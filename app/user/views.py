@@ -71,6 +71,21 @@ class FavoriteListView(generics.RetrieveAPIView):
         return queryset
 
 
+class FavoriteProductListView(generics.RetrieveAPIView):
+    serializer_class = serializers.FavoriteProductSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
+
+    def get_queryset(self):
+        queryset = get_user_model()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
+
+
 class FavoriteStoreView(generics.DestroyAPIView):
     queryset = UserFavoriteStore.objects.all()
     authentication_classes = (authentication.TokenAuthentication,)

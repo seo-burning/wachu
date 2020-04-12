@@ -26,6 +26,7 @@ urlpatterns = [
 
     path('favorite/', views.FavoriteListView.as_view(),
          name='favorite'),
+    path('favorite/product/', views.FavoriteProductListView.as_view()),
     path('favorite/store/create/', views.FavoriteStoreCreateView.as_view(),
          name='favorite_store_create'),
     path('favorite/store/<int:pk>/',
