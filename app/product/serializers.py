@@ -11,12 +11,13 @@ class ProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField(many=False)
     color = serializers.StringRelatedField(many=True)
     post = StorePostSerializer(many=False)
+    favorite_users_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Product
         fields = ('pk', 'name', 'tag',  'style',
                   'post', 'color', 'sub_category', 'price',
-                  'category', 'thumb_image_pk', )
+                  'category', 'thumb_image_pk', 'favorite_users_count')
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -36,3 +37,6 @@ class ProductSerializer(serializers.ModelSerializer):
                                              'post__store__category',
                                              )
         return queryset
+
+    def get_favorite_users_count(self, obj):
+        return obj.favorite_users.count()

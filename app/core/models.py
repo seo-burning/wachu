@@ -78,7 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     favorite_products = models.ManyToManyField(
         Product,
         through=UserFavoriteProduct,
-        related_name='favorite_products'
+        related_name='favorite_users'
     )
 
     objects = UserManager()
