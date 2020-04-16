@@ -12,7 +12,7 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore
 from core.models import UserPushToken
-from .models import UserFavoriteProduct
+from .models import UserFavoriteProduct, StoreReview
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -165,3 +165,32 @@ class UserNameUpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+
+
+class StoreReviewDestroyView(generics.DestroyAPIView):
+    queryset = StoreReview.objects.all()
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def destroy(self, request, *args, **kwargs):
+        data = self.queryset.filter(
+            pk=kwargs['pk'], user=request.user)
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class StoreReviewListByUserView(generics.ListAPIView):
+    serializer_class = serializers.StoreReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = StoreReview.objects.filter(user=user)
+        return queryset
+
+
+class StoreReviewCreateView(generics.CreateAPIView):
+    serializer_class = serializers.StoreReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)

@@ -53,6 +53,7 @@ class ProductSearchListView(generics.ListAPIView):
             q_filter = q.split(',')
         queryset = queryset.filter(Q(color__name__in=q_filter) | Q(
             sub_category__name__in=q_filter) | Q(category__name__in=q_filter)
-            | Q(style__name__in=q_filter))
+            | Q(style__name__in=q_filter) |
+            Q(post__store__insta_id__in=q_filter))
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset

@@ -5,7 +5,7 @@ from rest_framework import serializers
 from product.serializers import ProductSerializer
 
 from core.models import UserPushToken
-from user.models import UserFavoriteProduct
+from user.models import UserFavoriteProduct, StoreReview
 # TODO SELECT_RELATED
 
 
@@ -168,3 +168,11 @@ class FacebookPhoneNumberAccountCreateSerailizer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ()
+
+
+class StoreReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StoreReview
+        fields = ('store', 'product', 'user', 'rating', 'description'
+                  )

@@ -38,4 +38,14 @@ urlpatterns = [
     path('favorite/product/create',
          views.FavoriteProductCreateView.as_view(),
          name='favorite_product_create'),
+    path('store-review/',
+         views.StoreReviewListByUserView.as_view(),
+         name='store_review_by_user'),
+    path('store-review/create',
+         views.StoreReviewCreateView.as_view(),
+         name='store_review_create'),
+    path('store-review/delete/<int:pk>/',
+         views.StoreReviewDestroyView.as_view(),
+         name='store_review_delete'),
+
 ]

@@ -186,19 +186,6 @@ class StoreAddress(TimeStampedModel):
         return self.address
 
 
-class StoreReview(TimeStampedModel):
-    review = models.CharField(
-        max_length=500, null=True)
-    store = models.ForeignKey(
-        'Store', on_delete=models.CASCADE, related_name='store_review_set')
-    rating = models.IntegerField()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.review
-
-
 class PostImage(TimeStampedModel):
     post_image_type = models.CharField(
         max_length=25, choices=POST_IMAGE_TYPE, null=True)

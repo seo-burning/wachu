@@ -449,10 +449,3 @@ class AgeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
     )
-
-
-@admin.register(models.StoreReview)
-class StoreReviewAdmin(admin.ModelAdmin):
-    list_display = (
-        'review',
-    )
