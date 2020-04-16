@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from product import models
 from publish.serializers import StorePostSerializer
+from datetime import datetime, timezone, timedelta
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -12,10 +13,11 @@ class ProductSerializer(serializers.ModelSerializer):
     color = serializers.StringRelatedField(many=True)
     post = StorePostSerializer(many=False)
     favorite_users_count = serializers.SerializerMethodField()
+    is_new = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Product
-        fields = ('pk', 'name', 'tag',  'style',
+        fields = ('pk', 'is_new', 'name', 'tag',  'style',
                   'post', 'color', 'sub_category', 'price',
                   'category', 'thumb_image_pk', 'favorite_users_count')
 
@@ -40,3 +42,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_favorite_users_count(self, obj):
         return obj.favorite_users.count()
+
+    def get_is_new(self, obj):
+        is_new = False
+        time_diff = datetime.now(timezone.utc) - obj.created_at - timedelta(2)
+        if time_diff.days < 0:
+            is_new = True
+        return is_new
