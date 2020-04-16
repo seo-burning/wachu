@@ -19,8 +19,18 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ('pk', 'insta_id', 'insta_url', 'name', 'age',
-                  'primary_style', 'secondary_style', 'category',
-                  'facebook_numeric_id', 'facebook_id', 'profile_image',
+                  'primary_style',
+                  'secondary_style',
+                  'category',
+                  'current_review_rating',
+                  'facebook_id',
+                  'facebook_numeric_id',
+                  'current_ranking',
+                  'facebook_url',
+                  'homepage_url',
+                  'facebook_numeric_id',
+                  'facebook_id',
+                  'profile_image',
                   'favorite_users_count')
 
     def get_favorite_users_count(self, obj):
