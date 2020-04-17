@@ -1,5 +1,6 @@
 from django.contrib import admin
 from product import models
+from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
@@ -39,27 +40,12 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
-    fields = ['name']
-
-
-@admin.register(models.ProductSleeveLength)
-class ProductSleeveLengthAdmin(admin.ModelAdmin):
-    fields = ['name']
-
-
-@admin.register(models.ProductMaterial)
-class ProductMaterialAdmin(admin.ModelAdmin):
-    fields = ['name']
-
-
-@admin.register(models.ProductDetail)
-class ProductDetailAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['name', ]
 
 
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['name', 'display_name']
     list_display = ['name', 'product_num']
 
     def product_num(self, obj):
@@ -80,20 +66,53 @@ class ProductStyleAdmin(admin.ModelAdmin):
                            )
 
 
+@admin.register(models.ShopeeRating)
+class ShopeeRatingAdmin(admin.ModelAdmin):
+    fields = ['__all__', ]
+
+
+@admin.register(models.ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ['__str__',]
+    
+
+
 @admin.register(models.ProductTag)
 class ProductTagAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
+
+class ProductImageInline(admin.StackedInline):
+    model = models.ProductImage
+    fields = ['post_image_type',]
+    readonly_fields = ['post_image_type', ]
+    extra = 0
+    classes = ('grp-collapse grp-open',)
+    inline_classes = ('grp-collapse grp-open',)
+
+    def post_image_shot(self, obj):
+        return mark_safe('<img src="{url}" \
+            width="300" height="300" border="1" />'.format(
+            url=obj.source_thumb
+        ))
+
+class ShopeeRatingInline(admin.StackedInline):
+    model = models.ShopeeRating
+    extra = 0
+
+
+
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
+    inlines = [ShopeeRatingInline,ProductImageInline,]
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
                     'is_active',
                     'store',
                     'category',
                     'sub_category',
-                    'price',
+                    'original_price',
                     'style',
                     ]
     search_fields = ['store__insta_id']

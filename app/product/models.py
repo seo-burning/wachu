@@ -34,29 +34,9 @@ class ProductSize(TimeStampedModel):
         return self.name
 
 
-class ProductSleeveLength(TimeStampedModel):
-    name = models.CharField(_('Product Sleeve Length'), max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
-class ProductMaterial(TimeStampedModel):
-    name = models.CharField(_('Product Material'), max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
-class ProductDetail(TimeStampedModel):
-    name = models.CharField(_('Product Detail'), max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
 class ProductColor(TimeStampedModel):
-    name = models.CharField(_('Product Color'), max_length=255)
+    name = models.CharField(_('Product Color'), max_length=255, blank=True, null=True)
+    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -78,56 +58,111 @@ class ProductStyle(TimeStampedModel):
         return self.name
 
 
+POST_IMAGE_TYPE = (('P', _('Picture')), ('V', _('Video')))
+
+
+class ProductImage(TimeStampedModel):
+    post_image_type = models.CharField(
+        max_length=25, choices=POST_IMAGE_TYPE, null=True)
+    source = models.CharField(_('URL Source'), max_length=1024, null=True)
+    source_thumb = models.CharField(
+        _('Thumb Small Link'), max_length=1024, null=True)
+    product = models.ForeignKey(
+        'Product', on_delete=models.CASCADE, related_name='product_image_set')
+
+    def __str__(self):
+        return mark_safe('<img src="{url}" \
+        width="300" height="300" border="1" />'.format(
+            url=self.source_thumb
+        ))
+
+
+class ShopeeCategory(TimeStampedModel):
+    display_name = models.CharField(max_length=255)
+    catid = models.IntegerField()
+    no_sub = models.BooleanField(default=False)
+    is_default_subcat = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.display_name
+
+
+
+class ShopeeRating(TimeStampedModel):
+    # review-rate
+    shopee_view_count = models.IntegerField(default=0)
+    shopee_liked_count = models.IntegerField(default=0)
+    shopee_sold_count = models.IntegerField(default=0)
+    shopee_review_count = models.IntegerField(default=0)
+    shopee_rating_star = models.FloatField(default=0)
+    product = models.OneToOneField(
+        'Product', on_delete=models.CASCADE, null=True, blank=True)
+
+
+CURRENCY_TYPE = (('VND', _('VND')), )
+PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
+                       ('INSTAGRAM', _('Instagram')),
+                       ('HOMEPAGE', _('Homepage')), )
+
+
 class Product(TimeStampedModel):
     is_active = models.BooleanField(default=False)
-    is_checked = models.BooleanField(default=False)
+    is_discount = models.BooleanField(default=False)
+    product_source = models.CharField(
+        choices=PRODUCT_SOURCE_TYPE, max_length=255)
     store = models.ForeignKey('store.Store',
                               on_delete=models.CASCADE)
     name = models.CharField(_('Product Name'),
                             max_length=255, blank=True)
+    description = models.TextField()
+    shopee_item_id = models.CharField(
+                            max_length=255, blank=True, null=True)
+
+    # image
+    product_thumbnail_image = models.CharField(
+        _('Post Thumb Image'), null=True, max_length=1024)
+
+
+    # price & stock
+    original_price = models.IntegerField(default=0)
+    discount_price = models.IntegerField(null=True, blank=True)
+    discount_rate = models.IntegerField(null=True, blank=True)
+    currency = models.CharField(choices=CURRENCY_TYPE, max_length=20)
+    is_free_ship = models.BooleanField(default=False)
+    stock = models.IntegerField(default=0)
+
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL,
         null=True, blank=True)
     sub_category = models.ForeignKey(
         ProductSubCategory, on_delete=models.SET_NULL,
         null=True, blank=True)
-
-    thumb_image_pk = models.IntegerField(
-        _('Product Thumb Image'), default=1)
-
-    size = models.ManyToManyField(
-        ProductSize, blank=True)
-    sleeve_length = models.ForeignKey(
-        ProductSleeveLength, on_delete=models.SET_NULL,
-        null=True, blank=True)
-
-    material = models.ForeignKey(
-        ProductMaterial, on_delete=models.SET_NULL,
-        null=True, blank=True)
-    detail = models.ForeignKey(
-        ProductDetail, on_delete=models.SET_NULL,
-        null=True, blank=True)
-    color = models.ManyToManyField(
-        ProductColor, blank=True)
-
     style = models.ForeignKey(
         ProductStyle, on_delete=models.SET_NULL,
         null=True, blank=True)
 
-    price = models.IntegerField(default=0)
+    shopee_category = models.ManyToManyField(
+        ShopeeCategory, blank=True)
+    size = models.ManyToManyField(
+        ProductSize, blank=True)
+    size_chart = models.CharField(null=True, max_length=1024, blank=True)
 
-    tag = models.ManyToManyField(
-        ProductTag, blank=True)
+    color = models.ManyToManyField(
+        ProductColor, blank=True)
+
     post = models.ForeignKey(
-        'store.StorePost', on_delete=models.CASCADE)
+        'store.StorePost', on_delete=models.CASCADE, null=True, blank=True)
+    thumb_image_pk = models.IntegerField(
+        _('Product Thumb Image'), default=1)
 
-    def __str__(self):
-        if self.thumb_image_pk == 1:
-            thumb_image = self.post.post_thumb_image
-        else:
-            thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
 
-        return mark_safe('<img src="{url}" \
-        width="300" height="300" border="1" />'.format(
-            url=thumb_image
-        ))
+    # def __str__(self):
+    #     if self.thumb_image_pk == 1:
+    #         thumb_image = self.post.post_thumb_image
+    #     else:
+    #         thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
+
+    #     return mark_safe('<img src="{url}" \
+    #     width="300" height="300" border="1" />'.format(
+    #         url=thumb_image
+    #     ))
