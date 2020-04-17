@@ -116,3 +116,4 @@ ic_update.py
 ic_ranking.py
 ic_video.py
 app/crawling
+app/shopee_c.py

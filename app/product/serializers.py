@@ -121,7 +121,7 @@ class ProductSerializer(serializers.ModelSerializer):
 #         }
 #     ],
 #     "discount": "2%",
-    
+
 #     "name": "S\u01a1 mi oversize TKA209",
 
 #     "ctime": 1582175115,

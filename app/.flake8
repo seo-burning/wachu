@@ -9,3 +9,4 @@ exclude =
   ic_video.py,
   ic_ranking.py,
   checking_list.py,
+  shopee_c.py

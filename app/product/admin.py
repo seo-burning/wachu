@@ -73,8 +73,7 @@ class ShopeeRatingAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ['__str__',]
-    
+    list_display = ['__str__', ]
 
 
 @admin.register(models.ProductTag)
@@ -82,10 +81,9 @@ class ProductTagAdmin(admin.ModelAdmin):
     fields = ['name']
 
 
-
 class ProductImageInline(admin.StackedInline):
     model = models.ProductImage
-    fields = ['post_image_type',]
+    fields = ['post_image_type', ]
     readonly_fields = ['post_image_type', ]
     extra = 0
     classes = ('grp-collapse grp-open',)
@@ -97,15 +95,15 @@ class ProductImageInline(admin.StackedInline):
             url=obj.source_thumb
         ))
 
+
 class ShopeeRatingInline(admin.StackedInline):
     model = models.ShopeeRating
     extra = 0
 
 
-
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    inlines = [ShopeeRatingInline,ProductImageInline,]
+    inlines = [ShopeeRatingInline, ProductImageInline, ]
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
                     'is_active',
