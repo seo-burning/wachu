@@ -110,6 +110,8 @@ class Product(TimeStampedModel):
     is_discount = models.BooleanField(default=False)
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
+    product_link = models.CharField(
+        max_length=1024, blank=True, null=True)
     store = models.ForeignKey('store.Store',
                               on_delete=models.CASCADE)
     name = models.CharField(_('Product Name'),
@@ -117,7 +119,6 @@ class Product(TimeStampedModel):
     description = models.TextField()
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
-
     # image
     product_thumbnail_image = models.CharField(
         _('Post Thumb Image'), null=True, max_length=1024)
@@ -154,13 +155,13 @@ class Product(TimeStampedModel):
     thumb_image_pk = models.IntegerField(
         _('Product Thumb Image'), default=1)
 
-    def __str__(self):
-        if self.thumb_image_pk == 1:
-            thumb_image = self.post.post_thumb_image
-        else:
-            thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
+    # def __str__(self):
+    #     if self.thumb_image_pk == 1:
+    #         thumb_image = self.post.post_thumb_image
+    #     else:
+    #         thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
 
-        return mark_safe('<img src="{url}" \
-        width="300" height="300" border="1" />'.format(
-            url=thumb_image
-        ))
+    #     return mark_safe('<img src="{url}" \
+    #     width="300" height="300" border="1" />'.format(
+    #         url=thumb_image
+    #     ))
