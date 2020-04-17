@@ -113,6 +113,7 @@ class Store(TimeStampedModel):
     facebook_id = models.CharField(max_length=255, blank=True)
     facebook_numeric_id = models.CharField(max_length=255, blank=True)
     shopee_url = models.URLField(null=True, blank=True, max_length=500)
+    shopee_numeric_id = models.CharField(max_length=255, blank=True)
     homepage_url = models.URLField(null=True, blank=True, max_length=500)
 
     # Ranking Info
