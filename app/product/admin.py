@@ -106,6 +106,7 @@ class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ]
     raw_id_fields = ['store', 'post']
     list_display = ['__str__',
+                    'product_source',
                     'is_active',
                     'store',
                     'category',
