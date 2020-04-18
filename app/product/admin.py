@@ -83,10 +83,16 @@ class ShopeeCategoryAdmin(admin.ModelAdmin):
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(shopee_category=obj).count()
-        return format_html('<a href="http://dabivn.com/'
-                           'admin/product/product/?style__id__exact=%s">%s</a>'
-                           % (obj.pk, product_num)
-                           )
+        return product_num
+
+
+@admin.register(models.ProductExtraOption)
+class ProductExtraOptionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'product_num']
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(shopee_category=obj).count()
+        return product_num
 
 
 @admin.register(models.ProductImage)
@@ -126,6 +132,7 @@ class Product(admin.ModelAdmin):
     list_display = [
         'is_active',
         'product_source',
+        'get_product_link',
         '__str__',
         'store',
         'sub_category',
@@ -202,3 +209,11 @@ class Product(admin.ModelAdmin):
     def size_num(self, obj):
         size_num = obj.size.count()
         return size_num
+
+    def get_product_link(self, obj):
+        return format_html(
+            '<a href="%s" target="_blank">%s</a>' % (
+                obj.product_link, 'ProductLink')
+        )
+    get_product_link.short_description = "Link"
+    get_product_link.allow_tags = True

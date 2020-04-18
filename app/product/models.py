@@ -59,6 +59,13 @@ class ProductStyle(TimeStampedModel):
         return self.name
 
 
+class ProductExtraOption(TimeStampedModel):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 POST_IMAGE_TYPE = (('P', _('Picture')), ('V', _('Video')))
 
 
@@ -113,7 +120,7 @@ class Product(TimeStampedModel):
     is_discount = models.BooleanField(default=False)
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
-    product_link = models.CharField(
+    product_link = models.URLField(
         max_length=1024, blank=True, null=True)
     store = models.ForeignKey('store.Store',
                               on_delete=models.CASCADE)
@@ -149,9 +156,10 @@ class Product(TimeStampedModel):
     size = models.ManyToManyField(
         ProductSize, blank=True)
     size_chart = models.CharField(null=True, max_length=1024, blank=True)
-
     color = models.ManyToManyField(
         ProductColor, blank=True)
+    extra_option = models.ManyToManyField(
+        ProductExtraOption, blank=True)
 
     post = models.ForeignKey(
         'store.StorePost', on_delete=models.CASCADE, null=True, blank=True)
