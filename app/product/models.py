@@ -61,6 +61,8 @@ class ProductStyle(TimeStampedModel):
 
 class ProductExtraOption(TimeStampedModel):
     name = models.CharField(max_length=255, unique=True)
+    source_thumb = models.CharField(max_length=1024, null=True)
+    source = models.CharField(max_length=1024, null=True)
 
     def __str__(self):
         return self.name
@@ -157,7 +159,7 @@ class Product(TimeStampedModel):
         ProductSize, blank=True)
     size_chart = models.CharField(null=True, max_length=1024, blank=True)
     color = models.ManyToManyField(
-        ProductColor, blank=True)
+        ProductColor, blank=True, related_name='product_set')
     extra_option = models.ManyToManyField(
         ProductExtraOption, blank=True)
 

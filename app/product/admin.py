@@ -38,10 +38,89 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
                            )
 
 
+class ProductSizeThroughInline(admin.TabularInline):
+    model = models.Product.size.through
+    fields = ['product_thumbnail_image', 'product_link',
+              'product_out_link', ]
+    readonly_fields = ['product_thumbnail_image',
+                       'product_link', 'product_out_link']
+    extra = 0
+
+    def product_thumbnail_image(self, instance):
+        return mark_safe('<img src="{url}" \
+        width="400" height="400" border="1" />'.format(
+            url=instance.product.product_thumbnail_image
+        ))
+
+    def product_link(self, instance):
+        return mark_safe('<a href="http://dabivn.com/admin/\
+            product/product/%s" target="_blank">%s</a>' % (
+            instance.product.pk, "product page"
+        ))
+
+    def product_out_link(self, instance):
+        return mark_safe('<a href="%s" target="_blank">%s</a>' % (
+            instance.product.product_link, "product_out_link"
+        ))
+
+
+class ProductShopeeCategoryThroughInline(admin.TabularInline):
+    model = models.Product.shopee_category.through
+    fields = ['product_thumbnail_image', 'product_link',
+              'product_out_link', ]
+    readonly_fields = ['product_thumbnail_image',
+                       'product_link', 'product_out_link']
+    extra = 0
+
+    def product_thumbnail_image(self, instance):
+        return mark_safe('<img src="{url}" \
+        width="400" height="400" border="1" />'.format(
+            url=instance.product.product_thumbnail_image
+        ))
+
+    def product_link(self, instance):
+        return mark_safe('<a href="http://dabivn.com/\
+            admin/product/product/%s" target="_blank">%s</a>' % (
+            instance.product.pk, "product page"
+        ))
+
+    def product_out_link(self, instance):
+        return mark_safe('<a href="%s" target="_blank">%s</a>' % (
+            instance.product.product_link, "product_out_link"
+        ))
+
+
+class ProductColorThroughInline(admin.TabularInline):
+    model = models.Product.color.through
+    fields = ['product_thumbnail_image', 'product_link',
+              'product_out_link', ]
+    readonly_fields = ['product_thumbnail_image',
+                       'product_link', 'product_out_link']
+    extra = 0
+
+    def product_thumbnail_image(self, instance):
+        return mark_safe('<img src="{url}" \
+        width="400" height="400" border="1" />'.format(
+            url=instance.product.product_thumbnail_image
+        ))
+
+    def product_link(self, instance):
+        return mark_safe('<a href="http://dabivn.com/\
+            admin/product/product/%s" target="_blank">%s</a>' % (
+            instance.product.pk, "product page"
+        ))
+
+    def product_out_link(self, instance):
+        return mark_safe('<a href="%s" target="_blank">%s</a>' % (
+            instance.product.product_link, "product_out_link"
+        ))
+
+
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['name', ]
     list_display = ['name', 'product_num', 'created_at']
+    inlines = [ProductSizeThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(size=obj).count()
@@ -50,8 +129,9 @@ class ProductSizeAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
-    fields = ['name', 'display_name']
-    list_display = ['name', 'display_name', 'product_num']
+    fields = ['display_name', 'name', ]
+    list_display = ['display_name', 'name', 'product_num']
+    inlines = [ProductColorThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(color=obj).count()
@@ -80,6 +160,7 @@ class ShopeeRatingAdmin(admin.ModelAdmin):
 class ShopeeCategoryAdmin(admin.ModelAdmin):
     list_display = ['catid', 'display_name',
                     'is_default_subcat', 'product_num']
+    inlines = [ProductShopeeCategoryThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(shopee_category=obj).count()
@@ -91,7 +172,7 @@ class ProductExtraOptionAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_num']
 
     def product_num(self, obj):
-        product_num = obj.product_set.all().filter(shopee_category=obj).count()
+        product_num = obj.product_set.all().filter(extra_option=obj).count()
         return product_num
 
 
