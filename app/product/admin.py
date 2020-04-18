@@ -106,8 +106,7 @@ class ProductColorThroughInline(admin.TabularInline):
 
     def product_link(self, instance):
         return mark_safe(
-            '<a href="http://dabivn.com/admin/product/product/%s"\
-                target="_blank">%s</a>'
+            '<a href="http://dabivn.com/admin/product/product/%s" target="_blank">%s</a>'
             % (instance.product.pk, "product page"))
 
     def product_out_link(self, instance):
@@ -184,6 +183,11 @@ class ProductImageAdmin(admin.ModelAdmin):
 @admin.register(models.ProductTag)
 class ProductTagAdmin(admin.ModelAdmin):
     fields = ['name']
+
+
+@admin.register(models.ProductOption)
+class ProductOptionAdmin(admin.ModelAdmin):
+    pass
 
 
 class ProductImageInline(admin.StackedInline):

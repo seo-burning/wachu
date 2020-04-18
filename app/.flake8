@@ -10,3 +10,4 @@ exclude =
   ic_ranking.py,
   checking_list.py,
   shopee_c.py
+max-line-length = 120

@@ -180,3 +180,16 @@ class Product(TimeStampedModel):
         width="100" height="100" border="1" />'.format(
             url=thumb_image
         ))
+
+
+class ProductOption(TimeStampedModel):
+    shopee_item_id = models.CharField(
+        max_length=255, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, blank=True)
+    original_price = models.IntegerField(default=0)
+    discount_price = models.IntegerField(null=True, blank=True)
+    currency = models.CharField(choices=CURRENCY_TYPE, max_length=20)
+    stock = models.IntegerField(default=0)
+    shopee_sold_count = models.IntegerField(default=0)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
