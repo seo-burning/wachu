@@ -115,6 +115,31 @@ class ProductColorThroughInline(admin.TabularInline):
         ))
 
 
+class ProductExtraOptionThroughInline(admin.TabularInline):
+    model = models.Product.extra_option.through
+    fields = ['product_thumbnail_image', 'product_link',
+              'product_out_link', ]
+    readonly_fields = ['product_thumbnail_image',
+                       'product_link', 'product_out_link']
+    extra = 0
+
+    def product_thumbnail_image(self, instance):
+        return mark_safe('<img src="{url}" \
+        width="400" height="400" border="1" />'.format(
+            url=instance.product.product_thumbnail_image
+        ))
+
+    def product_link(self, instance):
+        return mark_safe(
+            '<a href="http://dabivn.com/admin/product/product/%s" target="_blank">%s</a>'
+            % (instance.product.pk, "product page"))
+
+    def product_out_link(self, instance):
+        return mark_safe('<a href="%s" target="_blank">%s</a>' % (
+            instance.product.product_link, "product_out_link"
+        ))
+
+
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['name', ]
@@ -169,6 +194,7 @@ class ShopeeCategoryAdmin(admin.ModelAdmin):
 @admin.register(models.ProductExtraOption)
 class ProductExtraOptionAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_num']
+    inlines = [ProductExtraOptionThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(extra_option=obj).count()
@@ -187,7 +213,7 @@ class ProductTagAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductOption)
 class ProductOptionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['is_active', 'name', 'original_price', 'discount_price', 'stock']
 
 
 class ProductImageInline(admin.StackedInline):
