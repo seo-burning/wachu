@@ -252,6 +252,16 @@ class Product(admin.ModelAdmin):
         'color_num',
         'size_num'
     ]
+    fieldsets = [('Status', {'fields': ['is_active', ]}),
+                 ('Product Source', {'fields': ['store', 'product_source', 'product_link', ]}),
+                 ('Product Info', {'fields': ['name', 'description', 'product_thumbnail_image']}),
+                 ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price',
+                                       'discount_price', 'discount_rate', 'currency', 'stock']}),
+                 ('Product Category', {'fields': ['category', 'sub_category', 'style', 'shopee_category', ]}),
+                 ('Product Detail', {'fields': ['size', 'size_chart', 'color', 'extra_option']}),
+                 ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
+
+                 ]
     list_display_links = ['is_active', '__str__', ]
     search_fields = ['store__insta_id']
     list_filter = [
