@@ -51,7 +51,7 @@ class ProductSizeAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name']
-    list_display = ['name', 'product_num']
+    list_display = ['name', 'display_name', 'product_num']
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(color=obj).count()
@@ -73,7 +73,12 @@ class ProductStyleAdmin(admin.ModelAdmin):
 
 @admin.register(models.ShopeeRating)
 class ShopeeRatingAdmin(admin.ModelAdmin):
-    fields = ['__all__', ]
+    pass
+
+
+@admin.register(models.ShopeeCategory)
+class ShopeeCategoryAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(models.ProductImage)

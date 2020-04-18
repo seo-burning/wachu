@@ -98,6 +98,9 @@ class ShopeeRating(TimeStampedModel):
     product = models.OneToOneField(
         'Product', on_delete=models.CASCADE, null=True, blank=True)
 
+    def __str__(self):
+        return str(self.product.pk) + ' ' + self.product.name
+
 
 CURRENCY_TYPE = (('VND', _('VND')), )
 PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
