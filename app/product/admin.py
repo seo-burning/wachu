@@ -193,7 +193,7 @@ class ShopeeCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductExtraOption)
 class ProductExtraOptionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'product_num']
+    list_display = ['name', 'variation_group', 'product_num']
     inlines = [ProductExtraOptionThroughInline, ]
 
     def product_num(self, obj):

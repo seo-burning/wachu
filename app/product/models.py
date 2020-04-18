@@ -60,6 +60,7 @@ class ProductStyle(TimeStampedModel):
 
 
 class ProductExtraOption(TimeStampedModel):
+    variation_group = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
     source_thumb = models.CharField(max_length=1024, null=True)
     source = models.CharField(max_length=1024, null=True)
