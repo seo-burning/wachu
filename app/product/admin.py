@@ -41,7 +41,11 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['name', ]
+    list_display = ['name', 'product_num']
 
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(size=obj).count()
+        return product_num
 
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
