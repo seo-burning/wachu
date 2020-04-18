@@ -105,21 +105,23 @@ class ShopeeRatingInline(admin.StackedInline):
 class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ]
     raw_id_fields = ['store', 'post']
-    list_display = ['__str__',
-                    'product_source',
-                    'is_active',
-                    'store',
-                    'category',
-                    'sub_category',
-                    'original_price',
-                    'style',
-                    ]
+    list_display = [
+        'is_active',
+        'product_source',
+        '__str__',
+        'store',
+        'sub_category',
+        'original_price',
+        'discount_price',
+        'color_num',
+        'size_num'
+    ]
+    list_display_links = ['is_active', '__str__', ]
     search_fields = ['store__insta_id']
     list_filter = [
         'is_active',
-        'category',
         'sub_category',
-        'style',
+        'product_source',
     ]
     actions = ['make_activate', 'make_deactivate',
                'categorize_bag', 'categorize_jewelry', 'categorize_shoes']
@@ -174,3 +176,11 @@ class Product(admin.ModelAdmin):
 
         # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
+
+    def color_num(self, obj):
+        color_num = obj.color.count()
+        return color_num
+
+    def size_num(self, obj):
+        size_num = obj.size.count()
+        return size_num
