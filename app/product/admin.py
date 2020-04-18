@@ -78,7 +78,15 @@ class ShopeeRatingAdmin(admin.ModelAdmin):
 
 @admin.register(models.ShopeeCategory)
 class ShopeeCategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['catid', 'display_name',
+                    'is_default_subcat', 'product_num']
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(shopee_category=obj).count()
+        return format_html('<a href="http://dabivn.com/'
+                           'admin/product/product/?style__id__exact=%s">%s</a>'
+                           % (obj.pk, product_num)
+                           )
 
 
 @admin.register(models.ProductImage)
