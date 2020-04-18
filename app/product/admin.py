@@ -142,8 +142,9 @@ class ProductExtraOptionThroughInline(admin.TabularInline):
 
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
-    fields = ['name', ]
-    list_display = ['name', 'product_num', 'created_at']
+    fields = ['display_name', 'name', ]
+    list_display = ['display_name', 'name', 'product_num', 'created_at']
+    list_filter = ['name']
     inlines = [ProductSizeThroughInline, ]
 
     def product_num(self, obj):
@@ -154,7 +155,9 @@ class ProductSizeAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
-    list_display = ['display_name', 'name', 'product_num']
+    list_display = ['display_name', 'name', 'product_num', 'created_at']
+    search_fields = ['display_name']
+    list_filter = ['name']
     inlines = [ProductColorThroughInline, ]
 
     def product_num(self, obj):
@@ -244,7 +247,7 @@ class Product(admin.ModelAdmin):
         'is_active',
         'product_source',
         'get_product_link',
-        '__str__',
+        'name',
         'store',
         'sub_category',
         'original_price',
@@ -254,7 +257,8 @@ class Product(admin.ModelAdmin):
     ]
     fieldsets = [('Status', {'fields': ['is_active', ]}),
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', ]}),
-                 ('Product Info', {'fields': ['name', 'description', 'product_thumbnail_image']}),
+                 ('Product Info', {'fields': ['name', 'shopee_item_id',
+                                              'description', 'product_thumbnail_image']}),
                  ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price',
                                        'discount_price', 'discount_rate', 'currency', 'stock']}),
                  ('Product Category', {'fields': ['category', 'sub_category', 'style', 'shopee_category', ]}),
@@ -262,7 +266,7 @@ class Product(admin.ModelAdmin):
                  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
 
                  ]
-    list_display_links = ['is_active', '__str__', ]
+    list_display_links = ['is_active', 'name', ]
     search_fields = ['store__insta_id']
     list_filter = [
         'is_active',

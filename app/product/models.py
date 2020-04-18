@@ -28,10 +28,12 @@ class ProductSubCategory(TimeStampedModel):
 
 
 class ProductSize(TimeStampedModel):
-    name = models.CharField(_('Product Length'), max_length=255)
+    display_name = models.CharField(max_length=255)
+    name = models.CharField(
+        _('Product Size'), max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
 
 class ProductColor(TimeStampedModel):
