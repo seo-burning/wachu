@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from product import models
-from publish.serializers import StoreSerializer
+from publish.serializers import StoreSerializer, StorePostSerializer
 from datetime import datetime, timezone, timedelta
 
 
@@ -30,6 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
     store = StoreSerializer(many=False)
     favorite_users_count = serializers.SerializerMethodField()
     is_new = serializers.SerializerMethodField()
+    post = StorePostSerializer(many=False)
 
     class Meta:
         model = models.Product
@@ -40,6 +41,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'is_new',
 
             'store',
+            'post',
 
             'name',
             'description',

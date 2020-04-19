@@ -289,10 +289,10 @@ class Product(admin.ModelAdmin):
                                               'description', 'product_thumbnail_image']}),
                  ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price',
                                        'discount_price', 'discount_rate', 'currency', 'stock']}),
-                 ('Product Category', {'fields': ['category', 'sub_category', 'style', 'shopee_category', ]}),
+                 ('Product Category', {'fields': ['category', 'sub_category', 'style', ]}),
                  ('Product Detail', {'fields': ['size', 'size_chart', 'color', 'extra_option']}),
+                 ('Shopee Info', {'fields': ['shopee_category', 'shopee_color', 'shopee_size', ]}),
                  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
-
                  ]
     list_display_links = ['is_active', 'name', ]
     search_fields = ['store__insta_id']
