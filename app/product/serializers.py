@@ -52,7 +52,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
             'name',
             'description',
+
+            'product_image_type',
             'product_thumbnail_image',
+            'video_source',
             'product_image_set',
 
 

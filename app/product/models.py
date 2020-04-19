@@ -159,7 +159,9 @@ PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
                        ('HOMEPAGE', _('Homepage')), )
 
 PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
-             ('MP', _('Multiple Picture')), ('V', _('Video')))
+                      ('MP', _('Multiple Picture')), ('V', _('Video')))
+
+
 class Product(TimeStampedModel):
     is_active = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
@@ -179,8 +181,7 @@ class Product(TimeStampedModel):
     product_image_type = models.CharField(
         choices=PRODUCT_IMAGE_TYPE, max_length=255, default='MP')
     product_thumbnail_image = models.CharField(null=True, max_length=1024)
-    video_sourcee = models.CharField(null=True, max_length=1024)
-
+    video_source = models.CharField(null=True, max_length=1024)
 
     # price & stock
     original_price = models.IntegerField(default=0)
