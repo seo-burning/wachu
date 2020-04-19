@@ -230,6 +230,10 @@ SOCIALACCOUNT_STORE_TOKENS = True
 # SITE_ID with your domain site in /admin/sites/
 SITE_ID = 9
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
 
 # https://www.oipapio.com/question-6018776
 

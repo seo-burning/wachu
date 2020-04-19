@@ -88,6 +88,7 @@ class ProductSerializer(serializers.ModelSerializer):
         queryset = queryset.prefetch_related(
             'post__post_image_set',
             'color',
+            'size',
             'store__category',
             'product_image_set'
         )
