@@ -108,6 +108,7 @@ class ShopeeCategory(TimeStampedModel):
     sub_category = models.ForeignKey(
         ProductSubCategory, on_delete=models.SET_NULL,
         null=True, blank=True)
+    is_valid = models.BooleanField(default=True)
 
     def __str__(self):
         return self.display_name

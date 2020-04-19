@@ -187,9 +187,9 @@ class ShopeeRatingAdmin(admin.ModelAdmin):
 
 @admin.register(models.ShopeeCategory)
 class ShopeeCategoryAdmin(admin.ModelAdmin):
-    list_display = ['catid', 'display_name', 'category', 'sub_category', 'product_num']
-    list_editable = ['category', 'sub_category']
-    list_filter = ['category', 'sub_category']
+    list_display = ['catid', 'is_valid', 'no_sub', 'display_name', 'category', 'sub_category', 'product_num']
+    # list_editable = ['category', 'sub_category']
+    list_filter = ['category', 'sub_category', 'no_sub', 'is_valid']
     search_fields = ['display_name', ]
     inlines = [ProductShopeeCategoryThroughInline, ]
 
