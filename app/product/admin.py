@@ -26,8 +26,8 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductSubCategory)
 class ProductSubCategoryAdmin(admin.ModelAdmin):
-    fields = ['name']
-    list_display = ['name', 'product_num']
+    fields = ['name', 'category']
+    list_display = ['name', 'product_num', 'category']
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(sub_category=obj).count()
@@ -195,6 +195,30 @@ class ShopeeCategoryAdmin(admin.ModelAdmin):
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(shopee_category=obj).count()
+        return product_num
+
+
+@admin.register(models.ShopeeSize)
+class ShopeeSizeAdmin(admin.ModelAdmin):
+    list_display = ['is_valid', 'display_name', 'size', 'product_num']
+    list_filter = ['is_valid', ]
+    search_fields = ['display_name', ]
+    # inlines = [ProductShopeeSizeThroughInline, ]
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(shopee_size=obj).count()
+        return product_num
+
+
+@admin.register(models.ShopeeColor)
+class ShopeeColorAdmin(admin.ModelAdmin):
+    list_display = ['is_valid', 'display_name', 'color', 'product_num']
+    list_filter = ['is_valid', ]
+    search_fields = ['display_name', ]
+    # inlines = [ProductShopeeColorThroughInline, ]
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(shopee_color=obj).count()
         return product_num
 
 

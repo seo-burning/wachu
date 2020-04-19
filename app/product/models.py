@@ -26,6 +26,9 @@ class ProductSubCategory(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['category', ]
+
 
 class ProductSize(TimeStampedModel):
     display_name = models.CharField(max_length=255)
@@ -114,6 +117,28 @@ class ShopeeCategory(TimeStampedModel):
         return self.display_name
 
 
+class ShopeeColor(TimeStampedModel):
+    display_name = models.CharField(max_length=255)
+    color = models.ForeignKey(
+        ProductColor, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    is_valid = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.display_name
+
+
+class ShopeeSize(TimeStampedModel):
+    display_name = models.CharField(max_length=255)
+    size = models.ForeignKey(
+        ProductSize, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    is_valid = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.display_name
+
+
 class ShopeeRating(TimeStampedModel):
     # review-rate
     shopee_view_count = models.IntegerField(default=0)
@@ -172,6 +197,11 @@ class Product(TimeStampedModel):
 
     shopee_category = models.ManyToManyField(
         ShopeeCategory, blank=True)
+    shopee_color = models.ManyToManyField(
+        ShopeeColor, blank=True)
+    shopee_size = models.ManyToManyField(
+        ShopeeSize, blank=True)
+
     size = models.ManyToManyField(
         ProductSize, blank=True)
     size_chart = models.CharField(null=True, max_length=1024, blank=True)
