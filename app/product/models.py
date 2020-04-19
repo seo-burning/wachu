@@ -36,6 +36,13 @@ class ProductSize(TimeStampedModel):
         return self.display_name
 
 
+# COLOR_CHOICE_FIELD = (
+#     ('black', _('đen')),
+#     ('blue', _('xanh dương')),
+#     ('white', _('trắng')),
+# )
+
+
 class ProductColor(TimeStampedModel):
     name = models.CharField(
         _('Product Color'), max_length=255, blank=True, null=True)
@@ -95,6 +102,12 @@ class ShopeeCategory(TimeStampedModel):
     catid = models.IntegerField()
     no_sub = models.BooleanField(default=False)
     is_default_subcat = models.BooleanField(default=False)
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    sub_category = models.ForeignKey(
+        ProductSubCategory, on_delete=models.SET_NULL,
+        null=True, blank=True)
 
     def __str__(self):
         return self.display_name

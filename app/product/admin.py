@@ -143,6 +143,7 @@ class ProductExtraOptionThroughInline(admin.TabularInline):
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
+    list_editable = ['name', ]
     list_display = ['display_name', 'name', 'product_num', 'created_at']
     list_filter = ['name']
     inlines = [ProductSizeThroughInline, ]
@@ -155,6 +156,7 @@ class ProductSizeAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
+    list_editable = ['name', ]
     list_display = ['display_name', 'name', 'product_num', 'created_at']
     search_fields = ['display_name']
     list_filter = ['name']
@@ -185,8 +187,10 @@ class ShopeeRatingAdmin(admin.ModelAdmin):
 
 @admin.register(models.ShopeeCategory)
 class ShopeeCategoryAdmin(admin.ModelAdmin):
-    list_display = ['catid', 'display_name',
-                    'is_default_subcat', 'product_num']
+    list_display = ['catid', 'display_name', 'category', 'sub_category', 'product_num']
+    list_editable = ['category', 'sub_category']
+    list_filter = ['category', 'sub_category']
+    search_fields = ['display_name', ]
     inlines = [ProductShopeeCategoryThroughInline, ]
 
     def product_num(self, obj):
