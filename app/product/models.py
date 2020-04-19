@@ -158,10 +158,12 @@ PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
                        ('INSTAGRAM', _('Instagram')),
                        ('HOMEPAGE', _('Homepage')), )
 
-
+PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
+             ('MP', _('Multiple Picture')), ('V', _('Video')))
 class Product(TimeStampedModel):
     is_active = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
+
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
     product_link = models.URLField(
@@ -174,8 +176,11 @@ class Product(TimeStampedModel):
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
     # image
-    product_thumbnail_image = models.CharField(
-        _('Post Thumb Image'), null=True, max_length=1024)
+    product_image_type = models.CharField(
+        choices=PRODUCT_IMAGE_TYPE, max_length=255, default='MP')
+    product_thumbnail_image = models.CharField(null=True, max_length=1024)
+    video_sourcee = models.CharField(null=True, max_length=1024)
+
 
     # price & stock
     original_price = models.IntegerField(default=0)

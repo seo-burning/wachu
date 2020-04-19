@@ -20,7 +20,14 @@ class ProductSizeSerializer(serializers.ModelSerializer):
         fields = ('display_name',)
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductImage
+        fields = ('source_thumb', 'post_image_type', 'source')
+
+
 class ProductSerializer(serializers.ModelSerializer):
+    product_image_set = ProductImageSerializer(read_only=True, many=True)
     shopee_category = ShopeeCategorySerializer(many=True)
     sub_category = serializers.StringRelatedField(many=False)
     style = serializers.StringRelatedField(many=False)
@@ -46,7 +53,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'product_thumbnail_image',
-
+            'product_image_set',
 
 
             'is_discount',
@@ -90,6 +97,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'post__post_image_set',
             'color',
             'store__category',
+            'product_image_set'
         )
         return queryset
 
