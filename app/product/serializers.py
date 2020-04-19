@@ -1,17 +1,8 @@
 from rest_framework import serializers
 
 from product import models
-from publish.serializers import StoreSerializer, StorePostSerializer
+from publish.serializers import StoreSerializer
 from datetime import datetime, timezone, timedelta
-
-
-class ShopeeCategorySerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField(many=False)
-    sub_category = serializers.StringRelatedField(many=False)
-
-    class Meta:
-        model = models.ShopeeCategory
-        fields = ('display_name', 'category', 'sub_category')
 
 
 class ProductSizeSerializer(serializers.ModelSerializer):
@@ -28,7 +19,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     product_image_set = ProductImageSerializer(read_only=True, many=True)
-    shopee_category = ShopeeCategorySerializer(many=True)
     sub_category = serializers.StringRelatedField(many=False)
     style = serializers.StringRelatedField(many=False)
     category = serializers.StringRelatedField(many=False)
@@ -37,7 +27,6 @@ class ProductSerializer(serializers.ModelSerializer):
     store = StoreSerializer(many=False)
     favorite_users_count = serializers.SerializerMethodField()
     is_new = serializers.SerializerMethodField()
-    post = StorePostSerializer(many=False)
 
     class Meta:
         model = models.Product
@@ -70,9 +59,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'size',
             'size_chart',
 
-            'shopee_category',
             'category',
             'sub_category',
+
             'style',
             'color',
             'extra_option',
