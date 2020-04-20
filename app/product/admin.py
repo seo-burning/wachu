@@ -12,8 +12,8 @@ import json
 
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    fields = ['name']
-    list_display = ['name', 'product_num']
+    fields = ['name', 'display_name']
+    list_display = ['name', 'display_name', 'product_num']
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(category=obj).count()
@@ -26,8 +26,8 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductSubCategory)
 class ProductSubCategoryAdmin(admin.ModelAdmin):
-    fields = ['name', 'category']
-    list_display = ['name', 'product_num', 'category']
+    fields = ['name', 'display_name', 'category']
+    list_display = ['name', 'display_name', 'product_num', 'category']
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(sub_category=obj).count()
@@ -115,6 +115,11 @@ class ProductColorThroughInline(admin.TabularInline):
         ))
 
 
+@admin.register(models.ProductTag)
+class ProductTagAdmin(admin.ModelAdmin):
+    pass
+
+
 class ProductExtraOptionThroughInline(admin.TabularInline):
     model = models.Product.extra_option.through
     fields = ['product_thumbnail_image', 'product_link',
@@ -143,8 +148,7 @@ class ProductExtraOptionThroughInline(admin.TabularInline):
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
-    list_editable = ['name', ]
-    list_display = ['display_name', 'name', 'product_num', 'created_at']
+    list_display = ['name', 'display_name', 'product_num', 'created_at']
     list_filter = ['name']
     inlines = [ProductSizeThroughInline, ]
 
@@ -235,11 +239,6 @@ class ProductExtraOptionAdmin(admin.ModelAdmin):
 @admin.register(models.ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ['__str__', ]
-
-
-@admin.register(models.ProductTag)
-class ProductTagAdmin(admin.ModelAdmin):
-    fields = ['name']
 
 
 @admin.register(models.ProductOption)

@@ -13,30 +13,29 @@ class TimeStampedModel(models.Model):
 
 class ProductCategory(TimeStampedModel):
     name = models.CharField(_('Product Category'), max_length=255)
-    display_name = models.CharField(max_length=255)
+    display_name = models.CharField(default='Need to tranlate', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
 
 class ProductSubCategory(TimeStampedModel):
     name = models.CharField(_('Product SubCategory'), max_length=255)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
-    display_name = models.CharField(max_length=255)
+    display_name = models.CharField(default='Need to tranlate', max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
     class Meta:
         ordering = ['category', ]
 
 
 class ProductSize(TimeStampedModel):
-    display_name = models.CharField(max_length=255)
+    display_name = models.CharField(default='Need to tranlate', max_length=255)
     name = models.CharField(
         _('Product Size'), max_length=255, blank=True, null=True)
-    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.display_name
