@@ -160,8 +160,7 @@ class ProductSizeAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
-    list_editable = ['name', ]
-    list_display = ['display_name', 'name', 'product_num', 'created_at']
+    list_display = ['name', 'display_name', 'product_num', 'created_at']
     search_fields = ['display_name']
     list_filter = ['name']
     inlines = [ProductColorThroughInline, ]
