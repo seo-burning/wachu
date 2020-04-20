@@ -22,7 +22,8 @@ class ProductInline(admin.StackedInline):
         'thumb_image_pk',
         'style',
         'color',
-        'price',
+        'original_price',
+        'discount_price',
         'size'
     ]
     raw_id_fields = ['store']
