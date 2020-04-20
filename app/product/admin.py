@@ -299,7 +299,7 @@ class Product(admin.ModelAdmin):
         'product_source',
     ]
     actions = ['make_activate', 'make_deactivate',
-               'categorize_bag', 'categorize_jewelry', 'categorize_shoes']
+               'categorize_bag', 'categorize_jewelry', 'categorize_shoes', 'product_type_instagram']
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
@@ -333,6 +333,12 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품을 shoes으로 분류'.format(updated_count))
     categorize_shoes.short_description = '상품을 shoes으로 분류'
+
+    def product_type_instagram(self, request, queryset):
+        updated_count = queryset.update(product_source='INSTAGRAM')
+        self.message_user(
+            request, '{}건의 상품을 INSTAGRAM 분류'.format(updated_count))
+    product_type_instagram.short_description = 'product source instagram'
 
     def changelist_view(self, request, extra_context=None):
         # Aggregate new subscribers per day

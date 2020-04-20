@@ -72,6 +72,7 @@ class FavoriteListView(generics.RetrieveAPIView):
         return queryset
 
 
+# TODO Optimized this to send it through product model.
 class FavoriteProductListView(generics.RetrieveAPIView):
     serializer_class = serializers.FavoriteProductListSerializer
     authentication_classes = (authentication.TokenAuthentication,)

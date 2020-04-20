@@ -15,6 +15,7 @@ class StoreInlineSerializer(serializers.ModelSerializer):
         fields = ('pk', 'insta_id', 'insta_url', 'name', 'age',
                   'primary_style', 'secondary_style', 'category',
                   'shopee_url',
+                  'phone',
                   'facebook_id', 'facebook_numeric_id',
                   'current_ranking',
                   'facebook_url',
@@ -56,6 +57,15 @@ class StoreAddressSerializer(serializers.ModelSerializer):
         return queryset
 
 
+class StoreAddressInlineSerializer(serializers.ModelSerializer):
+    region = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = StoreAddress
+        fields = ('address', 'region', 'google_map_url',
+                  'X_axis', 'Y_axis')
+
+
 class StorePostSerializer(serializers.ModelSerializer):
     post_image_set = PostImageSerializer(read_only=True, many=True)
     store = StoreInlineSerializer(many=False)
@@ -86,6 +96,7 @@ class StoreSerializer(serializers.ModelSerializer):
     secondary_style = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
     favorite_users_count = serializers.SerializerMethodField()
+    store_address_set = StoreAddressInlineSerializer(many=True)
 
     class Meta:
         model = Store
@@ -95,6 +106,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'primary_style',
                   'secondary_style',
                   'age',
+                  'phone',
                   'current_review_rating',
                   'current_ranking',
                   'shopee_url',
@@ -105,7 +117,8 @@ class StoreSerializer(serializers.ModelSerializer):
                   'recent_post_1',
                   'recent_post_2',
                   'recent_post_3',
-                  'favorite_users_count'
+                  'favorite_users_count',
+                  'store_address_set'
                   )
         read_only_fields = ('insta_id', 'pk', 'is_new_post',
                             'profile_image',
@@ -119,7 +132,8 @@ class StoreSerializer(serializers.ModelSerializer):
                             'recent_post_1',
                             'recent_post_2',
                             'recent_post_3',
-                            'favorite_users_count'
+                            'favorite_users_count',
+                            'store_address_set'
                             )
 
     # https://trameltonis.com/en/blog/optimizing-slow-django-rest-framework-performance/
@@ -130,8 +144,11 @@ class StoreSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('primary_style')
         queryset = queryset.select_related('secondary_style')
         queryset = queryset.select_related('age')
+        queryset = queryset.prefetch_related('store_address_set__region')
         queryset = queryset.prefetch_related('category')
         queryset = queryset.prefetch_related('favorite_users')
+        queryset = queryset.prefetch_related('store_address_set')
+
         return queryset
 
     def get_favorite_users_count(self, obj):
