@@ -13,6 +13,7 @@ class TimeStampedModel(models.Model):
 
 class ProductCategory(TimeStampedModel):
     name = models.CharField(_('Product Category'), max_length=255)
+    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -22,6 +23,7 @@ class ProductSubCategory(TimeStampedModel):
     name = models.CharField(_('Product SubCategory'), max_length=255)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -34,6 +36,7 @@ class ProductSize(TimeStampedModel):
     display_name = models.CharField(max_length=255)
     name = models.CharField(
         _('Product Size'), max_length=255, blank=True, null=True)
+    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.display_name
@@ -58,6 +61,7 @@ class ProductColor(TimeStampedModel):
 class ProductTag(TimeStampedModel):
     name = models.CharField(_('Product Tag'),
                             max_length=255, unique=True)
+    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -66,6 +70,7 @@ class ProductTag(TimeStampedModel):
 class ProductStyle(TimeStampedModel):
     name = models.CharField(_('Product Style'),
                             max_length=255, unique=True)
+    display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
