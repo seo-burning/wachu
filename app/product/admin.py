@@ -90,8 +90,8 @@ class ProductShopeeCategoryThroughInline(admin.TabularInline):
         ))
 
 
-class ProductColorThroughInline(admin.TabularInline):
-    model = models.Product.color.through
+class ProductShopeeColorThroughInline(admin.TabularInline):
+    model = models.Product.shopee_color.through
     fields = ['product_thumbnail_image', 'product_link',
               'product_out_link', ]
     readonly_fields = ['product_thumbnail_image',
@@ -163,7 +163,6 @@ class ProductColorAdmin(admin.ModelAdmin):
     list_display = ['name', 'display_name', 'product_num', 'created_at']
     search_fields = ['display_name']
     list_filter = ['name']
-    inlines = [ProductColorThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(color=obj).count()
@@ -218,7 +217,7 @@ class ShopeeColorAdmin(admin.ModelAdmin):
     list_display = ['is_valid', 'display_name', 'color', 'product_num']
     list_filter = ['is_valid', ]
     search_fields = ['display_name', ]
-    # inlines = [ProductShopeeColorThroughInline, ]
+    inlines = [ProductShopeeColorThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(shopee_color=obj).count()
