@@ -35,6 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_source',
             'product_link',
             'is_new',
+            'current_review_rating',
 
             'store',
             'post',

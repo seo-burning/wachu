@@ -13,6 +13,7 @@ from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore
 from core.models import UserPushToken
 from .models import UserFavoriteProduct, StoreReview
+from product.models import Product
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -197,7 +198,21 @@ class StoreReviewCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
-        print(request.data)
+        product_pk = request.data.__getitem__('product')
+        rating = request.data.__getitem__('rating')
+        product_obj = Product.objects.get(pk=product_pk)
+        review_list = StoreReview.objects.filter(product=product_obj)
+        review_sum = sum(review_obj.rating for review_obj in review_list)
+        print(type(review_sum), type(int(rating)), type(review_list.count()), type(1))
+        new_review_sum = review_sum + int(rating)
+        new_review_count = review_list.count()+1
+        print(new_review_sum, new_review_count)
+        new_current_review_rating = new_review_sum / new_review_count
+
+        product_obj.current_review_rating = new_current_review_rating
+        print(new_current_review_rating)
+        product_obj.save()
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

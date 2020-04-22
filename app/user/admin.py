@@ -6,7 +6,7 @@ from user import models
 @admin.register(models.StoreReview)
 class StoreReviewAdmin(admin.ModelAdmin):
     list_display = (
-        '__str__', 'store', 'user'
+        '__str__', 'store', 'user', 'product'
     )
 
 
