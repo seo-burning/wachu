@@ -271,6 +271,7 @@ class Product(admin.ModelAdmin):
     list_display = [
         'is_active',
         'product_source',
+        'current_review_rating',
         'get_product_link',
         'name',
         'store',
@@ -281,7 +282,7 @@ class Product(admin.ModelAdmin):
         'size_num'
     ]
     fieldsets = [('Status', {'fields': ['is_active', ]}),
-                 ('Product Source', {'fields': ['store', 'product_source', 'product_link', ]}),
+                 ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
                  ('Product Info', {'fields': ['name', 'shopee_item_id',
                                               'description', 'product_thumbnail_image']}),
                  ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price',

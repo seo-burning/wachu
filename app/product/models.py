@@ -169,7 +169,8 @@ PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
 class Product(TimeStampedModel):
     is_active = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
-
+    current_review_rating = models.DecimalField(
+        max_digits=2, decimal_places=1, default=0)
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
     product_link = models.URLField(

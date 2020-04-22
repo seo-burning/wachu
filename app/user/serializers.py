@@ -171,6 +171,7 @@ class FacebookPhoneNumberAccountCreateSerailizer(serializers.ModelSerializer):
 
 
 class StoreReviewSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(many=False)
 
     class Meta:
         model = StoreReview

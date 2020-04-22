@@ -17,6 +17,8 @@ class ProductInline(admin.StackedInline):
     model = Product
     fields = [
         'store',
+        'name',
+        'currency',
         'category',
         'sub_category',
         'thumb_image_pk',
