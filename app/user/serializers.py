@@ -174,5 +174,5 @@ class StoreReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreReview
-        fields = ('store', 'product', 'user', 'rating', 'description'
+        fields = ('store', 'product', 'rating', 'description'
                   )
