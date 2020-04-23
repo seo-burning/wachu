@@ -17,6 +17,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ('source_thumb', 'post_image_type', 'source')
 
 
+class ProductRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = ('current_review_rating',)
+
+
 class ProductSerializer(serializers.ModelSerializer):
     product_image_set = ProductImageSerializer(read_only=True, many=True)
     sub_category = serializers.StringRelatedField(many=False)

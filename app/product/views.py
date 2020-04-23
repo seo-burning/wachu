@@ -57,3 +57,10 @@ class ProductSearchListView(generics.ListAPIView):
             Q(post__store__insta_id__in=q_filter))
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
+
+
+class ProductRatingView(generics.RetrieveAPIView):
+    queryset = models.Product.objects.all()
+    serializer_class = serializers.ProductRatingSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
