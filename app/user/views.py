@@ -224,6 +224,7 @@ class ProductReviewCreateView(generics.CreateAPIView):
 class ReviewImageCreateView(generics.CreateAPIView):
     'Create a new image instance'
     serializer_class = serializers.ReviewImageCreateSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
 
     def post(self, request):
         serializer = serializers.ReviewImageCreateSerializer(data=request.data)
