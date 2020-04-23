@@ -96,16 +96,12 @@ class ProductImage(TimeStampedModel):
         _('Thumb Small Link'), max_length=1024, null=True)
     product = models.ForeignKey(
         'Product', on_delete=models.CASCADE, related_name='product_image_set')
-    ordering = models.IntegerField(default=0)
 
     def __str__(self):
         return mark_safe('<img src="{url}" \
         width="100" height="100" border="1" />'.format(
             url=self.source_thumb
         ))
-
-    class Meta:
-        ordering = ('-product', 'ordering',)
 
 
 class ShopeeCategory(TimeStampedModel):
