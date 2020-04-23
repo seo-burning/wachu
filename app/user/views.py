@@ -10,7 +10,7 @@ from user import serializers
 from allauth.socialaccount.providers.facebook.views \
     import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
-from store.models import UserFavoriteStore
+from store.models import UserFavoriteStore, Store
 from core.models import UserPushToken
 from .models import UserFavoriteProduct, ProductReview
 from product.models import Product
@@ -197,17 +197,21 @@ class ProductReviewListByProductView(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    # def list(self, request):
-    #     # Note the use of `get_queryset()` instead of `self.queryset`
-    #     queryset = self.get_queryset()
-    #     print(request)
-    #     serializer = serializers.ProductReviewSerializer(queryset, many=True)
-    #     return Response(serializer.data)
-
     def get_queryset(self):
         product = self.request.query_params.get('product')
         print(product)
         queryset = ProductReview.objects.filter(product__pk=product)
+        return queryset
+
+
+class ProductReviewListByStoreView(generics.ListAPIView):
+    serializer_class = serializers.ProductReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        store = self.request.query_params.get('store')
+        queryset = ProductReview.objects.filter(store__pk=store)
         return queryset
 
 
@@ -216,13 +220,22 @@ class ProductReviewCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def create(self, request, *args, **kwargs):
-        product_pk = request.data.__getitem__('product')
-        rating = request.data.__getitem__('rating')
+    def get_store_sum(self, store_pk, rating):
+        store_obj = Store.objects.get(pk=store_pk)
+        review_list = ProductReview.objects.filter(store=store_obj)
+        review_sum = sum(review_obj.rating for review_obj in review_list)
+        new_review_sum = review_sum + int(rating)
+        new_review_count = review_list.count()+1
+        print(new_review_sum, new_review_count)
+        new_current_review_rating = new_review_sum / new_review_count
+        store_obj.current_review_rating = new_current_review_rating
+        print(new_current_review_rating)
+        store_obj.save()
+
+    def get_product_sum(self, product_pk, rating):
         product_obj = Product.objects.get(pk=product_pk)
         review_list = ProductReview.objects.filter(product=product_obj)
         review_sum = sum(review_obj.rating for review_obj in review_list)
-        print(type(review_sum), type(int(rating)), type(review_list.count()), type(1))
         new_review_sum = review_sum + int(rating)
         new_review_count = review_list.count()+1
         print(new_review_sum, new_review_count)
@@ -230,6 +243,13 @@ class ProductReviewCreateView(generics.CreateAPIView):
         product_obj.current_review_rating = new_current_review_rating
         print(new_current_review_rating)
         product_obj.save()
+
+    def create(self, request, *args, **kwargs):
+        product_pk = request.data.__getitem__('product')
+        store_pk = request.data.__getitem__('store')
+        rating = request.data.__getitem__('rating')
+        self.get_product_sum(product_pk, rating)
+        self.get_store_sum(store_pk, rating)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

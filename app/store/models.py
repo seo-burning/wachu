@@ -119,7 +119,7 @@ class Store(TimeStampedModel):
     # Ranking Info
     current_ranking = models.IntegerField(null=True)
     current_review_rating = models.DecimalField(
-        max_digits=8, decimal_places=2, default=0)
+        max_digits=2, decimal_places=1, default=0)
     current_ranking_changed = models.IntegerField(null=True)
 
     # Favorite info
