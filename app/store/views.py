@@ -48,3 +48,10 @@ class StoreAddressListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = StoreAddress.objects.all()
         return queryset
+
+
+class StoreRatingView(generics.RetrieveAPIView):
+    queryset = Store.objects.all()
+    serializer_class = serializers.StoreRatingSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)

@@ -170,3 +170,9 @@ class StoreListSerializer(serializers.ModelSerializer):
                             'recent_post_1',
                             'recent_post_2',
                             'recent_post_3')
+
+
+class StoreRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ('current_review_rating',)
