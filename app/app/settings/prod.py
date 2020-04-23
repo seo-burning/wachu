@@ -2,7 +2,7 @@ import os
 from .common import *
 
 
-DEBUG = False
+DEBUG = True
 # WSGI application
 WSGI_APPLICATION = 'app.wsgi.prod.application'
 

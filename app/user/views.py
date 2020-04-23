@@ -12,7 +12,7 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore
 from core.models import UserPushToken
-from .models import UserFavoriteProduct, ProductReview, ReviewImage
+from .models import UserFavoriteProduct, ProductReview
 from product.models import Product
 
 
@@ -214,11 +214,6 @@ class ProductReviewCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        review_image_set = request.data.__getitem__('review_image_set')
-        review_obj = ProductReview.objects.get(pk=serializer.data['pk'])
-        for review_image_obj in review_image_set:
-            ReviewImage.objects.create(source=review_image_obj["uri"], review=review_obj)
-            print(review_image_obj["uri"])
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -229,14 +224,10 @@ class ProductReviewCreateView(generics.CreateAPIView):
 class ReviewImageCreateView(generics.CreateAPIView):
     'Create a new image instance'
     serializer_class = serializers.ReviewImageCreateSerializer
-    def post(self, request):
 
+    def post(self, request):
         serializer = serializers.ReviewImageCreateSerializer(data=request.data)
         if serializer.is_valid():
-
-            # Save request image in the database
             serializer.save()
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
