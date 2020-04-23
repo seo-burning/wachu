@@ -74,17 +74,14 @@ class FavoriteListView(generics.RetrieveAPIView):
 
 
 # TODO Optimized this to send it through product model.
-class FavoriteProductListView(generics.RetrieveAPIView):
-    serializer_class = serializers.FavoriteProductListSerializer
+class FavoriteProductListView(generics.ListAPIView):
+    serializer_class = serializers.ProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_object(self):
-        """Retrieve and return authenticated user"""
-        return self.request.user
-
     def get_queryset(self):
-        queryset = get_user_model()
+        queryset = Product.objects.filter(favorite_users=self.request.user)
+        print(queryset)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
