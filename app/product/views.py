@@ -64,3 +64,14 @@ class ProductRatingView(generics.RetrieveAPIView):
     serializer_class = serializers.ProductRatingSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+
+class CategoryListView(generics.ListAPIView):
+    serializer_class = serializers.ProductCategorySerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = models.ProductCategory.objects.filter(is_active=True)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset

@@ -14,6 +14,7 @@ class TimeStampedModel(models.Model):
 class ProductCategory(TimeStampedModel):
     name = models.CharField(_('Product Category'), max_length=255)
     display_name = models.CharField(default='Need to tranlate', max_length=255)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.display_name
@@ -24,6 +25,7 @@ class ProductSubCategory(TimeStampedModel):
     category = models.ForeignKey(
         ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
     display_name = models.CharField(default='Need to tranlate', max_length=255)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.display_name

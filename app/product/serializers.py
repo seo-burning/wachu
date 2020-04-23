@@ -5,6 +5,27 @@ from publish.serializers import StoreSerializer
 from datetime import datetime, timezone, timedelta
 
 
+class ProductSubCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductSubCategory
+        fields = ('display_name', 'name', 'is_active')
+
+
+class ProductCategorySerializer(serializers.ModelSerializer):
+    productsubcategory_set = ProductSubCategorySerializer(many=True)
+
+    class Meta:
+        model = models.ProductCategory
+        fields = ('display_name', 'name', 'productsubcategory_set')
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related('productsubcategory_set')
+        return queryset
+
+
 class ProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProductSize
