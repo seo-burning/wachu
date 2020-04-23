@@ -12,7 +12,7 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore
 from core.models import UserPushToken
-from .models import UserFavoriteProduct, StoreReview
+from .models import UserFavoriteProduct, ProductReview, ReviewImage
 from product.models import Product
 
 
@@ -169,8 +169,8 @@ class UserNameUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class StoreReviewDestroyView(generics.DestroyAPIView):
-    queryset = StoreReview.objects.all()
+class ProductReviewDestroyView(generics.DestroyAPIView):
+    queryset = ProductReview.objects.all()
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -181,19 +181,19 @@ class StoreReviewDestroyView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class StoreReviewListByUserView(generics.ListAPIView):
-    serializer_class = serializers.StoreReviewSerializer
+class ProductReviewListByUserView(generics.ListAPIView):
+    serializer_class = serializers.ProductReviewSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         user = self.request.user
-        queryset = StoreReview.objects.filter(user=user)
+        queryset = ProductReview.objects.filter(user=user)
         return queryset
 
 
-class StoreReviewCreateView(generics.CreateAPIView):
-    serializer_class = serializers.StoreReviewSerializer
+class ProductReviewCreateView(generics.CreateAPIView):
+    serializer_class = serializers.ProductReviewSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -201,23 +201,42 @@ class StoreReviewCreateView(generics.CreateAPIView):
         product_pk = request.data.__getitem__('product')
         rating = request.data.__getitem__('rating')
         product_obj = Product.objects.get(pk=product_pk)
-        review_list = StoreReview.objects.filter(product=product_obj)
+        review_list = ProductReview.objects.filter(product=product_obj)
         review_sum = sum(review_obj.rating for review_obj in review_list)
         print(type(review_sum), type(int(rating)), type(review_list.count()), type(1))
         new_review_sum = review_sum + int(rating)
         new_review_count = review_list.count()+1
         print(new_review_sum, new_review_count)
         new_current_review_rating = new_review_sum / new_review_count
-
         product_obj.current_review_rating = new_current_review_rating
         print(new_current_review_rating)
         product_obj.save()
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        review_image_set = request.data.__getitem__('review_image_set')
+        review_obj = ProductReview.objects.get(pk=serializer.data['pk'])
+        for review_image_obj in review_image_set:
+            ReviewImage.objects.create(source=review_image_obj["uri"], review=review_obj)
+            print(review_image_obj["uri"])
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class ReviewImageCreateView(generics.CreateAPIView):
+    'Create a new image instance'
+    serializer_class = serializers.ReviewImageCreateSerializer
+    def post(self, request):
+
+        serializer = serializers.ReviewImageCreateSerializer(data=request.data)
+        if serializer.is_valid():
+
+            # Save request image in the database
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

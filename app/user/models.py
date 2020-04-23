@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 from product.models import Product
 from store.models import Store
@@ -19,7 +20,20 @@ class UserFavoriteProduct(TimeStampedModel):
                              on_delete=models.CASCADE)
 
 
-class StoreReview(TimeStampedModel):
+class ReviewImage(TimeStampedModel):
+    source = models.ImageField(
+        blank=True, upload_to='review/%Y/%m')
+    review = models.ForeignKey(
+        'ProductReview', on_delete=models.CASCADE, related_name='review_image_set')
+
+    def __str__(self):
+        return mark_safe('<img src="{url}" \
+        width="100" height="100" border="1" />'.format(
+            url=self.source
+        ))
+
+
+class ProductReview(TimeStampedModel):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL, null=True)
