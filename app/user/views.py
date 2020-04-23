@@ -192,6 +192,25 @@ class ProductReviewListByUserView(generics.ListAPIView):
         return queryset
 
 
+class ProductReviewListByProductView(generics.ListAPIView):
+    serializer_class = serializers.ProductReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    # def list(self, request):
+    #     # Note the use of `get_queryset()` instead of `self.queryset`
+    #     queryset = self.get_queryset()
+    #     print(request)
+    #     serializer = serializers.ProductReviewSerializer(queryset, many=True)
+    #     return Response(serializer.data)
+
+    def get_queryset(self):
+        product = self.request.query_params.get('product')
+        print(product)
+        queryset = ProductReview.objects.filter(product__pk=product)
+        return queryset
+
+
 class ProductReviewCreateView(generics.CreateAPIView):
     serializer_class = serializers.ProductReviewSerializer
     authentication_classes = (authentication.TokenAuthentication,)
