@@ -27,10 +27,12 @@ class FacebookLoginConnect(SocialConnectView):
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+    authentication_classes = (authentication.TokenAuthentication,)
 
 
 class CreateUserView(generics.CreateAPIView):
     """Create a new user"""
+    authentication_classes = (authentication.TokenAuthentication,)
     serializer_class = serializers.UserSerializer
 
 
@@ -56,6 +58,7 @@ class CreateTokenView(ObtainAuthToken):
     """Create a new auth token for user"""
     serializer_class = serializers.AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+    authentication_classes = (authentication.TokenAuthentication,)
 
 
 class FavoriteListView(generics.RetrieveAPIView):

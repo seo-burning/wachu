@@ -14,6 +14,7 @@ import json
 class ProductCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name', 'is_active']
     list_display = ['name', 'display_name', 'product_num']
+    actions = ['make_activate', 'make_deactivate', ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(category=obj).count()
@@ -23,11 +24,24 @@ class ProductCategoryAdmin(admin.ModelAdmin):
                            % (obj.pk, product_num)
                            )
 
+    def make_activate(self, request, queryset):
+        updated_count = queryset.update(is_active=True)
+        self.message_user(
+            request, 'Activated 상태로 변경'.format(updated_count))
+    make_activate.short_description = 'Activate 상태로 변경'
+
+    def make_deactivate(self, request, queryset):
+        updated_count = queryset.update(is_active=False)
+        self.message_user(
+            request, 'Deavtivate 상태로 변경'.format(updated_count))
+    make_deactivate.short_description = 'Deactivate 상태로 변경'
+
 
 @admin.register(models.ProductSubCategory)
 class ProductSubCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name', 'category', 'is_active']
     list_display = ['name', 'display_name', 'product_num', 'category']
+    actions = ['make_activate', 'make_deactivate', ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(sub_category=obj).count()
@@ -36,6 +50,18 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
                            '?sub_category__id__exact=%s">%s</a>'
                            % (obj.pk, product_num)
                            )
+
+    def make_activate(self, request, queryset):
+        updated_count = queryset.update(is_active=True)
+        self.message_user(
+            request, 'Activated 상태로 변경'.format(updated_count))
+    make_activate.short_description = 'Activate 상태로 변경'
+
+    def make_deactivate(self, request, queryset):
+        updated_count = queryset.update(is_active=False)
+        self.message_user(
+            request, 'Deavtivate 상태로 변경'.format(updated_count))
+    make_deactivate.short_description = 'Deactivate 상태로 변경'
 
 
 class ProductSizeThroughInline(admin.TabularInline):
