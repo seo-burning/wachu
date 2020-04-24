@@ -51,10 +51,11 @@ class ProductSearchListView(generics.ListAPIView):
         q = self.request.query_params.get('q')
         if(q):
             q_filter = q.split(',')
+        print(q_filter)
+        # 여러가지 키워드가 날라오는거 기반으로 초반에 설계함
         queryset = queryset.filter(Q(color__name__in=q_filter) | Q(
             sub_category__name__in=q_filter) | Q(category__name__in=q_filter)
-            | Q(style__name__in=q_filter) |
-            Q(post__store__insta_id__in=q_filter))
+            | Q(style__name__in=q_filter) | Q(store__insta_id__icontains=q_filter[0]) | Q(name__icontains=q_filter[0]))
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
