@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from django.utils.translation import ugettext_lazy as _
+from product.models import ProductCategory
 
 
 class TimeStampedModel(models.Model):
@@ -100,7 +101,8 @@ class Store(TimeStampedModel):
     # Categorizing Fields ( updated by admin user )
     category = models.ManyToManyField(
         Category, blank=True, symmetrical=False, related_name="categorys_set")
-
+    product_category = models.ManyToManyField(
+        ProductCategory, blank=True)
     primary_style = models.ForeignKey(
         Primary_Style, on_delete=models.SET_NULL, null=True, blank=True)
     secondary_style = models.ForeignKey(

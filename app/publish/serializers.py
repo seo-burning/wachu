@@ -31,7 +31,8 @@ class StoreSerializer(serializers.ModelSerializer):
                   'facebook_numeric_id',
                   'facebook_id',
                   'profile_image',
-                  'favorite_users_count')
+                  'favorite_users_count',
+                  )
 
     def get_favorite_users_count(self, obj):
         return obj.favorite_users.count()

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from product import models
-from publish.serializers import StoreSerializer
+from store.serializers import StoreInlineSerializer
 from datetime import datetime, timezone, timedelta
 
 
@@ -51,7 +51,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField(many=False)
     color = serializers.StringRelatedField(many=True)
     size = serializers.StringRelatedField(many=True)
-    store = StoreSerializer(many=False)
+    store = StoreInlineSerializer(many=False)
     favorite_users_count = serializers.SerializerMethodField()
     is_new = serializers.SerializerMethodField()
 
@@ -118,7 +118,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'color',
             'size',
             'store__category',
-            'product_image_set'
+            'product_image_set',
+            'store__product_category'
         )
         return queryset
 
