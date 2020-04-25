@@ -182,7 +182,9 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     "store_type",
                     'current_ranking',
                     "insta_id", 'profile_thumb',
-                    'follower', 'post_num',
+                    'follower',
+                    'primary_style',
+                    'secondary_style', 'post_num',
                     'post_product_num', 'need_to_update', ]
     list_filter = ['is_active', 'is_updated', 'store_type']
     list_display_links = ["insta_id"]

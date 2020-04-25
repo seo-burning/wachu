@@ -8,6 +8,7 @@ exclude =
   ic_update.py,
   ic_video.py,
   ic_ranking.py,
+  update.py,
   checking_list.py,
   shopee_c.py
 max-line-length = 120
