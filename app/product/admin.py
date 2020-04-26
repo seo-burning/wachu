@@ -272,7 +272,7 @@ class ProductOptionAdmin(admin.ModelAdmin):
 
 class ProductImageInline(admin.StackedInline):
     model = models.ProductImage
-    fields = ['post_image_type', ]
+    fields = ['post_image_type', 'source', 'source_thumb']
     readonly_fields = ['post_image_type', ]
     extra = 0
     classes = ('grp-collapse grp-open',)

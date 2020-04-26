@@ -10,5 +10,6 @@ exclude =
   ic_ranking.py,
   update.py,
   checking_list.py,
-  shopee_c.py
+  shopee_c.py,
+  crawling
 max-line-length = 120
