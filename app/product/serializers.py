@@ -44,6 +44,15 @@ class ProductRatingSerializer(serializers.ModelSerializer):
         fields = ('current_review_rating',)
 
 
+class ShopeeRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ShopeeRating
+        fields = ('shopee_view_count', 'shopee_liked_count', 'shopee_sold_count',
+                  'shopee_review_count', 'shopee_rating_star',
+                  'shopee_1_star_count', 'shopee_2_star_count',
+                  'shopee_3_star_count', 'shopee_4_star_count', 'shopee_5_star_count')
+
+
 class ProductSerializer(serializers.ModelSerializer):
     product_image_set = ProductImageSerializer(read_only=True, many=True)
     sub_category = serializers.StringRelatedField(many=False)
@@ -54,6 +63,7 @@ class ProductSerializer(serializers.ModelSerializer):
     store = StoreInlineSerializer(many=False)
     favorite_users_count = serializers.SerializerMethodField()
     is_new = serializers.SerializerMethodField()
+    shopee_rating = ShopeeRatingSerializer(many=False)
 
     class Meta:
         model = models.Product
@@ -63,6 +73,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_link',
             'is_new',
             'current_review_rating',
+            'shopee_rating',
 
             'store',
             'post',
@@ -107,6 +118,7 @@ class ProductSerializer(serializers.ModelSerializer):
         # select_related for "to-one" relationships
         queryset = queryset.select_related(
             'category',
+            'shopee_rating',
             'style',
             'sub_category',
             'store',
@@ -117,6 +129,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'post__post_image_set',
             'color',
             'size',
+            # 'store__user_favorite_store',
             'store__category',
             'product_image_set',
             'store__product_category'

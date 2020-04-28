@@ -152,8 +152,14 @@ class ShopeeRating(TimeStampedModel):
     shopee_sold_count = models.IntegerField(default=0)
     shopee_review_count = models.IntegerField(default=0)
     shopee_rating_star = models.FloatField(default=0)
+    shopee_1_star_count = models.IntegerField(default=0)
+    shopee_2_star_count = models.IntegerField(default=0)
+    shopee_3_star_count = models.IntegerField(default=0)
+    shopee_4_star_count = models.IntegerField(default=0)
+    shopee_5_star_count = models.IntegerField(default=0)
+
     product = models.OneToOneField(
-        'Product', on_delete=models.CASCADE, null=True, blank=True)
+        'Product', on_delete=models.CASCADE, null=True, blank=True, related_name='shopee_rating')
 
     def __str__(self):
         return str(self.product.pk) + ' ' + self.product.name
