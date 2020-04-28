@@ -84,7 +84,6 @@ class FavoriteProductListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Product.objects.filter(favorite_users=self.request.user)
-        print(queryset)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
@@ -189,6 +188,7 @@ class ProductReviewListByUserView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         queryset = ProductReview.objects.filter(user=user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
 
@@ -201,6 +201,7 @@ class ProductReviewListByProductView(generics.ListAPIView):
         product = self.request.query_params.get('product')
         print(product)
         queryset = ProductReview.objects.filter(product__pk=product)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
 
@@ -212,6 +213,7 @@ class ProductReviewListByStoreView(generics.ListAPIView):
     def get_queryset(self):
         store = self.request.query_params.get('store')
         queryset = ProductReview.objects.filter(store__pk=store)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
 

@@ -214,6 +214,40 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         model = ProductReview
         fields = ('pk', 'store', 'product', 'rating', 'description', 'created_at', 'user', 'review_image_set')
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        queryset = queryset.select_related(
+            'user',
+            'product__category',
+            'product__shopee_rating',
+            'product__style',
+            'product__sub_category',
+            'product__store',
+            'product__store__age',
+            'product__store__primary_style',
+            'product__store__secondary_style',
+            'store',
+            'store__age',
+            'store__primary_style',
+            'store__secondary_style')
+        queryset = queryset.prefetch_related(
+            'product__post__post_image_set',
+            'product__color',
+            'product__size',
+            'product__product_image_set',
+            'product__store__favorite_users',
+            'product__store__category',
+            'product__store__product_category',
+            'product__favorite_users',
+            'product__extra_option',
+            'store__favorite_users',
+            'store__category',
+            'store__product_category',
+            'review_image_set'
+        )
+        return queryset
+
 
 class ReviewImageCreateSerializer(serializers.ModelSerializer):
     source = Base64ImageField(max_length=None, use_url=True)

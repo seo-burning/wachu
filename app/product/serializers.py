@@ -129,7 +129,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'post__post_image_set',
             'color',
             'size',
-            # 'store__user_favorite_store',
+            'extra_option',
+            'favorite_users',
+            'store__favorite_users',
             'store__category',
             'product_image_set',
             'store__product_category'
