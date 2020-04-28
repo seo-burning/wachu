@@ -216,7 +216,7 @@ class ProductReviewListByStoreView(generics.ListAPIView):
 
 
 class ProductReviewCreateView(generics.CreateAPIView):
-    serializer_class = serializers.ProductReviewSerializer
+    serializer_class = serializers.ProductReviewCreateSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 

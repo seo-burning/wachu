@@ -195,9 +195,20 @@ class ReviewImageSerializer(serializers.ModelSerializer):
         fields = ('source', 'pk')
 
 
+class ProductReviewCreateSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(many=False)
+    review_image_set = ReviewImageSerializer(many=True, read_only=True)
+    # product = ProductSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = ProductReview
+        fields = ('pk', 'store', 'product', 'rating', 'description', 'created_at', 'user', 'review_image_set')
+
+
 class ProductReviewSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(many=False)
     review_image_set = ReviewImageSerializer(many=True, read_only=True)
+    product = ProductSerializer(many=False, read_only=True)
 
     class Meta:
         model = ProductReview

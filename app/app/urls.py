@@ -53,6 +53,7 @@ urlpatterns = [
          TemplateView.as_view(template_name='privacypolicy.html')),
     path('terms-of-service/',
          TemplateView.as_view(template_name='termsofservice.html')),
+    path('dabi/', TemplateView.as_view(template_name='index_dabi.html')),
     path('admin/', admin.site.urls),
     path('api/user/', include('user.urls')),
     path('api/store/', include('store.urls')),
