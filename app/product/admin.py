@@ -146,6 +146,11 @@ class ProductTagAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(models.ProductBackEndRate)
+class ProductBackEndRateAdmin(admin.ModelAdmin):
+    pass
+
+
 class ProductExtraOptionThroughInline(admin.TabularInline):
     model = models.Product.extra_option.through
     fields = ['product_thumbnail_image', 'product_link',
@@ -296,6 +301,7 @@ class Product(admin.ModelAdmin):
     raw_id_fields = ['store', 'post']
     list_display = [
         'is_active',
+        'current_product_backend_rating',
         'product_source',
         'current_review_rating',
         'get_product_link',
@@ -307,7 +313,7 @@ class Product(admin.ModelAdmin):
         'color_num',
         'size_num'
     ]
-    fieldsets = [('Status', {'fields': ['is_active', ]}),
+    fieldsets = [('Status', {'fields': ['is_active', 'current_product_backend_rating']}),
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
                  ('Product Info', {'fields': ['name', 'shopee_item_id',
                                               'description', 'product_thumbnail_image']}),

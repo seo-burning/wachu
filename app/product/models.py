@@ -165,6 +165,30 @@ class ShopeeRating(TimeStampedModel):
         return str(self.product.pk) + ' ' + self.product.name
 
 
+class ProductBackEndRate(TimeStampedModel):
+    product_backend_rating = models.DecimalField(
+        max_digits=3, decimal_places=1, default=0)
+    review_count = models.IntegerField(null=True, blank=True)
+    review_rate = models.FloatField(null=True, blank=True)
+    shopee_review_count = models.IntegerField(null=True, blank=True)
+    shopee_review_rate = models.FloatField(null=True, blank=True)
+    shopee_view_count = models.IntegerField(null=True, blank=True)
+    shopee_liked_count = models.IntegerField(null=True, blank=True)
+    shopee_sold_count = models.IntegerField(null=True, blank=True)
+    post_like = models.IntegerField(null=True, blank=True)
+    post_comment = models.IntegerField(null=True, blank=True)
+    app_click_count = models.IntegerField(null=True, blank=True)
+    app_outlink_count = models.IntegerField(null=True, blank=True)
+    user_favorite_count = models.IntegerField(null=True, blank=True)
+    user_favorite_count = models.IntegerField(null=True, blank=True)
+    product_infomation_quality = models.IntegerField(null=True, blank=True)
+    product = models.ForeignKey(
+        'Product', on_delete=models.CASCADE, null=True, blank=True, related_name='product_backend_rating_set')
+
+    def __str__(self):
+        return str(self.product_backend_rating) + ' ' + self.product.name
+
+
 CURRENCY_TYPE = (('VND', _('VND')), )
 PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
                        ('INSTAGRAM', _('Instagram')),
@@ -175,10 +199,15 @@ PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
 
 
 class Product(TimeStampedModel):
+    class Meta:
+        ordering = ['current_product_backend_rating', ]
+
     is_active = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
     current_review_rating = models.DecimalField(
         max_digits=2, decimal_places=1, default=0)
+    current_product_backend_rating = models.DecimalField(
+        max_digits=3, decimal_places=1, default=0)
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
     product_link = models.URLField(
