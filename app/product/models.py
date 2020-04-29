@@ -206,8 +206,8 @@ class Product(TimeStampedModel):
     is_discount = models.BooleanField(default=False)
     current_review_rating = models.DecimalField(
         max_digits=2, decimal_places=1, default=0)
-    current_product_backend_rating = models.DecimalField(
-        max_digits=3, decimal_places=1, default=0)
+    current_product_backend_rating = models.DecimalField(_('Point'),
+                                                         max_digits=3, decimal_places=1, default=0)
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
     product_link = models.URLField(
