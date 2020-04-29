@@ -167,7 +167,7 @@ class ShopeeRating(TimeStampedModel):
 
 class ProductBackEndRate(TimeStampedModel):
     product_backend_rating = models.DecimalField(
-        max_digits=3, decimal_places=1, default=0)
+        max_digits=4, decimal_places=1, default=0)
     review_count = models.IntegerField(null=True, blank=True)
     review_rate = models.FloatField(null=True, blank=True)
     shopee_review_count = models.IntegerField(null=True, blank=True)
@@ -179,7 +179,6 @@ class ProductBackEndRate(TimeStampedModel):
     post_comment = models.IntegerField(null=True, blank=True)
     app_click_count = models.IntegerField(null=True, blank=True)
     app_outlink_count = models.IntegerField(null=True, blank=True)
-    user_favorite_count = models.IntegerField(null=True, blank=True)
     user_favorite_count = models.IntegerField(null=True, blank=True)
     product_infomation_quality = models.IntegerField(null=True, blank=True)
     product = models.ForeignKey(
@@ -204,8 +203,8 @@ class Product(TimeStampedModel):
 
     is_active = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
-    current_review_rating = models.DecimalField(
-        max_digits=2, decimal_places=1, default=0)
+    current_review_rating = models.DecimalField(_('Review'),
+                                                max_digits=2, decimal_places=1, default=0)
     current_product_backend_rating = models.DecimalField(_('Point'),
                                                          max_digits=3, decimal_places=1, default=0)
     product_source = models.CharField(

@@ -148,7 +148,8 @@ class ProductTagAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductBackEndRate)
 class ProductBackEndRateAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['product_backend_rating', 'product',
+                    'shopee_review_count', 'post_like']
 
 
 class ProductExtraOptionThroughInline(admin.TabularInline):
