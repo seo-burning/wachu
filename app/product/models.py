@@ -101,7 +101,7 @@ class ProductImage(TimeStampedModel):
 
     def __str__(self):
         return mark_safe('<img src="{url}" \
-        width="100" height="100" border="1" />'.format(
+        width="700" height="700" border="1" />'.format(
             url=self.source_thumb
         ))
 
@@ -271,7 +271,7 @@ class Product(TimeStampedModel):
             thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
 
         return mark_safe('<img src="{url}" \
-        width="100" height="100" border="1" />'.format(
+        width="700" height="700" border="1" />'.format(
             url=thumb_image
         ))
 
