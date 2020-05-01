@@ -47,6 +47,7 @@ class StoreAddressListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = StoreAddress.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
 

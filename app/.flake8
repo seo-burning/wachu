@@ -11,5 +11,6 @@ exclude =
   update.py,
   checking_list.py,
   shopee_c.py,
-  crawling
+  crawling,
+  static
 max-line-length = 120

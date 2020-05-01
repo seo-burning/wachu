@@ -243,3 +243,4 @@ GRAPPELLI_INDEX_DASHBOARD = {
     'django.contrib.admin.site': 'app.dashboard.CustomIndexDashboard',
 }
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+AWS_QUERYSTRING_AUTH = False
