@@ -168,55 +168,6 @@ class UserNameUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class ProductReviewDestroyView(generics.DestroyAPIView):
-    queryset = ProductReview.objects.all()
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def destroy(self, request, *args, **kwargs):
-        data = self.queryset.filter(
-            pk=kwargs['pk'], user=request.user)
-        data.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ProductReviewListByUserView(generics.ListAPIView):
-    serializer_class = serializers.ProductReviewSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = ProductReview.objects.filter(user=user)
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
-
-
-class ProductReviewListByProductView(generics.ListAPIView):
-    serializer_class = serializers.ProductReviewSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        product = self.request.query_params.get('product')
-        print(product)
-        queryset = ProductReview.objects.filter(product__pk=product)
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
-
-
-class ProductReviewListByStoreView(generics.ListAPIView):
-    serializer_class = serializers.ProductReviewSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        store = self.request.query_params.get('store')
-        queryset = ProductReview.objects.filter(store__pk=store)
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
-
-
 class ProductReviewCreateView(generics.CreateAPIView):
     serializer_class = serializers.ProductReviewCreateSerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -260,6 +211,75 @@ class ProductReviewCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class ProductReviewDestroyView(generics.DestroyAPIView):
+    queryset = ProductReview.objects.all()
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_store_sum(self, store_obj):
+        review_list = ProductReview.objects.filter(store=store_obj)
+        review_sum = sum(review_obj.rating for review_obj in review_list)
+        new_current_review_rating = new_review_sum / new_review_count
+        store_obj.current_review_rating = new_current_review_rating
+        print(new_current_review_rating)
+        store_obj.save()
+
+    def get_product_sum(self, product_obj):
+        review_list = ProductReview.objects.filter(product=product_obj)
+        review_sum = sum(review_obj.rating for review_obj in review_list)
+        new_current_review_rating = new_review_sum / new_review_count
+        product_obj.current_review_rating = new_current_review_rating
+        print(new_current_review_rating)
+        product_obj.save()
+
+    def destroy(self, request, *args, **kwargs):
+        data = self.queryset.get(
+            pk=kwargs['pk'], user=request.user)
+        store_obj = data.store
+        product_obj = data.product
+        data.delete()
+        self.get_store_sum(data.store_obj)
+        self.get_product_sum(data.product_obj)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProductReviewListByUserView(generics.ListAPIView):
+    serializer_class = serializers.ProductReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = ProductReview.objects.filter(user=user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
+
+
+class ProductReviewListByProductView(generics.ListAPIView):
+    serializer_class = serializers.ProductReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        product = self.request.query_params.get('product')
+        print(product)
+        queryset = ProductReview.objects.filter(product__pk=product)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
+
+
+class ProductReviewListByStoreView(generics.ListAPIView):
+    serializer_class = serializers.ProductReviewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        store = self.request.query_params.get('store')
+        queryset = ProductReview.objects.filter(store__pk=store)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
 
 
 class ReviewImageCreateView(generics.CreateAPIView):
