@@ -221,7 +221,7 @@ class ProductReviewDestroyView(generics.DestroyAPIView):
     def get_store_sum(self, store_obj):
         review_list = ProductReview.objects.filter(store=store_obj)
         review_sum = sum(review_obj.rating for review_obj in review_list)
-        new_current_review_rating = new_review_sum / new_review_count
+        new_current_review_rating = review_sum / review_list.count
         store_obj.current_review_rating = new_current_review_rating
         print(new_current_review_rating)
         store_obj.save()
@@ -229,7 +229,7 @@ class ProductReviewDestroyView(generics.DestroyAPIView):
     def get_product_sum(self, product_obj):
         review_list = ProductReview.objects.filter(product=product_obj)
         review_sum = sum(review_obj.rating for review_obj in review_list)
-        new_current_review_rating = new_review_sum / new_review_count
+        new_current_review_rating = review_sum / review_list.count
         product_obj.current_review_rating = new_current_review_rating
         print(new_current_review_rating)
         product_obj.save()
@@ -240,8 +240,8 @@ class ProductReviewDestroyView(generics.DestroyAPIView):
         store_obj = data.store
         product_obj = data.product
         data.delete()
-        self.get_store_sum(data.store_obj)
-        self.get_product_sum(data.product_obj)
+        self.get_store_sum(store_obj)
+        self.get_product_sum(product_obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
