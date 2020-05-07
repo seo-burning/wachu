@@ -8,29 +8,16 @@ from django.db.models.functions import TruncDay
 import json
 
 from store import models
-from product.models import Product
+from product.models import Product, ProductImage
 from publish.models import PostGroup
 from core.models import ExportCsvMixin
+from .forms import ProductFormForInstagramPost, ProductInlineFormSet
 
 
-class ProductInline(admin.StackedInline):
+class ProductCreateInline(admin.StackedInline):
     model = Product
-    fields = [
-        'store',
-        'name',
-        'currency',
-        'category',
-        'sub_category',
-        'thumb_image_pk',
-        'style',
-        'color',
-        'original_price',
-        'discount_price',
-        'size'
-    ]
-    raw_id_fields = ['store']
-    classes = ('grp-collapse grp-open',)
-    inline_classes = ('grp-collapse grp-open',)
+    form = ProductFormForInstagramPost
+    formset = ProductInlineFormSet
     extra = 1
 
 
@@ -329,7 +316,7 @@ class PostRelatedProductFilter(admin.SimpleListFilter):
 
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
-    inlines = [ProductInline, PostImageInline, PostGroupInline]
+    inlines = [ProductCreateInline, PostImageInline, PostGroupInline]
     model = models.StorePost
     readonly_fields = ('post_like', 'post_score',
                        'post_description',
@@ -419,6 +406,43 @@ class StorePostAdmin(admin.ModelAdmin):
 
         # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
+
+    def save_formset(self, request, form, formset, change):
+        if formset.model != Product:
+            return super(StorePostAdmin, self).save_formset(request, form, formset, change)
+        product_list = formset.save(commit=False)
+        for product_obj in product_list:
+            print(product_obj.post)
+            post_obj = product_obj.post
+            product_obj.store = post_obj.store
+            product_obj.description = post_obj.post_description
+            product_obj.product_link = post_obj.post_url
+            product_obj.currency = 'VND'
+            product_obj.product_source = 'INSTAGRAM'
+            product_obj.is_active = True
+            product_obj.save()
+            thumb_image_pk = product_obj.thumb_image_pk
+            post_image_set = post_obj.post_image_set.all()
+            image_count = post_image_set.count()
+            print(image_count, thumb_image_pk, post_obj.post_type)
+            if post_obj.post_type == 'V':
+                product_obj.video_source = post_obj.video_source
+                product_obj.product_thumbnail_image = post_obj.post_thumb_image
+                product_image_obj, is_created = ProductImage.objects.get_or_create(
+                    source_thumb=post_obj.post_thumb_image,
+                    post_image_type='V',
+                    source=post_obj.video_source, product=product_obj)
+            else:
+                product_obj.product_thumbnail_image = post_image_set[image_count - thumb_image_pk].source_thumb
+                product_obj.product_image_type = post_obj.post_type
+                product_obj.video_source = post_obj.video_source
+                for i, post_image in enumerate(post_image_set):
+                    product_image_obj, is_created = ProductImage.objects.get_or_create(
+                        source_thumb=post_image.source_thumb,
+                        post_image_type=post_image.post_image_type,
+                        source=post_image.source, product=product_obj)
+            product_obj.save()
+        formset.save_m2m()
 
 
 @admin.register(models.Region)
