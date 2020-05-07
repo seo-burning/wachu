@@ -11,7 +11,7 @@ import datetime
 from store_point_logic import calculate_post_point, calculate_store_point
 import multiprocessing as mp
 from functools import partial
-# from time import sleep
+from time import sleep
 import random
 from django.db.models import Q
 
@@ -88,7 +88,6 @@ class InstagramScraper:
         script_tag = str(body.find('script'))
         raw_string = script_tag.replace('<script type="text/javascript">', '').replace('</script>', '').replace(
             'window._sharedData =', '').replace(';', '').strip()
-        print(raw_string)
         return json.loads(raw_string)
 
     def profile_page_metrics(self, profile_url):
@@ -101,12 +100,12 @@ class InstagramScraper:
             slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
             pass
         else:
-        for key, value in metrics.items():
-            if value and isinstance(value, dict):
-                value = value['count']
-                results[key] = value
-            elif value:
-                results[key] = value
+            for key, value in metrics.items():
+                if value and isinstance(value, dict):
+                    value = value['count']
+                    results[key] = value
+                elif value:
+                    results[key] = value
         return results
 
     def profile_page_recent_posts(self, profile_url):
@@ -176,10 +175,10 @@ class InstagramScraper:
     def insert_insta(self, url):
         results = {}
         results = self.profile_page_metrics(url)
-        # sleep(2+random.random()*15)
+        sleep(2+random.random()*15)
         result_post = []
         result_post = self.profile_page_recent_posts(url)
-        # sleep(2+random.random()*15)
+        sleep(2+random.random()*15)
 
         profile_description = ''
         email = ''
@@ -279,7 +278,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
                                     post_url)
-                                # sleep(2+random.random()*15)
+                                sleep(2+random.random()*15)
                                 obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
                                 obj_post.save()
                                 for image in post_images:
@@ -298,7 +297,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'V'
                                 post_video = self.get_video_from_post_page(
                                     post_url)
-                                # sleep(2+random.random()*15)
+                                sleep(2+random.random()*15)
                                 video_file_update_with_video_source(
                                     obj_post, post_video['video_url'], post_video['thumbnail_src'])
                                 obj_post.view_count = post_video['video_view_count']
@@ -339,7 +338,7 @@ class InstagramScraper:
                 print("U - {} (id:{} / {} post saved.)".format(username,
                                                                obj_store.id, post_saved))
             return new_post
-            # time.sleep(5)
+            time.sleep(5)
 
 
 def update_user_profile_image():
