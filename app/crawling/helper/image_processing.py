@@ -17,8 +17,8 @@ def create_presigned_url(bucket_name, object_name, expiration=6048000):
     """
 
     # Generate a presigned URL for the S3 object
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS3GZCVURG',
-                             aws_secret_access_key='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')
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     try:
         response = s3_client.generate_presigned_url('get_object',
                                                     Params={'Bucket': bucket_name,
@@ -80,8 +80,8 @@ def resize_in_ratio(image_source, max_width_and_height, resize_source, quality=9
 
 
 def upload_to_s3(file_root, upload_root):
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS3GZCVURG',
-                             aws_secret_access_key='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',
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                              config=Config(signature_version='s3v4'))
     with open(file_root, 'rb') as f:
         s3_client.upload_fileobj(f, 'wachu', upload_root)

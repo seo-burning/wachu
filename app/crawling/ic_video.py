@@ -19,6 +19,9 @@ from store.models import Store, StorePost, StoreRanking, PostImage
 
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
 
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
 
 def create_presigned_url(bucket_name, object_name, expiration=6048000):
     """Generate a presigned URL to share an S3 object
@@ -28,10 +31,9 @@ def create_presigned_url(bucket_name, object_name, expiration=6048000):
     :param expiration: Time in seconds for the presigned URL to remain valid
     :return: Presigned URL as string. If error, returns None.
     """
-
     # Generate a presigned URL for the S3 object
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS3GZCVURG',
-                             aws_secret_access_key='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')
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     try:
         response = s3_client.generate_presigned_url('get_object',
                                                     Params={'Bucket': bucket_name,
@@ -77,8 +79,8 @@ def video_file_update(obj_post):
     file_root = './crawling/'+store_name + '_' + object_name
     with open(file_root, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS3GZCVURG',
-                             aws_secret_access_key='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', config=Config(signature_version='s3v4'))
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     with open(file_root, 'rb') as f:
         s3_client.upload_fileobj(f, 'wachu', '{media}/{video}/{store}/{file_name}'.format(
             media='media', video='video', store=store_name, file_name=object_name))
@@ -109,9 +111,8 @@ def video_file_update_with_video_source(obj_post, video_source, video_thumbnail)
     with open(thumb_file_root, 'wb') as out_file:
         shutil.copyfileobj(response_thumb.raw, out_file)
 
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS3GZCVURG',
-                             aws_secret_access_key='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', config=Config(signature_version='s3v4'))
-
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     with open(file_root, 'rb') as f:
         s3_client.upload_fileobj(f, 'wachu', '{media}/{video}/{store}/{file_name}'.format(
             media='media', video='video', store=store_name, file_name=object_name))
@@ -188,8 +189,8 @@ def resize_in_ratio(image_source, max_width_and_height, resize_source, quality=9
 
 
 def upload_to_s3(file_root, upload_root):
-    s3_client = boto3.client('s3', aws_access_key_id='AKIA3KMPT5RS3GZCVURG',
-                             aws_secret_access_key='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', config=Config(signature_version='s3v4'))
+    s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     with open(file_root, 'rb') as f:
         s3_client.upload_fileobj(f, 'wachu', upload_root)
     video_source = "https://s3.console.aws.amazon.com/s3/object/wachu/"+upload_root
