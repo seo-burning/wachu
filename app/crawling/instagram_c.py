@@ -16,6 +16,7 @@ import random
 from django.db.models import Q
 
 from ic_video import resize_thumbnail_by_store, video_update_credential, video_file_update_with_video_source
+from utils.slack import slack_notify, slack_upload_file
 
 import os_setup
 
@@ -96,7 +97,8 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']
         except Exception as e:
-            print(e)
+            slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
+            pass
         else:
             for key, value in metrics.items():
                 if value and isinstance(value, dict):
@@ -113,8 +115,7 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']["edges"]
         except Exception as e:
-            print("Failed in Get Posts {} {}".format(profile_url, e))
-            post_error_account.append(profile_url)
+            slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
             pass
         else:
             for node in metrics:
@@ -130,8 +131,8 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['PostPage'][0]['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
         except Exception as e:
-            print("Failed in Get Single Posts {} {}".format(request_url, e))
-            post_error_account.append(request_url)
+            slack_notify("Failed in Get Single Posts {} {}".format(request_url, e))
+            pass
         else:
             for node in metrics:
                 node = node.get('node')
@@ -146,8 +147,8 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['PostPage'][0]['graphql']['shortcode_media']
         except Exception as e:
-            print("Failed in Get Posts'  video{} {}".format(request_url, e))
-            post_error_account.append(request_url)
+            slack_notify("Failed in Get Posts'  video{} {}".format(request_url, e))
+            pass
         return metrics
 
     def update_profile(self, url):
@@ -171,14 +172,13 @@ class InstagramScraper:
             obj_store.profile_image = results['profile_pic_url_hd']
             obj_store.save()
 
-    def insert_insta(self, url, created_account, updated_account, deactivated_account, post_error_account, post_0_account):
+    def insert_insta(self, url):
         results = {}
-        print(url)
         results = self.profile_page_metrics(url)
-        sleep(2+random.random()*5)
+        sleep(2+random.random()*15)
         result_post = []
         result_post = self.profile_page_recent_posts(url)
-        sleep(2+random.random()*5)
+        sleep(2+random.random()*15)
 
         profile_description = ''
         email = ''
@@ -278,7 +278,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
                                     post_url)
-                                sleep(2+random.random()*5)
+                                sleep(2+random.random()*15)
                                 obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
                                 obj_post.save()
                                 for image in post_images:
@@ -297,7 +297,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'V'
                                 post_video = self.get_video_from_post_page(
                                     post_url)
-                                sleep(2+random.random()*5)
+                                sleep(2+random.random()*15)
                                 video_file_update_with_video_source(
                                     obj_post, post_video['video_url'], post_video['thumbnail_src'])
                                 obj_post.view_count = post_video['video_view_count']
@@ -323,26 +323,22 @@ class InstagramScraper:
                         post_score_sum = post_score_sum + obj_post.post_score
                     except IndexError as e:
                         print('E', end='')
-                        post_error_account.append(obj_store.insta_url)
                         pass
 
             else:
-                post_0_account.append(obj_store.insta_url)
                 print("Fail to Find post. Account may be Private")
             obj_store.is_new_post = is_new_post
             obj_store.save()
             resize_thumbnail_by_store(obj_store)
 
             if (is_created):
-                created_account.append(obj_store.insta_url)
                 print("C - {} (id:{} / {} post saved.)".format(username,
                                                                obj_store.id, post_saved))
             elif (is_created == False):
-                updated_account.append(obj_store.insta_url)
                 print("U - {} (id:{} / {} post saved.)".format(username,
                                                                obj_store.id, post_saved))
             return new_post
-            time.sleep(1)
+            time.sleep(5)
 
 
 def update_user_profile_image():
@@ -355,16 +351,37 @@ def update_user_profile_image():
         obj.update_profile(url)
 
 
+def update_instagram():
+    pk = 0
+    dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
+    file_path = './instagram_result.txt'
+    store_list = Store.objects.all().filter(Q(
+        store_type='IF(P)') | Q(
+        store_type='IF')).order_by('current_ranking')
+    content = ['https://www.instagram.com/' +
+               x.insta_id + '/' for x in store_list]
+    obj = InstagramScraper()
+    total_new_post = 0
+    print(len(content))
+    with open(file_path, "w") as f:
+        for url in list(content):
+            pk = pk + 1
+            new_post = obj.insert_insta(ur)
+            if new_post == None:
+                new_post = 0
+            total_new_post = total_new_post + new_post
+            result_text = "{} save new post : #{} // total : #{}".format(url, new_post, total_new_post)
+            f.writelines(result_text)
+    slack_notify(">updated store : {} total created post : {}".format(str(pk), str(total_new_post)))
+    slack_upload_file(file_path)
+    os.remove(file_path)
+
+
 if __name__ == '__main__':
     print('start scrapying')
 
     start_time = time.time()
 
-    created_account = []
-    updated_account = []
-    deactivated_account = []
-    post_error_account = []
-    post_0_account = []
     dateInfo = input('date info input : ')
     if dateInfo:
         print(dateInfo)
@@ -385,12 +402,6 @@ if __name__ == '__main__':
     store_list = store_list[start_num:]
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
-    # with open('./data/account_list.txt', 'r') as f:
-    #     content = f.readlines()
-    #     content = ['https://www.instagram.com/' +
-    #                x.split('\n')[0] + '/' for x in content]
-    # print(content)
-    # content = ['https://www.instagram.com/playdirtystreetwear',]
     obj = InstagramScraper()
     pk = start_num
     print("changed to not updated --- %s seconds ---" %
@@ -400,8 +411,7 @@ if __name__ == '__main__':
     for url in list(content):
         pk = pk + 1
         print("ranking #{}".format(pk))
-        new_post = obj.insert_insta(url, created_account, updated_account,
-                                    deactivated_account, post_error_account, post_0_account)
+        new_post = obj.insert_insta(url)
         if new_post == None:
             new_post = 0
         total_new_post = total_new_post + new_post
