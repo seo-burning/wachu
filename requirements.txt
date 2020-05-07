@@ -17,6 +17,7 @@ django-storages
 requests
 bs4
 pymsteams
+slacker
 
 #debug
 django-debug-toolbar

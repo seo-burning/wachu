@@ -11,7 +11,7 @@ from random import choice
 from django.db.models import Q
 import os_setup
 import multiprocessing as mp
-
+from utils.slack import slack_notify
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize
 from store.models import Store, StorePost
 PROJECT_ROOT = os.getcwd()
@@ -133,6 +133,7 @@ class ShopeeScraper:
         else:
             obj_product.is_active = False
         obj_product.save()
+        return obj_product.is_active
 
     def __update_extra_options(self, obj_product, variation):
         options = variation['options']
@@ -245,21 +246,22 @@ class ShopeeScraper:
             obj_option.shopee_sold_count = option['sold']
             obj_option.save()
 
-    def get_or_create_product(self, store_obj, itemid, view_count):
+    def get_or_create_product(self, store_obj, itemid, view_count, created, need_to_update):
         shopid = store_obj.shopee_numeric_id
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         data = self.__request_url_item(shopid, itemid).json()['item']
         if is_created:
             print(store_obj.insta_id, itemid)
-            self.__update_category(obj_product, data['categories'])
+            is_valid = self.__update_category(obj_product, data['categories'])
+            if (is_valid == False):
+                need_to_update.append(obj_product.product_link)
             obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
-            obj_product.is_active = True
             obj_product.created_at = datetime.datetime.fromtimestamp(
                 int(data['ctime']), pytz.UTC)
             if (data['size_chart'] != None):
                 obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
-
+            created.append(obj_product.product_link)
             obj_product.product_source = 'SHOPEE'
             obj_product.name = data['name']
             obj_product.description = data['description']
@@ -291,10 +293,12 @@ class ShopeeScraper:
         obj_product.is_free_ship = data['show_free_shipping']
         obj_product.stock = data['stock']
         obj_product.save()
-        return obj_product
+        return obj_product, created, need_to_update
 
     def search_store(self, store_obj):
         i = 0
+        created = []
+        need_to_update = []
         list_length = 100
         store_id = store_obj.insta_id
         print(store_id)
@@ -305,8 +309,8 @@ class ShopeeScraper:
             product_list = response.json()['items']
             for j, product in enumerate(product_list):
                 print("{} - #{} product".format(store_id, i*list_length+j+1))
-                # try:
-                product_obj = self.get_or_create_product(store_obj, product['itemid'], product['view_count'])
+                product_obj, created, need_to_update = self.get_or_create_product(
+                    store_obj, product['itemid'], product['view_count'], created, need_to_update)
                 if (i == 0 and j == 0):
                     store_obj.recent_post_1 = product_obj.product_thumbnail_image
                     print(store_obj.recent_post_1)
@@ -317,10 +321,11 @@ class ShopeeScraper:
                     store_obj.recent_post_3 = product_obj.product_thumbnail_image
                     print(store_obj.recent_post_3)
                 store_obj.save()
-                # except:
-                #     print('error')
             list_length = len(product_list)
             i = i+1
+            break
+        slack_notify(store_obj.insta_id + '  created : ' + str(len(created)) +
+                     '   need to update : '+str(len(need_to_update)))
         print('finished!')
 
 

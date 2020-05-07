@@ -6,6 +6,9 @@ import requests
 import shutil
 from botocore.client import Config
 
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
 
 def create_presigned_url(bucket_name, object_name, expiration=6048000):
     """Generate a presigned URL to share an S3 object
