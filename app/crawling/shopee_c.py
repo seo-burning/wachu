@@ -304,23 +304,30 @@ class ShopeeScraper:
         while list_length == 100:
             response = self.__request_url(
                 store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
-            product_list = response.json()['items']
-            for j, product in enumerate(product_list):
-                # print("{} - #{} product".format(store_id, i*list_length+j+1))
-                product_obj, created, need_to_update = self.get_or_create_product(
-                    store_obj, product['itemid'], product['view_count'], created, need_to_update)
-                if (i == 0 and j == 0):
-                    store_obj.recent_post_1 = product_obj.product_thumbnail_image
-                    # print(store_obj.recent_post_1)
-                elif (i == 0 and j == 1):
-                    store_obj.recent_post_2 = product_obj.product_thumbnail_image
-                    # print(store_obj.recent_post_2)
-                elif (i == 0 and j == 2):
-                    store_obj.recent_post_3 = product_obj.product_thumbnail_image
-                    # print(store_obj.recent_post_3)
-                store_obj.save()
-            list_length = len(product_list)
-            i = i+1
+            try:
+                product_list = response.json()['items']
+                for j, product in enumerate(product_list):
+                    # print("{} - #{} product".format(store_id, i*list_length+j+1))
+                    try:
+                        product_obj, created, need_to_update = self.get_or_create_product(
+                            store_obj, product['itemid'], product['view_count'], created, need_to_update)
+                    except:
+                        slack_notify('error : {} #{} {}'.format(store_id, i, product['itemid']))
+                    if (i == 0 and j == 0):
+                        store_obj.recent_post_1 = product_obj.product_thumbnail_image
+                        # print(store_obj.recent_post_1)
+                    elif (i == 0 and j == 1):
+                        store_obj.recent_post_2 = product_obj.product_thumbnail_image
+                        # print(store_obj.recent_post_2)
+                    elif (i == 0 and j == 2):
+                        store_obj.recent_post_3 = product_obj.product_thumbnail_image
+                        # print(store_obj.recent_post_3)
+                    store_obj.save()
+                list_length = len(product_list)
+                i = i+1
+            except:
+                slack_notify('error : {} #{} {}'.format(store_id, i*100, "fail to get list"))
+                i = i+1
 
         return i, len(created), len(need_to_update)
 
