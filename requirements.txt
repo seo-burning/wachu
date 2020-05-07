@@ -18,6 +18,7 @@ requests
 bs4
 pymsteams
 slacker
+slackclient
 
 #debug
 django-debug-toolbar

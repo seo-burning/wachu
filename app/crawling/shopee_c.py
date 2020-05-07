@@ -11,7 +11,7 @@ from random import choice
 from django.db.models import Q
 import os_setup
 import multiprocessing as mp
-from utils.slack import slack_notify
+from utils.slack import slack_notify, slack_upload_file
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize
 from store.models import Store, StorePost
 PROJECT_ROOT = os.getcwd()
@@ -57,7 +57,7 @@ class ShopeeScraper:
 
     def __random_proxies(self):
         if self.proxy and isinstance(self.proxy, list):
-            # print('execute')
+            print('execute')
             return choice(self.proxy)
         proxies = get_proxies()
         return random.sample(get_proxies(), 1)[0]
@@ -72,7 +72,7 @@ class ShopeeScraper:
                                     proxies={'http': self.proxy, 'https': self.proxy})
             response.raise_for_status()
         except requests.HTTPError as e:
-            # print(e)
+            print(e)
             pass
         except requests.RequestException:
             raise requests.RequestException
@@ -88,7 +88,7 @@ class ShopeeScraper:
                                     proxies={'http': self.proxy, 'https': self.proxy})
             response.raise_for_status()
         except requests.HTTPError as e:
-            # print(e)
+            print(e)
             pass
         except requests.RequestException:
             raise requests.RequestException
@@ -104,7 +104,7 @@ class ShopeeScraper:
                                     proxies={'http': self.proxy, 'https': self.proxy})
             response.raise_for_status()
         except requests.HTTPError as e:
-            # print(e)
+            print(e)
             pass
         except requests.RequestException:
             raise requests.RequestException
@@ -121,13 +121,13 @@ class ShopeeScraper:
             obj_cat.is_default_subcat = category['is_default_subcat']
             obj_cat.save()
             if obj_cat.is_valid:
-                # print(obj_cat.display_name)
+                print(obj_cat.display_name)
                 if obj_cat.category:
                     obj_product.category = obj_cat.category
-                    # print('category added')
+                    print('category added')
                 if obj_cat.sub_category:
                     obj_product.sub_category = obj_cat.sub_category
-                    # print('sub-category added')
+                    print('sub-category added')
         if obj_product.sub_category:
             obj_product.is_active = True
         else:
@@ -152,11 +152,11 @@ class ShopeeScraper:
             obj_extra_option, is_created = ProductExtraOption.objects.get_or_create(
                 name=option_string, source=source, source_thumb=source_thumb, variation_group=variation_group)
             obj_product.extra_option.add(obj_extra_option)
-            # print(option_string)
+            print(option_string)
         obj_product.save()
 
     def __update_size(self, obj_product, options):
-        # print(options)
+        print(options)
         obj_product.size.clear()
         obj_product.shopee_size.clear()
         for option in options:
@@ -166,10 +166,10 @@ class ShopeeScraper:
             obj_product.shopee_size.add(obj_size)
         for size_obj in obj_product.shopee_size.all():
             if size_obj.size:
-                print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
+                # print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
                 obj_product.size.add(size_obj.size)
             else:
-                print("not exist : {}".format(size_obj.display_name))
+                # print("not exist : {}".format(size_obj.display_name))
                 pass
         obj_product.save()
 
@@ -184,10 +184,10 @@ class ShopeeScraper:
             obj_product.shopee_color.add(obj_color)
         for color_obj in obj_product.shopee_color.all():
             if color_obj.color:
-                print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
+                # print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
                 obj_product.color.add(color_obj.color)
             else:
-                print("not exist : {}".format(color_obj.display_name))
+                # print("not exist : {}".format(color_obj.display_name))
                 pass
         obj_product.save()
 
@@ -252,7 +252,7 @@ class ShopeeScraper:
             shopee_item_id=itemid, store=store_obj)
         data = self.__request_url_item(shopid, itemid).json()['item']
         if is_created:
-            print(store_obj.insta_id, itemid)
+            # print(store_obj.insta_id, itemid)
             is_valid = self.__update_category(obj_product, data['categories'])
             if (is_valid == False):
                 need_to_update.append(obj_product.product_link)
@@ -277,7 +277,7 @@ class ShopeeScraper:
                     post_image_type='P')
 
             for variation in data['tier_variations']:
-                print(variation['name'])
+                # print(variation['name'])
                 variation_name = variation['name'].lower().strip()
                 if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
                     self.__update_size(obj_product, variation['options'])
@@ -301,32 +301,28 @@ class ShopeeScraper:
         need_to_update = []
         list_length = 100
         store_id = store_obj.insta_id
-        print(store_id)
         while list_length == 100:
             response = self.__request_url(
                 store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
-            print(response)
             product_list = response.json()['items']
             for j, product in enumerate(product_list):
-                print("{} - #{} product".format(store_id, i*list_length+j+1))
+                # print("{} - #{} product".format(store_id, i*list_length+j+1))
                 product_obj, created, need_to_update = self.get_or_create_product(
                     store_obj, product['itemid'], product['view_count'], created, need_to_update)
                 if (i == 0 and j == 0):
                     store_obj.recent_post_1 = product_obj.product_thumbnail_image
-                    print(store_obj.recent_post_1)
+                    # print(store_obj.recent_post_1)
                 elif (i == 0 and j == 1):
                     store_obj.recent_post_2 = product_obj.product_thumbnail_image
-                    print(store_obj.recent_post_2)
+                    # print(store_obj.recent_post_2)
                 elif (i == 0 and j == 2):
                     store_obj.recent_post_3 = product_obj.product_thumbnail_image
-                    print(store_obj.recent_post_3)
+                    # print(store_obj.recent_post_3)
                 store_obj.save()
             list_length = len(product_list)
             i = i+1
-            break
-        slack_notify(store_obj.insta_id + '  created : ' + str(len(created)) +
-                     '   need to update : '+str(len(need_to_update)))
-        print('finished!')
+
+        return i, len(created), len(need_to_update)
 
 
 def _update_color_size_from_shopee_color_size(product_obj):
@@ -334,27 +330,27 @@ def _update_color_size_from_shopee_color_size(product_obj):
     product_obj.size.clear()
     for color_obj in product_obj.shopee_color.all():
         if color_obj.color:
-            print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
+            # print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
             product_obj.color.add(color_obj.color)
         else:
-            print("not exist : {}".format(color_obj.display_name))
+            # print("not exist : {}".format(color_obj.display_name))
             pass
     for size_obj in product_obj.shopee_size.all():
         if size_obj.size:
-            print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
+            # print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
             product_obj.size.add(size_obj.size)
         else:
-            print("not exist : {}".format(size_obj.display_name))
+            # print("not exist : {}".format(size_obj.display_name))
             pass
     product_obj.save()
 
 
 def update_color_size_from_shopee_color_size():
-    print('Update Color&Size from Shopee Color&Size')
+    # print('Update Color&Size from Shopee Color&Size')
     product_list = Product.objects.filter(product_source='SHOPEE')
-    print(product_list.count())
+    # print(product_list.count())
     # pool = mp.Pool(processes=6)
-    print('Set up Multiprocessing....')
+    # print('Set up Multiprocessing....')
     # pool.map(_update_color_size_from_shopee_color_size, product_list)
     for product_obj in product_list:
         _update_color_size_from_shopee_color_size(product_obj)
@@ -365,13 +361,13 @@ def _update_product_category_from_shopee(obj_product):
     shopee_category = obj_product.shopee_category
     for obj_cat in shopee_category.all():
         if obj_cat.is_valid:
-            print(obj_cat.display_name)
+            # print(obj_cat.display_name)
             if obj_cat.category:
                 obj_product.category = obj_cat.category
-                print('category added')
+                # print('category added')
             if obj_cat.sub_category:
                 obj_product.sub_category = obj_cat.sub_category
-                print('sub-category added')
+                # print('sub-category added')
     if obj_product.sub_category:
         obj_product.is_active = True
     else:
@@ -380,9 +376,9 @@ def _update_product_category_from_shopee(obj_product):
 
 
 def update_product_category_from_shopee():
-    print('Update Category from Shopee')
+    # print('Update Category from Shopee')
     product_list = Product.objects.filter(product_source='SHOPEE')
-    print(product_list.count())
+    # print(product_list.count())
     for product_obj in product_list:
         _update_product_category_from_shopee(product_obj)
 
@@ -395,10 +391,20 @@ def update_shopee():
         Q(store_type='IF(P)SH') |
         Q(store_type='IS(P)')
     )
-    # print(len(store_list))
-    # pool = mp.Pool(processes=6)
-    # pool.map(obj.search_store, store_list)
-    # pool.close()
-    for i, store_obj in enumerate(store_list):
-        print(i, store_obj)
-        obj.search_store(store_obj)
+    total_updated = 0
+    total_created = 0
+    total_need_to_update = 0
+    file_path = './shopee_result.txt'
+    with open(file_path, "w") as f:
+        for i, store_obj in enumerate(store_list):
+            updated, created, need_to_update = obj.search_store(store_obj)
+            result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
+                '   need to update : '+str(need_to_update) + '\n'
+            f.writelines(result_text)
+            total_updated += updated
+            total_created += created
+            total_need_to_update += need_to_update
+    slack_notify('>total : ' + str(total_updated) + '  created : ' + str(total_created) +
+                 '   need to update : '+str(total_need_to_update) + '\n')
+    slack_upload_file(file_path)
+    os.remove(file_path)
