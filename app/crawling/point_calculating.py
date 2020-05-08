@@ -4,7 +4,6 @@ from store.models import Store, StorePost, StoreRanking
 from user.models import ProductReview
 
 from datetime import datetime, timezone, timedelta
-import multiprocessing as mp
 
 dateInfo = (datetime.now()).strftime('%Y-%m-%d')
 
@@ -346,17 +345,11 @@ def _calculate_store_obj_review_rating(store_obj):
 # Export Functions
 def calculate_product_review_rating():
     product_list = Product.objects.all()
-    print('Calculating product review rating....')
-    pool = mp.Pool(processes=6)
-    print('Set up Multiprocessing....')
-    pool.map(_calculating_product_obj_review_rating, product_list)
-    pool.close()
+    for product_obj in product_list:
+        _calculating_product_obj_review_rating(product_obj)
 
 
 def calculate_store_review_rating():
     store_list = Store.objects.filter(is_active=True)
-    print('Calculating product review rating....')
-    pool = mp.Pool(processes=6)
-    print('Set up Multiprocessing....')
-    pool.map(_calculate_store_obj_review_rating, store_list)
-    pool.close()
+    for store_obj in store_list:
+        _calculate_store_obj_review_rating(store_obj)

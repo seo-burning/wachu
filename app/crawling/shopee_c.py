@@ -297,6 +297,7 @@ class ShopeeScraper:
 
     def search_store(self, store_obj):
         i = 0
+        pk = 0
         created = []
         need_to_update = []
         list_length = 100
@@ -323,13 +324,14 @@ class ShopeeScraper:
                         store_obj.recent_post_3 = product_obj.product_thumbnail_image
                         # print(store_obj.recent_post_3)
                     store_obj.save()
+                    pk += 1
                 list_length = len(product_list)
                 i = i+1
             except:
                 slack_notify('error : {} #{} {}'.format(store_id, i*100, "fail to get list"))
                 i = i+1
 
-        return i, len(created), len(need_to_update)
+        return pk, len(created), len(need_to_update)
 
 
 def _update_color_size_from_shopee_color_size(product_obj):

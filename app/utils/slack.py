@@ -32,3 +32,8 @@ if __name__ == '__main__':
     slack_notify('jemclothes')
     for created_obj in created:
         slack_notify(created_obj)
+    file_path = './shopee_result.txt'
+    with open(file_path, "w") as f:
+        f.writelines('123')
+    slack_upload_file(file_path)
+    os.remove(file_path)
