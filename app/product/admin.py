@@ -269,6 +269,7 @@ class ProductExtraOptionAdmin(admin.ModelAdmin):
 @admin.register(models.ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ['__str__', ]
+    list_filter = ['post_image_type', ]
 
 
 @admin.register(models.ProductOption)
@@ -312,7 +313,7 @@ class Product(admin.ModelAdmin):
         'original_price',
         'discount_price',
         'color_num',
-        'size_num'
+        'size_num',
     ]
     fieldsets = [('Status', {'fields': ['is_active', 'current_product_backend_rating']}),
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
@@ -329,6 +330,7 @@ class Product(admin.ModelAdmin):
     search_fields = ['store__insta_id']
     list_filter = [
         'is_active',
+        'product_image_type',
         'sub_category',
         'product_source',
     ]
