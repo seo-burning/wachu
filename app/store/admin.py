@@ -140,6 +140,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                                         'current_ranking_changed',
                                         'current_review_rating',
                                         'instagram_link',
+                                        'profile_image',
                                         'profile_image_shot',
                                         'insta_id',
                                         'insta_url',
