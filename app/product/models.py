@@ -15,6 +15,10 @@ class ProductCategory(TimeStampedModel):
     name = models.CharField(_('Product Category'), max_length=255)
     display_name = models.CharField(default='Need to tranlate', max_length=255)
     is_active = models.BooleanField(default=False)
+    ordering = models.IntegerField(default=999)
+
+    class Meta:
+        ordering = ['ordering']
 
     def __str__(self):
         return self.display_name
@@ -26,12 +30,13 @@ class ProductSubCategory(TimeStampedModel):
         ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
     display_name = models.CharField(default='Need to tranlate', max_length=255)
     is_active = models.BooleanField(default=False)
+    ordering = models.IntegerField(default=999)
 
     def __str__(self):
         return self.display_name
 
     class Meta:
-        ordering = ['category', ]
+        ordering = ['category', 'ordering']
 
 
 class ProductSize(TimeStampedModel):

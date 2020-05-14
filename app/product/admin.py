@@ -12,7 +12,7 @@ import json
 
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    fields = ['name', 'display_name', 'is_active']
+    fields = ['name', 'display_name', 'is_active', 'ordering']
     list_display = ['name', 'display_name', 'product_num']
     actions = ['make_activate', 'make_deactivate', ]
 
@@ -39,7 +39,7 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductSubCategory)
 class ProductSubCategoryAdmin(admin.ModelAdmin):
-    fields = ['name', 'display_name', 'category', 'is_active']
+    fields = ['name', 'display_name', 'category', 'is_active', 'ordering']
     list_display = ['name', 'display_name', 'product_num', 'category']
     actions = ['make_activate', 'make_deactivate', ]
 
