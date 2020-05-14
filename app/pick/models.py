@@ -25,15 +25,6 @@ class ChuPoint(TimeStampedModel):
     age = models.ForeignKey(
         Age, on_delete=models.CASCADE, null=True, blank=True)
 
-    def __str__(self):
-        return ' {} {} {} {} {} {}'.format(''.join(
-            obj.name for obj in self.product_category.all()),
-            ''.join(
-            obj.name for obj in self.product_color.all()),
-            self.primary_style,
-            self.secondary_style,
-            self.age)
-
 
 class ChuPickSet(TimeStampedModel):
     is_published = models.BooleanField(default=False)

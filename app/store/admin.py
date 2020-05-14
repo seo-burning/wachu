@@ -116,6 +116,7 @@ class StoreAddressInline(admin.StackedInline):
               'google_map_url', 'region', 'X_axis', 'Y_axis', 'contact']
     extra = 1
 
+
 # https://medium.com/@hakibenita/things-you-must-know-about-django-admin-as-your-app-gets-bigger-6be0b0ee9614
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):

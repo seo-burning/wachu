@@ -27,13 +27,13 @@ class ProductCategoryAdmin(admin.ModelAdmin):
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
         self.message_user(
-            request, 'Activated 상태로 변경'.format(updated_count))
+            request, '{} Activated 상태로 변경'.format(updated_count))
     make_activate.short_description = 'Activate 상태로 변경'
 
     def make_deactivate(self, request, queryset):
         updated_count = queryset.update(is_active=False)
         self.message_user(
-            request, 'Deavtivate 상태로 변경'.format(updated_count))
+            request, '{} Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = 'Deactivate 상태로 변경'
 
 
@@ -54,13 +54,13 @@ class ProductSubCategoryAdmin(admin.ModelAdmin):
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
         self.message_user(
-            request, 'Activated 상태로 변경'.format(updated_count))
+            request, '{} Activated 상태로 변경'.format(updated_count))
     make_activate.short_description = 'Activate 상태로 변경'
 
     def make_deactivate(self, request, queryset):
         updated_count = queryset.update(is_active=False)
         self.message_user(
-            request, 'Deavtivate 상태로 변경'.format(updated_count))
+            request, '{} Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = 'Deactivate 상태로 변경'
 
 
