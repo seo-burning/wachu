@@ -5,33 +5,6 @@ import os_setup
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize
 from store.models import Store, StorePost
 
-# {
-#     'is_active': False,
-#     'is_discount': True,
-#     'current_review_rating': 0,
-#     'product_source': 'HOMEPAGE',
-#     'product_link': 'https://degrey.vn/products/fire-shirt-fs',
-#     'store': 291,
-#     'name': 'Fire Shirt - FS',
-#     'description': 'Fire Shirt - FS',
-#     'product_image_type': 'MP',
-#     'product_thumbnail_image': 'http://product.hstatic.net/1000281824/product/6159ad75-666f-4b9a-85ae-4e17f53c70ed_69497d9df1c24ba582541ff256f5fd10_grande.jpeg',
-#     'video_source': None,
-#     'original_price': '350000',
-#     'discount_price': '315000',
-#     'discount_rate': '10',
-#     'currency': 'VND',
-#     'is_free_ship': False,
-#     'stock': 9999,
-#     'shopee_color': [{'display_name': 'NHỎ'},
-#                      {'display_name': 'TRUNG'},
-#                      {'display_name': 'LỚN'}],
-#     'shopee_size': [],
-#     'shopee_category': [],
-#     'size_chart': None,
-#     'productOption': []
-# }
-
 
 def update_color(obj_product, options):
     obj_product.color.clear()

@@ -221,7 +221,7 @@ def degrey_sub_crawler(obj, product_source):
     return product_list
 
 
-def degrey_crawler():
+def get_degrey():
     print('operating degrey crawler')
     obj = HomepageCrawler()
     i = 1

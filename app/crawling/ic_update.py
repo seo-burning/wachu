@@ -1,7 +1,8 @@
 
-from ic_video import video_file_update_with_video_source
-from product.models import Product, ProductCategory, ProductSubCategory, ProductColor, ProductStyle
 from store.models import Store, StorePost, StoreRanking, PostImage
+from product.models import Product, ProductCategory, ProductSubCategory, ProductColor, ProductStyle
+from ic_video import video_file_update_with_video_source, video_file_update_with_video_source_post_product_image
+
 import sys
 import os
 import django
@@ -21,7 +22,6 @@ django.setup()
 _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 ]
-
 
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -57,9 +57,9 @@ class InstagramScraper:
     def extract_json_data(html):
         soup = BeautifulSoup(html, 'html.parser')
         body = soup.find('body')
-        script_tag = body.find('script')
-        raw_string = script_tag.text.strip().replace(
-            'window._sharedData =', '').replace(';', '')
+        script_tag = str(body.find('script'))
+        raw_string = script_tag.replace('<script type="text/javascript">', '').replace('</script>', '').replace(
+            'window._sharedData =', '').replace(';', '').strip()
         return json.loads(raw_string)
 
     def profile_page_metrics(self, profile_url):
@@ -170,6 +170,9 @@ class InstagramScraper:
                         if image['__typename'] == 'GraphVideo':
                             obj_image.post_image_type = 'V'
                             obj_image.source = image['video_url']
+                            obj_image.source_thumb = image['display_resources'][0]['src']
+                            video_file_update_with_video_source_post_product_image(
+                                obj_image, image['video_url'], image['display_resources'][0]['src'])
                         obj_image.save()
                 elif obj_post.post_type == 'V':
                     post_video = self.get_video_from_post_page(
@@ -182,34 +185,6 @@ class InstagramScraper:
 
         except Exception as e:
             print(e)
-
-
-def deactive_post_by_store(obj_store):
-    obj_list = StorePost.objects.all().filter(
-        is_active=True).filter(store=obj_store)
-    print(obj_store, obj_list.count())
-    for i, obj_post in enumerate(obj_list):
-        obj_post.is_active = False
-        obj_post.save()
-
-
-def auto_fill_product():
-    store_obj = Store.objects.all().get(insta_id='20decemberjeans')
-    store_post_list = StorePost.objects.all().filter(
-        store=store_obj).filter(product=None, is_product='P')
-    post_category = ProductCategory.objects.all().get(name='pants')
-    sub = ProductSubCategory.objects.all().get(name='jeans')
-    color_p = ProductColor.objects.all().get(name='black')
-    style = ProductStyle.objects.all().get(name='simple')
-
-    print(store_post_list.count())
-    print(sub, style, post_category)
-    for store_post_obj in store_post_list:
-        product_obj, is_created = Product.objects.get_or_create(
-            store=store_obj, post=store_post_obj, category=post_category, sub_category=sub, style=style)
-        product_obj.color.add(color_p)
-        product_obj.save()
-    # print("--- %s seconds ---" % (time.time() - start_time))
 
 
 # 자주 포스트를 지우는 계정 리스트 확인.

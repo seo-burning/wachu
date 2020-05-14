@@ -8,14 +8,15 @@ from random import choice
 import pymsteams  # https://pypi.org/project/pymsteams/
 import time
 import datetime
-from store_point_logic import calculate_post_point, calculate_store_point
+from store_point_logic import calculate_post_point
 import multiprocessing as mp
 from functools import partial
 from time import sleep
 import random
 from django.db.models import Q
 
-from ic_video import resize_thumbnail_by_store, video_update_credential, video_file_update_with_video_source
+from helper.instagram_helper import resize_thumbnail_by_store
+from ic_video import video_file_update_with_video_source, video_file_update_with_video_source_post_product_image
 from utils.slack import slack_notify, slack_upload_file
 
 import os_setup
@@ -288,11 +289,12 @@ class InstagramScraper:
                                         store_post=obj_post,
                                         post_image_type='P')
                                     if image['__typename'] == 'GraphVideo':
-                                        print('Video Post')
                                         obj_image.post_image_type = 'V'
                                         obj_image.source = image['video_url']
+                                        obj_image.source_thumb = image['display_resources'][0]['src']
+                                        video_file_update_with_video_source_post_product_image(
+                                            obj_image, image['video_url'], image['display_resources'][0]['src'])
                                         obj_image.save()
-
                             elif post['__typename'] == 'GraphVideo':
                                 obj_post.post_type = 'V'
                                 post_video = self.get_video_from_post_page(
