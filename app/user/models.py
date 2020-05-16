@@ -44,3 +44,23 @@ class ProductReview(TimeStampedModel):
 
     def __str__(self):
         return self.store.insta_id + self.user.name
+
+
+class RecipientModel(models.Model):
+    class Meta:
+        abstract = True
+    recipient_name = models.CharField(
+        max_length=250, null=True)
+    contact_number = models.CharField(
+        max_length=250, null=True)
+# 159 Xa lộ Hà Nội, Thảo Điền, Quận 2, Hồ Chí Minh
+    country = models.CharField(
+        max_length=50, null=True, default='Việt Nam')
+    city = models.CharField(u'Tỉnh/Thành Phố',
+                            max_length=50, null=True)
+    district = models.CharField(u'Quận/Huyện',
+                                max_length=50, null=True)
+    ward = models.CharField(u'Phường/Xã',
+                            max_length=50, null=True)
+    additional_address = models.CharField(u'Địa chỉ cụ thể',
+                                          max_length=250, null=True)

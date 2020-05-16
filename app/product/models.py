@@ -202,8 +202,21 @@ PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
                       ('MP', _('Multiple Picture')), ('V', _('Video')))
 
 
-class Product(TimeStampedModel):
+class PriceModel(models.Model):
     class Meta:
+        abstract = True
+    original_price = models.IntegerField(default=0)
+    discount_price = models.IntegerField(null=True, blank=True)
+    discount_rate = models.IntegerField(null=True, blank=True)
+    currency = models.CharField(choices=CURRENCY_TYPE, max_length=20, default='VND')
+    is_free_ship = models.BooleanField(default=False)
+
+
+class Product(TimeStampedModel, PriceModel):
+    class Meta:
+        verbose_name = u'제품'
+        verbose_name_plural = verbose_name
+
         ordering = ['current_product_backend_rating', ]
 
     is_active = models.BooleanField(default=False)
@@ -229,12 +242,6 @@ class Product(TimeStampedModel):
     product_thumbnail_image = models.CharField(null=True, max_length=1024)
     video_source = models.CharField(null=True, max_length=1024)
 
-    # price & stock
-    original_price = models.IntegerField(default=0)
-    discount_price = models.IntegerField(null=True, blank=True)
-    discount_rate = models.IntegerField(null=True, blank=True)
-    currency = models.CharField(choices=CURRENCY_TYPE, max_length=20)
-    is_free_ship = models.BooleanField(default=False)
     stock = models.IntegerField(default=0)
 
     category = models.ForeignKey(
