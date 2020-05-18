@@ -64,3 +64,11 @@ class RecipientModel(models.Model):
                             max_length=50, null=True)
     additional_address = models.CharField(u'Địa chỉ cụ thể',
                                           max_length=250, null=True)
+
+
+class Recipient(RecipientModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.city + ' ' + self.district + ' ' + self.ward + ' ' + self.additional_address

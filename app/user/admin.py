@@ -25,3 +25,8 @@ class UserFavoriteProductAdmin(admin.ModelAdmin):
 @admin.register(models.ReviewImage)
 class ReviewImageAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.Recipient)
+class RecipientAdmin(admin.ModelAdmin):
+    list_display = ['user', 'recipient_name', 'contact_number', '__str__']

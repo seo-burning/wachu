@@ -75,7 +75,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, Recipie
         verbose_name_plural = verbose_name
     customer = models.ForeignKey(settings.AUTH_USER_MODEL,
                                  on_delete=models.SET_NULL, null=True)
-    extra_message = models.CharField(max_length=255)
+    extra_message = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.customer.name + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")

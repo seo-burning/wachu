@@ -12,7 +12,7 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, Store
 from core.models import UserPushToken
-from .models import UserFavoriteProduct, ProductReview
+from .models import UserFavoriteProduct, ProductReview, Recipient
 from product.models import Product
 
 
@@ -294,3 +294,35 @@ class ReviewImageCreateView(generics.CreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RecipientCreateView(generics.CreateAPIView):
+    serializer_class = serializers.RecipientSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class RecipientDestroyView(generics.DestroyAPIView):
+    queryset = Recipient.objects.all()
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def destroy(self, request, *args, **kwargs):
+        data = self.queryset.filter(
+            id=kwargs['pk'], user=request.user)
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RecipientListByUserView(generics.ListAPIView):
+    serializer_class = serializers.RecipientSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Recipient.objects.filter(user=user)
+        return queryset

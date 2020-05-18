@@ -56,5 +56,13 @@ urlpatterns = [
     path('product-review/delete/<int:pk>/',
          views.ProductReviewDestroyView.as_view(),
          name='product_review_delete'),
-
+    path('recipient/',
+         views.RecipientListByUserView.as_view(),
+         name='recipient_by_user'),
+    path('recipient/create/',
+         views.RecipientCreateView.as_view(),
+         name='recipient_create'),
+    path('recipient/delete/<int:pk>/',
+         views.RecipientDestroyView.as_view(),
+         name='recipient_delete'),
 ]
