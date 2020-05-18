@@ -65,4 +65,6 @@ urlpatterns = [
     path('recipient/delete/<int:pk>/',
          views.RecipientDestroyView.as_view(),
          name='recipient_delete'),
-]
+    path('recipient/update/<int:pk>/',
+         views.RecipientUpdateView.as_view(),
+         name='recipient_update'), ]

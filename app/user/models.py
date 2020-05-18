@@ -69,6 +69,10 @@ class RecipientModel(models.Model):
 class Recipient(RecipientModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL, null=True)
+    primary = models.BooleanField(default=False)
 
     def __str__(self):
         return self.city + ' ' + self.district + ' ' + self.ward + ' ' + self.additional_address
+
+    class Meta:
+        ordering = ['-primary', ]

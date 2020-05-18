@@ -304,6 +304,19 @@ class RecipientCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def create(self, request, *args, **kwargs):
+        primary = request.data.__getitem__('primary')
+        if (primary):
+            recipient_list = Recipient.objects.filter(user=request.user)
+            for recipient_obj in recipient_list:
+                recipient_obj.primary = False
+                recipient_obj.save()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class RecipientDestroyView(generics.DestroyAPIView):
     queryset = Recipient.objects.all()
@@ -326,3 +339,19 @@ class RecipientListByUserView(generics.ListAPIView):
         user = self.request.user
         queryset = Recipient.objects.filter(user=user)
         return queryset
+
+
+class RecipientUpdateView(generics.UpdateAPIView):
+    serializer_class = serializers.RecipientSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Recipient.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        primary = request.data.__getitem__('primary')
+        if (primary):
+            recipient_list = Recipient.objects.filter(user=request.user)
+            for recipient_obj in recipient_list:
+                recipient_obj.primary = False
+                recipient_obj.save()
+        return super(RecipientUpdateView, self).update(request, *args, **kwargs)
