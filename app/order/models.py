@@ -77,6 +77,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, Recipie
     class Meta:
         verbose_name = u'주문'
         verbose_name_plural = verbose_name
+        ordering = ['-created_at']
     customer = models.ForeignKey(settings.AUTH_USER_MODEL,
                                  on_delete=models.SET_NULL, null=True)
     extra_message = models.CharField(max_length=255, blank=True)
