@@ -12,11 +12,12 @@ class OrderListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = models.Order.objects.filter(customer=self.request.user)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
 
 class OrderCreateView(generics.CreateAPIView):
-    serializer_class = serializers.OrderSerializer
+    serializer_class = serializers.OrderCreateSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -27,21 +28,24 @@ class OrderCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        ordered_product_list = request.data.__getitem__('orderedProductList')
         created_order = models.Order.objects.get(id=serializer.data['id'])
-        for ordered_product_obj in ordered_product_list:
-            product_obj = Product.objects.get(pk=ordered_product_obj['product'])
-            ordered_product = models.OrderedProduct.objects.create(
-                product=product_obj,
-                order=created_order,
-                quantity=ordered_product_obj['quantity'],
-                original_price=ordered_product_obj['original_price'],
-                discount_rate=ordered_product_obj['discount_rate'],
-                is_free_ship=ordered_product_obj['is_free_ship'],
-            )
-            if(ordered_product_obj['discount_price']):
-                ordered_product.discount_price = ordered_product_obj['discount_price']
-                ordered_product.save()
+        try:
+            ordered_product_list = request.data.__getitem__('orderedProductList')
+            for ordered_product_obj in ordered_product_list:
+                product_obj = Product.objects.get(pk=ordered_product_obj['product'])
+                ordered_product = models.OrderedProduct.objects.create(
+                    product=product_obj,
+                    order=created_order,
+                    quantity=ordered_product_obj['quantity'],
+                    original_price=ordered_product_obj['original_price'],
+                    discount_rate=ordered_product_obj['discount_rate'],
+                    is_free_ship=ordered_product_obj['is_free_ship'],
+                )
+                if(ordered_product_obj['discount_price']):
+                    ordered_product.discount_price = ordered_product_obj['discount_price']
+                    ordered_product.save()
+        except:
+            pass
         models.OrderStatusLog.objects.create(order=created_order, order_status='order-processing')
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
