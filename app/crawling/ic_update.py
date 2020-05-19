@@ -1,6 +1,6 @@
 
-from store.models import Store, StorePost, StoreRanking, PostImage
-from product.models import Product, ProductCategory, ProductSubCategory, ProductColor, ProductStyle
+
+
 from ic_video import video_file_update_with_video_source, video_file_update_with_video_source_post_product_image
 
 import sys
@@ -25,7 +25,8 @@ _user_agents = [
 
 # dateInfo = (datetime.datetime.now()+datetime.timedelta(days=-1)).strftime('%Y-%m-%d')
 dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-
+from product.models import Product, ProductCategory, ProductSubCategory, ProductColor, ProductStyle
+from store.models import Store, StorePost, StoreRanking, PostImage
 # dateInfo = '2019-07-22'
 
 
@@ -276,3 +277,34 @@ def update_insta_post_to_product():
     for product_obj in product_list:
         _update_insta_post_to_product(product_obj)
     print(len(product_list))
+
+
+def update_product_category_to_store_category():
+    store_list = Store.objects.filter(is_active=True)
+    for store_obj in store_list:
+        print(store_obj.insta_id)
+        product_list = Product.objects.filter(store=store_obj)
+        product_category_list = []
+        for product_obj in product_list:
+            if(product_obj.category):
+                if (product_obj.category not in product_category_list):
+                    product_category_list.append(product_obj.category)
+        print(product_category_list)
+        for product_category in product_category_list:
+            store_obj.product_category.add(product_category)
+        store_obj.save()
+
+def update_product_thumbnail_from_post_by_store():
+    product_list = Product.objects.filter(product_source='INSTAGRAM')
+    for product_obj in product_list:
+        product_obj.product_thumbnail_image = product_obj.post.post_thumb_image
+        product_obj.save()
+
+def preview_image_update():
+    store_list = Store.objects.filter(is_active=True)
+    for store_obj in store_list:
+        product_list = Product.objects.filter(store=store_obj).order_by('-created_at')
+        store_obj.recent_post_1 = product_list[0].product_thumbnail_image
+        store_obj.recent_post_2 = product_list[1].product_thumbnail_image
+        store_obj.recent_post_3 = product_list[2].product_thumbnail_image
+        store_obj.save()

@@ -61,6 +61,7 @@ urlpatterns = [
     path('api/chu/', include('pick.urls')),
     path('api/auth/', include('rest_auth.urls')),
     path('api/core/', include('core.urls')),
+    path('api/order/', include('order.urls')),
     path('api/product/', include('product.urls')),
     path('api/advertisement/', include('advertisement.urls'))
 

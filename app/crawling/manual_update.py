@@ -1,5 +1,4 @@
-from ic_update import re_update_post_with_video, all_store_re_update_mp_post_with_video
+from ic_update import preview_image_update
 
 if __name__ == '__main__':
-    re_update_post_with_video()
-    all_store_re_update_mp_post_with_video()
+    preview_image_update()
