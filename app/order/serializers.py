@@ -38,10 +38,17 @@ class OrderSerializer(serializers.ModelSerializer):
             'orderedproduct_set__product__style',
             'orderedproduct_set__product__extra_option',
             'orderedproduct_set__product__favorite_users',
+            'orderedproduct_set__product__category',
+            'orderedproduct_set__product__sub_category',
+            'orderedproduct_set__product__shopee_rating',
             'orderedproduct_set__product__store__favorite_users',
             'orderedproduct_set__product__store__category',
             'orderedproduct_set__product__product_image_set',
-            'orderedproduct_set__product__store__product_category'
+            'orderedproduct_set__product__store__product_category',
+            'orderedproduct_set__product__store__age',
+            'orderedproduct_set__product__store__primary_style',
+            'orderedproduct_set__product__store__secondary_style',
+
         )
         return queryset
 

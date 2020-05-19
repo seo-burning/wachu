@@ -15,6 +15,14 @@ class OrderListView(generics.ListAPIView):
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     serializer = serializers.OrderSerializer(queryset, many=True)
+    #     response_list = serializer.data
+    #     custom_dict = {"test": "test", }
+    #     response_list.append(custom_dict)
+    #     return Response(response_list)
+
 
 class OrderRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.OrderSerializer
