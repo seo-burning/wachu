@@ -29,23 +29,20 @@ class OrderCreateView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         created_order = models.Order.objects.get(id=serializer.data['id'])
-        try:
-            ordered_product_list = request.data.__getitem__('orderedProductList')
-            for ordered_product_obj in ordered_product_list:
-                product_obj = Product.objects.get(pk=ordered_product_obj['product'])
-                ordered_product = models.OrderedProduct.objects.create(
-                    product=product_obj,
-                    order=created_order,
-                    quantity=ordered_product_obj['quantity'],
-                    original_price=ordered_product_obj['original_price'],
-                    discount_rate=ordered_product_obj['discount_rate'],
-                    is_free_ship=ordered_product_obj['is_free_ship'],
-                )
-                if(ordered_product_obj['discount_price']):
-                    ordered_product.discount_price = ordered_product_obj['discount_price']
-                    ordered_product.save()
-        except:
-            pass
+        ordered_product_list = request.data.__getitem__('orderedProductList')
+        for ordered_product_obj in ordered_product_list:
+            product_obj = Product.objects.get(pk=ordered_product_obj['product'])
+            ordered_product = models.OrderedProduct.objects.create(
+                product=product_obj,
+                order=created_order,
+                quantity=ordered_product_obj['quantity'],
+                original_price=ordered_product_obj['original_price'],
+                discount_rate=ordered_product_obj['discount_rate'],
+                is_free_ship=ordered_product_obj['is_free_ship'],
+            )
+            if(ordered_product_obj['discount_price']):
+                ordered_product.discount_price = ordered_product_obj['discount_price']
+                ordered_product.save()
         models.OrderStatusLog.objects.create(order=created_order, order_status='order-processing')
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
