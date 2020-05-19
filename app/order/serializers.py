@@ -21,7 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
                   'total_price',  'payment', 'order_status',
                   'recipient_name', 'contact_number', 'country',
                   'city', 'district', 'ward', 'additional_address',
-                  'extra_message', ]
+                  'extra_message', 'created_at', 'updated_at']
 
     @staticmethod
     def setup_eager_loading(queryset):
