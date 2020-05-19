@@ -16,6 +16,17 @@ class OrderListView(generics.ListAPIView):
         return queryset
 
 
+class OrderRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = serializers.OrderSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = models.Order.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
+
+
 class OrderCreateView(generics.CreateAPIView):
     serializer_class = serializers.OrderCreateSerializer
     authentication_classes = (authentication.TokenAuthentication,)

@@ -22,10 +22,11 @@ class OrderStatusModel(models.Model):
         ('order-processing', '주문 완료'),
         ('delivery', '배송 중'),
         ('delivered', '배송 완료'),
-        ('done', '구매 완료'),
+        ('order-complete', '구매 완료'),
         ('cancelled', '주문 취소'),
         ('change-processing', '교환'),
         ('refund-processing', '환불'),
+        ('refund-complete', '환불 완료'),
     ]
     order_status = models.CharField(u'주문상태', default='order-processing', max_length=50, choices=STATUS_CHOICES)
 
