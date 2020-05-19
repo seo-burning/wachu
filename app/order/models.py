@@ -68,6 +68,9 @@ class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
     order = models.ForeignKey('Order', verbose_name=u'주문',
                               on_delete=models.SET_NULL, null=True)
 
+    def __str__(self):
+        return str(self.order)
+
 
 class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, RecipientModel, PaymentModel):
     class Meta:
@@ -76,6 +79,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, Recipie
     customer = models.ForeignKey(settings.AUTH_USER_MODEL,
                                  on_delete=models.SET_NULL, null=True)
     extra_message = models.CharField(max_length=255, blank=True)
+    total_price = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.customer.name + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")
+        return self.customer.name + ' ' + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")

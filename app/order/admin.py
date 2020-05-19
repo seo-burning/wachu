@@ -31,4 +31,6 @@ class OrderedProductAdmin(admin.ModelAdmin):
 
 @admin.register(OrderStatusLog)
 class OrderStatusLogAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['__str__', 'order_status', 'created_at']
+    list_filter = ['order_status', ]
+    search_fields = ['customer__name']

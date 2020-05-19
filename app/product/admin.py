@@ -319,7 +319,7 @@ class Product(admin.ModelAdmin):
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
                  ('Product Info', {'fields': ['name', 'shopee_item_id',
                                               'description', 'product_thumbnail_image']}),
-                 ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price',
+                 ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price', 'shipping_price',
                                        'discount_price', 'discount_rate', 'currency', 'stock']}),
                  ('Product Category', {'fields': ['category', 'sub_category', 'style', ]}),
                  ('Product Detail', {'fields': ['size', 'size_chart', 'color', 'extra_option']}),
