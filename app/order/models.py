@@ -69,7 +69,7 @@ class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
                               on_delete=models.SET_NULL, null=True)
 
 
-class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, RecipientModel):
+class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, RecipientModel, PaymentModel):
     class Meta:
         verbose_name = u'주문'
         verbose_name_plural = verbose_name
