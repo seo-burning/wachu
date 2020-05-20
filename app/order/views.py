@@ -3,6 +3,7 @@ from order import serializers, models
 from rest_framework.response import Response
 from rest_framework import status
 from product.models import Product
+from rest_framework.views import APIView
 
 
 class OrderListView(generics.ListAPIView):
@@ -10,18 +11,23 @@ class OrderListView(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
+# https://www.django-rest-framework.org/api-guide/filtering/
     def get_queryset(self):
-        queryset = models.Order.objects.filter(customer=self.request.user)
+        order_status = self.kwargs['status']
+        if (order_status == 'all'):
+            queryset = models.Order.objects.filter(customer=self.request.user)
+        else:
+            queryset = models.Order.objects.filter(customer=self.request.user, order_status=order_status)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     serializer = serializers.OrderSerializer(queryset, many=True)
-    #     response_list = serializer.data
-    #     custom_dict = {"test": "test", }
-    #     response_list.append(custom_dict)
-    #     return Response(response_list)
+
+class OrderSummaryView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        return Response({'some': 'data'})
 
 
 class OrderRetrieveUpdateView(generics.RetrieveUpdateAPIView):
