@@ -5,6 +5,16 @@ from store.serializers import StoreInlineSerializer
 from datetime import datetime, timezone, timedelta
 
 
+class ProductOptionSerializer(serializers.ModelSerializer):
+    size = serializers.StringRelatedField(many=False)
+    color = serializers.StringRelatedField(many=False)
+    extra_option = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = models.ProductOption
+        fields = '__all__'
+
+
 class ProductSubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProductSubCategory
@@ -64,6 +74,7 @@ class ProductSerializer(serializers.ModelSerializer):
     favorite_users_count = serializers.SerializerMethodField()
     is_new = serializers.SerializerMethodField()
     shopee_rating = ShopeeRatingSerializer(many=False)
+    product_options = ProductOptionSerializer(many=True)
 
     class Meta:
         model = models.Product
@@ -108,7 +119,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'thumb_image_pk',
             'post',
 
-
+            'product_options',
             'favorite_users_count'
         )
 
@@ -134,7 +145,12 @@ class ProductSerializer(serializers.ModelSerializer):
             'store__favorite_users',
             'store__category',
             'product_image_set',
-            'store__product_category'
+            'store__product_category',
+            'product_options',
+            'product_options__size',
+            'product_options__color',
+            'product_options__extra_option',
+
         )
         return queryset
 

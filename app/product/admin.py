@@ -141,11 +141,6 @@ class ProductShopeeColorThroughInline(admin.TabularInline):
         ))
 
 
-@admin.register(models.ProductTag)
-class ProductTagAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(models.ProductBackEndRate)
 class ProductBackEndRateAdmin(admin.ModelAdmin):
     list_display = ['product_backend_rating', 'product',

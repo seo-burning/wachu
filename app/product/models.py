@@ -11,66 +11,64 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
-class ProductCategory(TimeStampedModel):
-    name = models.CharField(_('Product Category'), max_length=255)
-    display_name = models.CharField(default='Need to tranlate', max_length=255)
+class ActiveModel(models.Model):
+    class Meta:
+        abstract = True
     is_active = models.BooleanField(default=False)
+
+
+class OrderingModel(models.Model):
+    class Meta:
+        abstract = True
     ordering = models.IntegerField(default=999)
+
+
+class DispalyNameModel(models.Model):
+    class Meta:
+        abstract = True
+    name = models.CharField(max_length=255)
+    display_name = models.CharField(default='Need to tranlate', max_length=255)
+
+
+class ProductCategory(TimeStampedModel, DispalyNameModel, ActiveModel, OrderingModel):
 
     class Meta:
         ordering = ['ordering']
+        verbose_name = u'제품 상위 카테고리 / Product Category'
+        verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.display_name
 
 
-class ProductSubCategory(TimeStampedModel):
-    name = models.CharField(_('Product SubCategory'), max_length=255)
-    category = models.ForeignKey(
-        ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
-    display_name = models.CharField(default='Need to tranlate', max_length=255)
-    is_active = models.BooleanField(default=False)
-    ordering = models.IntegerField(default=999)
-
-    def __str__(self):
-        return self.display_name
-
+class ProductSubCategory(TimeStampedModel, DispalyNameModel, ActiveModel, OrderingModel):
     class Meta:
         ordering = ['category', 'ordering']
-
-
-class ProductSize(TimeStampedModel):
-    display_name = models.CharField(default='Need to tranlate', max_length=255)
-    name = models.CharField(
-        _('Product Size'), max_length=255, blank=True, null=True)
+        verbose_name = u'제품 하위 카테고리 / Product SubCategory'
+        verbose_name_plural = verbose_name
+    category = models.ForeignKey(
+        ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.display_name
 
 
-# COLOR_CHOICE_FIELD = (
-#     ('black', _('đen')),
-#     ('blue', _('xanh dương')),
-#     ('white', _('trắng')),
-# )
-
-
-class ProductColor(TimeStampedModel):
-    name = models.CharField(
-        _('Product Color'), max_length=255, blank=True, null=True)
-    display_name = models.CharField(max_length=255)
+class ProductSize(TimeStampedModel, DispalyNameModel):
+    class Meta:
+        verbose_name = u'제품 사이즈 / Product Size'
+        verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.display_name
 
 
-class ProductTag(TimeStampedModel):
-    name = models.CharField(_('Product Tag'),
-                            max_length=255, unique=True)
-    display_name = models.CharField(max_length=255)
+class ProductColor(TimeStampedModel, DispalyNameModel):
+    class Meta:
+        verbose_name = u'제품 색상 / Product Color'
+        verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
 
 class ProductStyle(TimeStampedModel):
@@ -213,14 +211,12 @@ class PriceModel(models.Model):
     shipping_price = models.IntegerField(default=0)
 
 
-class Product(TimeStampedModel, PriceModel):
+class Product(TimeStampedModel, PriceModel, ActiveModel):
     class Meta:
         verbose_name = u'제품'
         verbose_name_plural = verbose_name
-
         ordering = ['current_product_backend_rating', ]
 
-    is_active = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
     current_review_rating = models.DecimalField(_('Review'),
                                                 max_digits=2, decimal_places=1, default=0)
@@ -289,14 +285,14 @@ class Product(TimeStampedModel, PriceModel):
         ))
 
 
-class ProductOption(TimeStampedModel):
+class ProductOption(PriceModel, TimeStampedModel):
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     name = models.CharField(max_length=255, blank=True)
-    original_price = models.IntegerField(default=0)
-    discount_price = models.IntegerField(null=True, blank=True)
-    currency = models.CharField(choices=CURRENCY_TYPE, max_length=20)
     stock = models.IntegerField(default=0)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='product_options')
     shopee_sold_count = models.IntegerField(default=0)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True)
+    color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True)
+    extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True)

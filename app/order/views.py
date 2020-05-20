@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from product.models import Product
 from rest_framework.views import APIView
+from django.db.models import Q
 
 
 class OrderListView(generics.ListAPIView):
@@ -16,6 +17,11 @@ class OrderListView(generics.ListAPIView):
         order_status = self.kwargs['status']
         if (order_status == 'all'):
             queryset = models.Order.objects.filter(customer=self.request.user)
+        elif (order_status == 'cancel-refund-exchange'):
+            queryset = models.Order.objects.filter(customer=self.request.user)
+            queryset = models.Order.objects.filter(Q(order_status='cancelled') | Q(
+                order_status='change-processing') | Q(order_status='refund-processing') |
+                Q(order_status='refund-complete'))
         else:
             queryset = models.Order.objects.filter(customer=self.request.user, order_status=order_status)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
