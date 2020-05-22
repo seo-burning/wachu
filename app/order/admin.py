@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderedProduct, OrderStatusLog
+from .models import Order, OrderedProduct, OrderStatusLog, Coupon, AppliedCoupon
 # Register your models here.
 
 
@@ -34,3 +34,15 @@ class OrderStatusLogAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'order_status', 'created_at']
     list_filter = ['order_status', ]
     search_fields = ['customer__name']
+
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['code', 'scope', 'valid_date',
+                    'discount_rate', 'discount_price',
+                    'max_discount_price', 'minimun_order_price']
+
+
+@admin.register(AppliedCoupon)
+class AppliedCouponAdmin(admin.ModelAdmin):
+    pass

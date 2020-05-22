@@ -58,12 +58,22 @@ class CouponModel(models.Model):
     discount_price = models.IntegerField(null=True, blank=True)
     discount_rate = models.IntegerField(null=True, blank=True)
     max_discount_price = models.IntegerField(null=True, blank=True)
+    minimun_order_price = models.IntegerField(null=True, blank=True)
     code = models.CharField(max_length=10)
     description = models.CharField(max_length=255)
     valid_date = models.DateTimeField()
 
 
-class Coupon(ActiveModel, CouponModel, TimeStampedModel):
+class CouponScopeModel(models.Model):
+    class Meta:
+        abstract = True
+    SCOPE_CHOICES = [('all', 'ALL')]
+    scope = models.CharField(default='all', max_length=50,
+                             choices=SCOPE_CHOICES)
+# Coupon Type 설계 필요.
+
+
+class Coupon(ActiveModel, CouponModel, TimeStampedModel, CouponScopeModel):
     class Meta:
         verbose_name = u'쿠폰'
         verbose_name_plural = verbose_name
@@ -94,7 +104,8 @@ class OrderedProduct(PriceModel, TimeStampedModel):
                               on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, verbose_name=u'제품', on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(u'수량', default=1)
-    product_option = models.ForeignKey(ProductOption, verbose_name=u'제품 옵션', on_delete=models.SET_NULL,
+    product_option = models.ForeignKey(ProductOption, verbose_name=u'제품 옵션',
+                                       on_delete=models.SET_NULL,
                                        null=True)
 
 
@@ -111,7 +122,8 @@ class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
         return str(self.order)
 
 
-class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, RecipientModel, PaymentModel):
+class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
+            RecipientModel, PaymentModel, CouponScopeModel):
     class Meta:
         verbose_name = u'주문'
         verbose_name_plural = verbose_name
@@ -134,7 +146,6 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, Recipie
 
 
 def slug_save(obj):
-    """ A function to generate a 8 character slug and see if it has been used and contains naughty words."""
     if not obj.slug:  # if there isn't a slug
         obj.slug = get_random_string(8).upper()  # create one
         slug_is_wrong = True
@@ -144,7 +155,7 @@ def slug_save(obj):
             if len(other_objs_with_slug) > 0:
                 # if any other objects have current slug
                 slug_is_wrong = True
-            naughty_words = ['dabi', 'dacbiet']
+            naughty_words = ['sex', 'fuck']
             if obj.slug in naughty_words:
                 slug_is_wrong = True
             if slug_is_wrong:
