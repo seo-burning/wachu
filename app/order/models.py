@@ -2,7 +2,7 @@ from django.utils.crypto import get_random_string
 from django.db import models
 from django.conf import settings
 
-from product.models import PriceModel, Product
+from product.models import PriceModel, Product, ProductOption
 from user.models import RecipientModel
 # Create your models here.
 
@@ -56,16 +56,21 @@ class OrderedProduct(PriceModel, TimeStampedModel):
     class Meta:
         verbose_name = u'주문 제품'
         verbose_name_plural = verbose_name
+        ordering = ['-created_at', 'order']
+
     order = models.ForeignKey('Order', verbose_name=u'주문서',
                               on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, verbose_name=u'제품', on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(u'수량', default=1)
+    product_option = models.ForeignKey(ProductOption, verbose_name=u'제품 옵션', on_delete=models.SET_NULL,
+                                       null=True)
 
 
 class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
     class Meta:
         verbose_name = u'주문 상태'
         verbose_name_plural = verbose_name
+        ordering = ['-created_at', 'order']
 
     order = models.ForeignKey('Order', verbose_name=u'주문',
                               on_delete=models.SET_NULL, null=True)
@@ -79,6 +84,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel, Recipie
         verbose_name = u'주문'
         verbose_name_plural = verbose_name
         ordering = ['-created_at']
+
     customer = models.ForeignKey(settings.AUTH_USER_MODEL,
                                  on_delete=models.SET_NULL, null=True)
     extra_message = models.CharField(max_length=255, blank=True)

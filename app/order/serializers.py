@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from order.models import Order, OrderedProduct
-from product.serializers import ProductSerializer
+from product.serializers import ProductSerializer, ProductOptionSerializer
 
 
 class OrderedProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False)
+    prodct_option = ProductOptionSerializer(many=False)
 
     class Meta:
         model = OrderedProduct

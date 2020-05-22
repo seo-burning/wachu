@@ -286,6 +286,11 @@ class Product(TimeStampedModel, PriceModel, ActiveModel):
 
 
 class ProductOption(PriceModel, TimeStampedModel):
+    class Meta:
+        verbose_name = u'제품 옵션 / Product Option'
+        verbose_name_plural = verbose_name
+        ordering = ['-created_at', 'product']
+
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)

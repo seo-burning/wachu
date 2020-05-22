@@ -9,7 +9,7 @@ INSTALLED_APPS += [
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
 # WSGI application
 WSGI_APPLICATION = 'app.wsgi.dev.application'
-SITE_ID = 2
+# SITE_ID = 2
 
 INTERNAL_IPS = ('172.18.0.1',)
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000

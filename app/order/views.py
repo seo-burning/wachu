@@ -2,7 +2,7 @@ from rest_framework import generics, authentication, permissions
 from order import serializers, models
 from rest_framework.response import Response
 from rest_framework import status
-from product.models import Product
+from product.models import Product, ProductOption
 from rest_framework.views import APIView
 from django.db.models import Q
 
@@ -63,8 +63,10 @@ class OrderCreateView(generics.CreateAPIView):
         ordered_product_list = request.data.__getitem__('orderedProductList')
         for ordered_product_obj in ordered_product_list:
             product_obj = Product.objects.get(pk=ordered_product_obj['product'])
+            product_option_obj = ProductOption.objects.get(pk=ordered_product_obj['product_option'])
             ordered_product = models.OrderedProduct.objects.create(
                 product=product_obj,
+                product_option=product_option_obj,
                 order=created_order,
                 quantity=ordered_product_obj['quantity'],
                 original_price=ordered_product_obj['original_price'],
