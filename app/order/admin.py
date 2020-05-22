@@ -38,7 +38,7 @@ class OrderStatusLogAdmin(admin.ModelAdmin):
 
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ['code', 'scope', 'valid_date',
+    list_display = ['code', 'is_active', 'scope', 'valid_date', 'restriction',
                     'discount_rate', 'discount_price',
                     'max_discount_price', 'minimun_order_price']
 

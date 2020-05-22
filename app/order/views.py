@@ -5,6 +5,26 @@ from rest_framework import status
 from product.models import Product, ProductOption
 from rest_framework.views import APIView
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
+
+
+class CouponValidateView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        code = request.query_params['code']
+        try:
+            coupon_obj = models.Coupon.objects.filter(is_active=True).get(code=code)
+        except ObjectDoesNotExist:
+            coupon_obj = None
+
+        if coupon_obj:
+            serializer = serializers.CouponSerializer(coupon_obj)
+            print(code, coupon_obj)
+            return Response({'validation': True, 'code': serializer.data})
+        else:
+            return Response({'validation': False})
 
 
 class OrderListView(generics.ListAPIView):

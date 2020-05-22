@@ -54,26 +54,29 @@ class ActiveModel(models.Model):
 class CouponModel(models.Model):
     class Meta:
         abstract = True
+    SCOPE_CHOICES = [('total', 'TOTAL_PRICE'), ('shipping', 'SHIPPING'), ('product', 'PRODUCT')]
 
     discount_price = models.IntegerField(null=True, blank=True)
     discount_rate = models.IntegerField(null=True, blank=True)
     max_discount_price = models.IntegerField(null=True, blank=True)
     minimun_order_price = models.IntegerField(null=True, blank=True)
     code = models.CharField(max_length=10)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True)
     valid_date = models.DateTimeField()
+    scope = models.CharField(default='total', max_length=50,
+                             choices=SCOPE_CHOICES)
 
 
-class CouponScopeModel(models.Model):
+class CouponRestrictionModel(models.Model):
     class Meta:
         abstract = True
-    SCOPE_CHOICES = [('all', 'ALL')]
-    scope = models.CharField(default='all', max_length=50,
-                             choices=SCOPE_CHOICES)
+    RESTRICTION_CHOICES = [('none', 'NONE')]
+    restriction = models.CharField(default='none', max_length=50,
+                                   choices=RESTRICTION_CHOICES)
 # Coupon Type 설계 필요.
 
 
-class Coupon(ActiveModel, CouponModel, TimeStampedModel, CouponScopeModel):
+class Coupon(ActiveModel, CouponModel, TimeStampedModel, CouponRestrictionModel):
     class Meta:
         verbose_name = u'쿠폰'
         verbose_name_plural = verbose_name
@@ -123,7 +126,7 @@ class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
 
 
 class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
-            RecipientModel, PaymentModel, CouponScopeModel):
+            RecipientModel, PaymentModel):
     class Meta:
         verbose_name = u'주문'
         verbose_name_plural = verbose_name

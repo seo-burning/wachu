@@ -9,4 +9,5 @@ urlpatterns = [
     path('update/<int:pk>/', views.OrderRetrieveUpdateView.as_view(),
          name='order_retrieve_update'),
     path('<str:status>/', views.OrderListView.as_view(), name='order_list'),
+    path('coupon/validate/', views.CouponValidateView.as_view(), name='validate_coupon')
 ]

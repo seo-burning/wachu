@@ -1,6 +1,12 @@
 from rest_framework import serializers
-from order.models import Order, OrderedProduct
+from order.models import Order, OrderedProduct, Coupon
 from product.serializers import ProductSerializer, ProductOptionSerializer
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = '__all__'
 
 
 class OrderedProductSerializer(serializers.ModelSerializer):
