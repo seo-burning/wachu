@@ -5,13 +5,14 @@ from product.serializers import ProductSerializer, ProductOptionSerializer
 
 class OrderedProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False)
-    prodct_option = ProductOptionSerializer(many=False)
+    product_option = ProductOptionSerializer(many=False)
 
     class Meta:
         model = OrderedProduct
         fields = '__all__'
 
 
+# TODO EAGER LOADING
 class OrderSerializer(serializers.ModelSerializer):
     orderedproduct_set = OrderedProductSerializer(many=True)
 
@@ -33,10 +34,14 @@ class OrderSerializer(serializers.ModelSerializer):
         queryset = queryset.prefetch_related(
             'orderedproduct_set',
             'orderedproduct_set__product',
+            'orderedproduct_set__product_option',
+            'orderedproduct_set__product_option__color',
+            'orderedproduct_set__product_option__size',
+            'orderedproduct_set__product_option__extra_option',
             'orderedproduct_set__product__post__post_image_set',
             'orderedproduct_set__product__color',
-            'orderedproduct_set__product__size',
             'orderedproduct_set__product__style',
+            'orderedproduct_set__product__size',
             'orderedproduct_set__product__extra_option',
             'orderedproduct_set__product__favorite_users',
             'orderedproduct_set__product__category',
@@ -49,6 +54,10 @@ class OrderSerializer(serializers.ModelSerializer):
             'orderedproduct_set__product__store__age',
             'orderedproduct_set__product__store__primary_style',
             'orderedproduct_set__product__store__secondary_style',
+            'orderedproduct_set__product__product_options',
+            'orderedproduct_set__product__product_options__color',
+            'orderedproduct_set__product__product_options__size',
+            'orderedproduct_set__product__product_options__extra_option',
 
         )
         return queryset

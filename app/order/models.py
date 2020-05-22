@@ -51,6 +51,38 @@ class ActiveModel(models.Model):
     is_active = models.BooleanField(default=False)
 
 
+class CouponModel(models.Model):
+    class Meta:
+        abstract = True
+
+    discount_price = models.IntegerField(null=True, blank=True)
+    discount_rate = models.IntegerField(null=True, blank=True)
+    max_discount_price = models.IntegerField(null=True, blank=True)
+    code = models.CharField(max_length=10)
+    description = models.CharField(max_length=255)
+    valid_date = models.DateTimeField()
+
+
+class Coupon(ActiveModel, CouponModel, TimeStampedModel):
+    class Meta:
+        verbose_name = u'쿠폰'
+        verbose_name_plural = verbose_name
+
+
+class AppliedCoupon(ActiveModel, TimeStampedModel):
+    class Meta:
+        verbose_name = u'사용 쿠폰'
+        verbose_name_plural = verbose_name
+        ordering = ['-is_active']
+
+    coupon = models.ForeignKey(Coupon, verbose_name=u'쿠폰', on_delete=models.SET_NULL,
+                               null=True, related_name='used_coupons')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'유저', on_delete=models.SET_NULL,
+                             null=True, related_name='used_coupons')
+    order = models.ForeignKey('Order', verbose_name=u'주문',
+                              on_delete=models.SET_NULL, null=True, related_name='applied_coupons')
+
+
 class OrderedProduct(PriceModel, TimeStampedModel):
     # 주문한 시점의 상태를 기록할 필요가 있음, 가격 등의 변동이 있을 가능성이 존재함.
     class Meta:
