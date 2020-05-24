@@ -96,6 +96,10 @@ class OrderCreateView(generics.CreateAPIView):
             if(ordered_product_obj['discount_price']):
                 ordered_product.discount_price = ordered_product_obj['discount_price']
                 ordered_product.save()
+        coupon_id = request.data.__getitem__('coupon_code')
+        if coupon_id:
+            coupon_obj = models.Coupon.objects.get(id=coupon_id)
+            models.AppliedCoupon.objects.create(coupon=coupon_obj, user=request.user, order=created_order)
         models.OrderStatusLog.objects.create(order=created_order, order_status='order-processing')
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

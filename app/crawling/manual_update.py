@@ -72,8 +72,16 @@ def make_product_options_from_product(product):
 
 
 if __name__ == '__main__':
-    product_list = Product.objects.filter(is_active=True)
-    import multiprocessing as mp
-    pool = mp.Pool(processes=6)
-    pool.map(make_product_options_from_product, product_list)
-    pool.close()
+    product_list = Product.objects.filter(is_active=True, is_free_ship=False)
+    print(len(product_list))
+    for product_obj in product_list:
+        product_option_list = ProductOption.objects.filter(product=product_obj)
+        print(product_obj.name)
+        for product_option_obj in product_option_list:
+            print('saved')
+            product_option_obj.shipping_price = 25000
+            product_option_obj.save()
+    # import multiprocessing as mp
+    # pool = mp.Pool(processes=6)
+    # pool.map(make_product_options_from_product, product_list)
+    # pool.close()

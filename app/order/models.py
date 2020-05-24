@@ -82,11 +82,10 @@ class Coupon(ActiveModel, CouponModel, TimeStampedModel, CouponRestrictionModel)
         verbose_name_plural = verbose_name
 
 
-class AppliedCoupon(ActiveModel, TimeStampedModel):
+class AppliedCoupon(TimeStampedModel):
     class Meta:
         verbose_name = u'사용 쿠폰'
         verbose_name_plural = verbose_name
-        ordering = ['-is_active']
 
     coupon = models.ForeignKey(Coupon, verbose_name=u'쿠폰', on_delete=models.SET_NULL,
                                null=True, related_name='used_coupons')
