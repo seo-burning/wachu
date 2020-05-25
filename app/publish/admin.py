@@ -59,7 +59,9 @@ class LinkingBannerAdmin(admin.ModelAdmin):
               'link_url',
               'published_banner',
               'banner_type',
-              'coupon_code']
+              'coupon_code',
+              'primary_color',
+              'secondary_color']
     list_display = ['__str__', 'title',
                     'published_banner',
                     'banner_type',

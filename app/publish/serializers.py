@@ -48,7 +48,9 @@ class LinkingBannerSerializer(serializers.ModelSerializer):
                   'cover_picture_4',
                   'link_url',
                   'coupon_code',
-                  'banner_type')
+                  'banner_type',
+                  'primary_color',
+                  'secondary_color')
 
 
 class PostImageSerializer(serializers.ModelSerializer):

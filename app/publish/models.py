@@ -46,6 +46,8 @@ class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
     published_banner = models.ForeignKey(
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
     banner_type = models.CharField(default='base', max_length=20, choices=BANNER_TYPE)
+    primary_color = models.CharField(max_length=20, blank=True)
+    secondary_color = models.CharField(max_length=20, blank=True)
 
     class Meta:
         ordering = ('-is_active', 'ordering',)
