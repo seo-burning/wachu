@@ -46,7 +46,7 @@ class LinkingBannerSerializer(serializers.ModelSerializer):
                   'cover_picture_2',
                   'cover_picture_3',
                   'cover_picture_4',
-                  'link_url')
+                  'link_url', 'banner_type')
 
 
 class PostImageSerializer(serializers.ModelSerializer):

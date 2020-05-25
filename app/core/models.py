@@ -7,6 +7,7 @@ import csv
 from django.http import HttpResponse
 from user.models import UserFavoriteProduct
 from product.models import Product
+from .abstract_models import TimeStampedModel
 
 
 class ExportCsvMixin:
@@ -28,14 +29,6 @@ class ExportCsvMixin:
         return response
 
     export_as_csv.short_description = "Export Selected"
-
-
-class TimeStampedModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
 
 
 class UserManager(BaseUserManager):

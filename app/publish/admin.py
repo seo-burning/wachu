@@ -57,7 +57,7 @@ class LinkingBannerAdmin(admin.ModelAdmin):
               'cover_picture_3',
               'cover_picture_4',
               'link_url',
-              'published_banner']
+              'published_banner', 'banner_type']
     list_display = ['__str__', 'title',
                     'published_banner']
     list_display_links = ['__str__', 'title']

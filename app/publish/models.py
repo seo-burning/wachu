@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from core.models import TimeStampedModel
+from core.abstract_models import TimeStampedModel, ActiveModel, OrderingModel
 from store.models import StorePost
 from product import models as p_models
 from store.models import Store
@@ -26,8 +26,10 @@ class PostGroup(TimeStampedModel):
         return self.title
 
 
-class LinkingBanner(TimeStampedModel):
-    ordering = models.IntegerField(default=999, null=True)
+BANNER_TYPE = [('linking', 'LINKING'), ('base', 'BASIC'), ('coupon', 'COUPON')]
+
+
+class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
     title = models.CharField(_('Post Group Title'), max_length=50)
     list_thumb_picture = models.ImageField(
         blank=True, upload_to='post-group-list-thumb/%Y/%m')
@@ -42,6 +44,10 @@ class LinkingBanner(TimeStampedModel):
     link_url = models.URLField(null=True, blank=True, max_length=500)
     published_banner = models.ForeignKey(
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
+    banner_type = models.CharField(default='base', max_length=20, choices=BANNER_TYPE)
+
+    class Meta:
+        ordering = ('-is_active', 'ordering',)
 
     def __str__(self):
         return self.title

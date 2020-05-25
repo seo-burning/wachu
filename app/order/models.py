@@ -4,14 +4,9 @@ from django.conf import settings
 
 from product.models import PriceModel, Product, ProductOption
 from user.models import RecipientModel
+
+from core.abstract_models import TimeStampedModel, ActiveModel
 # Create your models here.
-
-
-class TimeStampedModel(models.Model):
-    class Meta:
-        abstract = True
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
 class OrderStatusModel(models.Model):
@@ -43,12 +38,6 @@ class DeliveryStatusModel(models.Model):
         abstract = True
 
     delivery_status = models.CharField(u'배송상태', max_length=50, blank=True)
-
-
-class ActiveModel(models.Model):
-    class Meta:
-        abstract = True
-    is_active = models.BooleanField(default=False)
 
 
 class CouponModel(models.Model):

@@ -2,16 +2,9 @@ from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
+from core.abstract_models import ActiveModel, TimeStampedModel
 from django.utils.translation import ugettext_lazy as _
 from product.models import ProductCategory
-
-
-class TimeStampedModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
 
 
 class UserFavoriteStore(TimeStampedModel):
@@ -74,13 +67,12 @@ STORE_TYPE = (('IF', _('-')),
               )
 
 
-class Store(TimeStampedModel):
+class Store(ActiveModel, TimeStampedModel):
     class Meta:
-        ordering = ('current_ranking',)
+        ordering = ('-is_active', 'current_ranking',)
     store_type = models.CharField(
         max_length=25, choices=STORE_TYPE, default='IF', null=True)
     """Store object"""
-    is_active = models.BooleanField(default=False)
     is_updated = models.BooleanField(default=False)
     is_new_post = models.BooleanField(default=False)
 
