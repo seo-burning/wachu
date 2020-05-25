@@ -42,6 +42,7 @@ class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
     cover_picture_4 = models.ImageField(
         blank=True, upload_to='post-group-cover/%Y/%m')
     link_url = models.URLField(null=True, blank=True, max_length=500)
+    coupon_code = models.URLField(null=True, blank=True, max_length=100)
     published_banner = models.ForeignKey(
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
     banner_type = models.CharField(default='base', max_length=20, choices=BANNER_TYPE)
