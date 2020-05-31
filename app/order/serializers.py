@@ -38,7 +38,7 @@ class OrderSerializer(serializers.ModelSerializer):
                   'total_price',  'payment',
                   'recipient_name', 'contact_number', 'country',
                   'city', 'district', 'ward', 'additional_address',
-                  'extra_message', 'created_at', 'updated_at']
+                  'extra_message', 'created_at', 'updated_at', 'pk']
 
     @staticmethod
     def setup_eager_loading(queryset):
