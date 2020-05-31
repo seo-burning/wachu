@@ -128,7 +128,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
     slug = models.SlugField(max_length=8, blank=True)
 
     def __str__(self):
-        return self.customer.name + ' ' + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")
+        return str(self.pk) + ' ' + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")
 
     def save(self, *args, **kwargs):
         """ Add Slug creating/checking to save method. """

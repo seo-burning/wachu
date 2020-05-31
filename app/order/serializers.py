@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from order.models import Order, OrderedProduct, Coupon
+from order.models import Order, OrderedProduct, Coupon, AppliedCoupon
 from product.serializers import ProductSerializer, ProductOptionSerializer
 
 
@@ -18,15 +18,24 @@ class OrderedProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AppliedCouponSerializer(serializers.ModelSerializer):
+    coupon = CouponSerializer(many=False)
+
+    class Meta:
+        model = AppliedCoupon
+        fields = ['coupon', ]
 # TODO EAGER LOADING
+
+
 class OrderSerializer(serializers.ModelSerializer):
     orderedproduct_set = OrderedProductSerializer(many=True)
+    applied_coupons = AppliedCouponSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ['orderedproduct_set', 'slug', 'original_price', 'discount_price',
+        fields = ['order_status', 'applied_coupons', 'orderedproduct_set', 'slug', 'original_price', 'discount_price',
                   'discount_rate', 'is_free_ship', 'shipping_price', 'currency',
-                  'total_price',  'payment', 'order_status',
+                  'total_price',  'payment',
                   'recipient_name', 'contact_number', 'country',
                   'city', 'district', 'ward', 'additional_address',
                   'extra_message', 'created_at', 'updated_at']
@@ -38,6 +47,8 @@ class OrderSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related(
             'customer',)
         queryset = queryset.prefetch_related(
+            'applied_coupons',
+            'applied_coupons__coupon',
             'orderedproduct_set',
             'orderedproduct_set__product',
             'orderedproduct_set__product_option',
