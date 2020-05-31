@@ -5,6 +5,7 @@ app_name = 'order'
 
 urlpatterns = [
     path('create/', views.OrderCreateView.as_view(), name='order_create'),
+    path('create/status/', views.OrderStatusLogCreateView.as_view(), name='order_status_log_create'),
     path('user/', views.OrderSummaryView.as_view(), name='order_summary'),
     path('update/<int:pk>/', views.OrderRetrieveUpdateView.as_view(),
          name='order_retrieve_update'),

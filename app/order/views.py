@@ -108,10 +108,19 @@ class OrderCreateView(generics.CreateAPIView):
     # 주문을 만드면서, 해당 상태에서 고정된 상품을 생성해야 한다.
 
 
-# class OrderCreateView(generics.CreateAPIView):
-#     serializer_class = serializers.OrderedProductSerializer
-#     authentication_classes = (authentication.TokenAuthentication,)
-#     permission_classes = (permissions.IsAuthenticated,)
+class OrderStatusLogCreateView(generics.CreateAPIView):
+    serializer_class = serializers.OrderStatusLogCreateSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
-    # 주문을 만드면서, 각 단계에 대한 Order Status Log를 만들어야한다.
-    # 주문을 만드면서, 해당 상태에서 고정된 상품을 생성해야 한다.
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        order_pk = request.data.__getitem__('order')
+        order_status = request.data.__getitem__('order_status')
+        order_obj = models.Order.objects.get(pk=order_pk)
+        order_obj.order_status = order_status
+        order_obj.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
