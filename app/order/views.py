@@ -27,6 +27,16 @@ class CouponValidateView(APIView):
             return Response({'validation': False})
 
 
+class CouponListView(generics.ListAPIView):
+    serializer_class = serializers.CouponSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = models.Coupon.objects.filter(is_active=True)
+        return queryset
+
+
 class OrderListView(generics.ListAPIView):
     serializer_class = serializers.OrderSerializer
     authentication_classes = (authentication.TokenAuthentication,)
