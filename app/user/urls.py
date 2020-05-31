@@ -18,6 +18,8 @@ urlpatterns = [
          name='additional_info_update'),
     path('me/name/', views.UserNameUpdateView.as_view(),
          name='name_update'),
+    path('me/profile-image/', views.UserProfileImageUpdateView.as_view(),
+         name='profile_image_update'),
     path('me/push_token/', views.CreatUserPushToken.as_view(),
          name='push_token'),
     path('facebook/', views.FacebookLogin.as_view(), name='fb_login'),

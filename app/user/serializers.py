@@ -112,6 +112,14 @@ class UserNameSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class UserProfileImageCreateSerializer(serializers.ModelSerializer):
+    profile_image = Base64ImageField(max_length=None, use_url=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('profile_image',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     get_user_favorite_stores_count = serializers.IntegerField(
         source='favorite_stores.count', read_only=True)
@@ -123,7 +131,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'password', 'name',
                   'age', 'height', 'weight', 'gender',
                   'get_user_favorite_stores_count',
-                  'get_user_favorite_posts_count')
+                  'get_user_favorite_posts_count', 'profile_image')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 6}}
 
     def create(self, validated_data):

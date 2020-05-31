@@ -168,6 +168,17 @@ class UserNameUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
+    """Update user basic infomation"""
+    serializer_class = serializers.UserProfileImageCreateSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
+
+
 class ProductReviewCreateView(generics.CreateAPIView):
     serializer_class = serializers.ProductReviewCreateSerializer
     authentication_classes = (authentication.TokenAuthentication,)

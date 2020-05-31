@@ -67,7 +67,8 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    profile_image = models.ImageField(
+        blank=True, upload_to='profile/%Y/%m')
     favorite_products = models.ManyToManyField(
         Product,
         through=UserFavoriteProduct,
