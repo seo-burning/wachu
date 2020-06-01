@@ -17,7 +17,7 @@ from django.db.models import Q
 
 from helper.instagram_helper import resize_thumbnail_by_store
 from ic_video import video_file_update_with_video_source, video_file_update_with_video_source_post_product_image
-from utils.slack import slack_notify, slack_upload_file
+# # # from utils.slack import slack_notify, slack_upload_file
 
 import os_setup
 
@@ -43,7 +43,7 @@ def get_proxies():
     soup = BeautifulSoup(response.text, 'html.parser')
     proxy_list = soup.find('tbody')
     proxies = set()
-    for rows in proxy_list.find_all('tr')[:5]:
+    for rows in proxy_list.find_all('tr')[5:7]:
         proxies.add(rows.find_all('td')[0].text +
                     ':'+rows.find_all('td')[1].text)
     return proxies
@@ -71,8 +71,11 @@ class InstagramScraper:
 
     def __request_url(self, url):
         try:
-            response = requests.get(url, headers={'user-agent': self.__random_agent(), },
-                                    proxies={'http': self.proxy, 'https': self.proxy})
+            headers = self.__random_agent()
+            proxies = self.__random_proxies()
+            response = requests.get(url, headers={'user-agent': headers, },
+                                    proxies={'http': proxies, 'https': proxies})
+            print(proxies)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -93,20 +96,29 @@ class InstagramScraper:
 
     def profile_page_metrics(self, profile_url):
         results = {}
-        try:
-            response = self.__request_url(profile_url)
-            json_data = self.extract_json_data(response)
-            metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']
-        except Exception as e:
-            slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
-            pass
-        else:
-            for key, value in metrics.items():
-                if value and isinstance(value, dict):
+    # try:
+        response = self.__request_url(profile_url)
+        json_data = self.extract_json_data(response)
+        metrics = json_data['entry_data']
+        print(metrics)
+        metrics = metrics['ProfilePage'][0]['graphql']['user']
+        print(metrics)
+        print('execute profile')
+    # except Exception as e:
+    #     print(e)
+    #     print('error occured')
+    #     slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
+    #     pass
+    # else:
+        print(len(metrics.items()))
+        for key, value in metrics.items():
+            if value and isinstance(value, dict):
+                print(key)
+                if 'count' in value:
                     value = value['count']
-                    results[key] = value
-                elif value:
-                    results[key] = value
+                results[key] = value
+            elif value:
+                results[key] = value
         return results
 
     def profile_page_recent_posts(self, profile_url):
@@ -116,7 +128,8 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']["edges"]
         except Exception as e:
-            slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
+            # slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
+            print(e)
             pass
         else:
             for node in metrics:
@@ -132,7 +145,8 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['PostPage'][0]['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
         except Exception as e:
-            slack_notify("Failed in Get Single Posts {} {}".format(request_url, e))
+            # slack_notify("Failed in Get Single Posts {} {}".format(request_url, e))
+            print('Error occured when get specific post data')
             pass
         else:
             for node in metrics:
@@ -148,7 +162,7 @@ class InstagramScraper:
             json_data = self.extract_json_data(response)
             metrics = json_data['entry_data']['PostPage'][0]['graphql']['shortcode_media']
         except Exception as e:
-            slack_notify("Failed in Get Posts'  video{} {}".format(request_url, e))
+            # slack_notify("Failed in Get Posts'  video{} {}".format(request_url, e))
             pass
         return metrics
 
@@ -176,10 +190,10 @@ class InstagramScraper:
     def insert_insta(self, url):
         results = {}
         results = self.profile_page_metrics(url)
-        sleep(2+random.random()*15)
+        # sleep(2+random.random()*15)
         result_post = []
         result_post = self.profile_page_recent_posts(url)
-        sleep(2+random.random()*15)
+        # sleep(2+random.random()*15)
 
         profile_description = ''
         email = ''
@@ -279,7 +293,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'MP'
                                 post_images = self.get_content_from_post_page(
                                     post_url)
-                                sleep(2+random.random()*15)
+                                # sleep(2+random.random()*15)
                                 obj_post.post_thumb_image = post_images[0]['display_resources'][0]['src']
                                 obj_post.save()
                                 for image in post_images:
@@ -299,7 +313,7 @@ class InstagramScraper:
                                 obj_post.post_type = 'V'
                                 post_video = self.get_video_from_post_page(
                                     post_url)
-                                sleep(2+random.random()*15)
+                                # sleep(2+random.random()*15)
                                 video_file_update_with_video_source(
                                     obj_post, post_video['video_url'], post_video['thumbnail_src'])
                                 obj_post.view_count = post_video['video_view_count']
@@ -324,7 +338,7 @@ class InstagramScraper:
                         post_saved = post_saved + 1
                         post_score_sum = post_score_sum + obj_post.post_score
                     except IndexError as e:
-                        print('E', end='')
+                        print(e, end='')
                         pass
 
             else:
@@ -374,8 +388,8 @@ def update_instagram():
             total_new_post = total_new_post + new_post
             result_text = "{} save new post : #{} // total : #{}".format(url, new_post, total_new_post)
             f.writelines(result_text)
-    slack_notify(">updated store : {} total created post : {}".format(str(pk), str(total_new_post)))
-    slack_upload_file(file_path)
+    # slack_notify(">updated store : {} total created post : {}".format(str(pk), str(total_new_post)))
+    # slack_upload_file(file_path)
     os.remove(file_path)
 
 
@@ -391,8 +405,7 @@ if __name__ == '__main__':
         dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
         print(dateInfo)
     store_list = Store.objects.all().filter(Q(
-        store_type='IF(P)') | Q(
-        store_type='IF')).order_by('current_ranking')
+        store_type='IF(P)')).order_by('current_ranking')
     print("total active store: #{}".format(len(store_list)))
     all_store_ranking_objs_for_today = StoreRanking.objects.filter(
         date=dateInfo).filter(store__is_active=True)
@@ -418,6 +431,7 @@ if __name__ == '__main__':
             new_post = 0
         total_new_post = total_new_post + new_post
         print("save new post : #{} // total : #{}".format(new_post, total_new_post))
+        break
 
     print(total_new_post)
     print("--- %s seconds ---" % (time.time() - start_time))
