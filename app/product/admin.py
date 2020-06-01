@@ -10,6 +10,11 @@ import json
 # Register your models here.
 
 
+@admin.register(models.ProductTag)
+class ProductTagAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name', 'is_active', 'ordering']
@@ -317,7 +322,7 @@ class Product(admin.ModelAdmin):
                  ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price', 'shipping_price',
                                        'discount_price', 'discount_rate', 'currency', 'stock']}),
                  ('Product Category', {'fields': ['category', 'sub_category', 'style', ]}),
-                 ('Product Detail', {'fields': ['size', 'size_chart', 'color', 'extra_option']}),
+                 ('Product Detail', {'fields': ['size', 'size_chart', 'color', 'tag', 'extra_option']}),
                  ('Shopee Info', {'fields': ['shopee_category', 'shopee_color', 'shopee_size', ]}),
                  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
                  ]

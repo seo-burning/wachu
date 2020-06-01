@@ -36,6 +36,15 @@ class ProductSize(TimeStampedModel, DispalyNameModel):
         return self.display_name
 
 
+class ProductTag(TimeStampedModel, DispalyNameModel):
+    class Meta:
+        verbose_name = u'제품 태그 / Product Tag'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.display_name
+
+
 class ProductColor(TimeStampedModel, DispalyNameModel):
     class Meta:
         verbose_name = u'제품 색상 / Product Color'
@@ -234,11 +243,14 @@ class Product(TimeStampedModel, PriceModel, ActiveModel):
 
     size = models.ManyToManyField(
         ProductSize, blank=True)
+
     size_chart = models.CharField(null=True, max_length=1024, blank=True)
     color = models.ManyToManyField(
         ProductColor, blank=True, related_name='product_set')
     extra_option = models.ManyToManyField(
         ProductExtraOption, blank=True)
+    tag = models.ManyToManyField(
+        ProductTag, blank=True)
 
     post = models.ForeignKey(
         'store.StorePost', on_delete=models.CASCADE, null=True, blank=True)
