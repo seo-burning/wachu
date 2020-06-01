@@ -16,7 +16,7 @@ class ProductFormForInstagramPost(forms.ModelForm):
             'original_price',
             'discount_price',
             'size',
-            'tag'
+            'pattern'
         ]
         raw_id_fields = ['store']
 

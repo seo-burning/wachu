@@ -36,9 +36,9 @@ class ProductSize(TimeStampedModel, DispalyNameModel):
         return self.display_name
 
 
-class ProductTag(TimeStampedModel, DispalyNameModel):
+class ProductPattern(TimeStampedModel, DispalyNameModel):
     class Meta:
-        verbose_name = u'제품 태그 / Product Tag'
+        verbose_name = u'제품 패턴 / Product Tag'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -249,8 +249,8 @@ class Product(TimeStampedModel, PriceModel, ActiveModel):
         ProductColor, blank=True, related_name='product_set')
     extra_option = models.ManyToManyField(
         ProductExtraOption, blank=True)
-    tag = models.ManyToManyField(
-        ProductTag, blank=True)
+    pattern = models.ManyToManyField(
+        ProductPattern, blank=True)
 
     post = models.ForeignKey(
         'store.StorePost', on_delete=models.CASCADE, null=True, blank=True)
