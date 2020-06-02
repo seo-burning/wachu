@@ -76,7 +76,7 @@ class Store(ActiveModel, TimeStampedModel):
     is_updated = models.BooleanField(default=False)
     is_new_post = models.BooleanField(default=False)
 
-    insta_id = models.CharField(_("Instagram ID"), max_length=255)
+    insta_id = models.CharField(_("Instagram ID"), max_length=255, unique=True)
     insta_url = models.URLField(
         _("Instagram URL"), null=True, blank=True, max_length=500)
     profile_image = models.URLField(
