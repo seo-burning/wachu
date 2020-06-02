@@ -111,7 +111,7 @@ class Store(ActiveModel, TimeStampedModel):
     shopee_url = models.URLField(null=True, blank=True, max_length=500)
     shopee_numeric_id = models.CharField(max_length=255, blank=True)
     homepage_url = models.URLField(null=True, blank=True, max_length=500)
-
+    dosiin_url = models.URLField(null=True, blank=True, max_length=500)
     # Ranking Info
     current_ranking = models.IntegerField(null=True)
     current_review_rating = models.DecimalField(

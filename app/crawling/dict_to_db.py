@@ -2,8 +2,11 @@ import multiprocessing as mp
 from functools import partial
 
 import os_setup
-from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize
-from store.models import Store, StorePost
+from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
+    ProductSize, ProductColor, ProductExtraOption, \
+    ProductOption, ShopeeColor, ShopeeSize, ProductSubCategory, ProductCategory,\
+    ProductStyle
+from store.models import Store, StorePost, Primary_Style, Age, Category
 
 
 def update_color(obj_product, options):
@@ -55,6 +58,10 @@ def update_product_option(obj_product, option_list):
         obj_option.discount_price = option['discount_price']
         obj_option.currency = option['currency']
         obj_option.stock = option['stock']
+        if 'size' in option_list:
+            obj_size = ShopeeSize.objects.get(
+                display_name=obj_option['size'])
+            obj_option.size = obj_size.size
         obj_option.save()
 
 
@@ -68,8 +75,31 @@ def update_product_image(obj_product, product_image_list):
         )
 
 
+def update_sub_category(obj_product, subcategory):
+    shopee_category, is_created = ShopeeCategory.objects.get_or_create(display_name=subcategory)
+    print(shopee_category.sub_category)
+    if shopee_category.sub_category:
+        obj_product.sub_category = shopee_category.sub_category
+        obj_product.category = shopee_category.category
+        obj_product.is_active = True
+    else:
+        obj_product.is_active = False
+    obj_product.save()
+
+
+def update_style(obj_product, style):
+    style_obj = ProductStyle.objects.get(name=style)
+    obj_product.style = style_obj
+    obj_product.save()
+
+
 def update_product_object(product_source):
-    store_obj = Store.objects.get(pk=product_source['store'])
+    if ('store' in product_source):
+        store_obj = Store.objects.get(pk=product_source['store'])
+    elif ('store_name' in product_source):
+        store_name = product_source['store_name']
+        store_obj = Store.objects.get(insta_id=store_name)
+        print(store_name)
     product_obj, is_created = Product.objects.get_or_create(
         name=product_source['name'],
         product_link=product_source['product_link'],
@@ -94,11 +124,81 @@ def update_product_object(product_source):
     update_size(product_obj, product_source['shopee_size'])
     update_product_option(product_obj, product_source['productOption'])
     update_product_image(product_obj, product_source['product_image_list'])
+    if 'subcategory' in product_source:
+        print('this')
+        update_sub_category(product_obj, product_source['subcategory'])
+    if 'style' in product_source:
+        update_style(product_obj, product_source['style'])
     product_obj.save()
 
 
 def dict_to_product_model(product_list):
-    pool = mp.Pool(processes=6)
+    pool = mp.Pool(processes=32)
     print('setup multiprocessing')
     pool.map(update_product_object, product_list)
     pool.close()
+    # for product_obj in product_list:
+    #     update_product_object(product_obj)
+
+
+#  {'insta_id': 'dam',
+#   'store_type': 'DS',
+#   'profile_image': 'https://static.dosi-in.com/images/logos/20/logo.png',
+#   'name': 'ĐẬM',
+#   'homepage_url': 'https://dosi-in.com/dam/',
+#   'primary_style': 'street'}
+
+def update_store_object(store_dic):
+    store_obj, is_created = Store.objects.get_or_create(
+        insta_id=store_dic['insta_id'], store_type=store_dic['store_type'])
+    store_obj.profile_image = store_dic['profile_image']
+    store_obj.name = store_dic['name']
+    store_obj.is_active = False
+    store_obj.homepage_url = store_dic['homepage_url']
+    primary_style = Primary_Style.objects.get(name=store_dic['primary_style'])
+    age = Age.objects.get(name='10s, 20s')
+    category = Category.objects.get(name='cloth_all')
+    store_obj.primary_style = primary_style
+    store_obj.age = age
+    store_obj.category.add(category)
+    store_obj.save()
+
+
+def dict_to_store_model(store_dic_list):
+    for store_dic in store_dic_list:
+        update_store_object(store_dic)
+
+
+sub_cat = [{'dosiin': 'sleeveless',
+            'subcategory': 'offshoulder_sleeveless'},
+           {'dosiin': 'short-sleeve',
+            'subcategory': 'tshirts'},
+           {'dosiin': 'long-sleeve',
+            'subcategory': 'sweatshirts'},
+           {'dosiin': 'long-sleeve-vi',
+            'subcategory': 'sweater'},
+           {'dosiin': 'hoodie-hood-zipup',
+            'subcategory': 'hoodie'},
+           {'dosiin': 'shirts-blouses',
+            'subcategory': 'shirts'},
+           #                        {'dosiin':'one-piece',
+           #                         'subcategory':'offshoulder_sleeveless'},
+           {'dosiin': 'pike-polo',
+            'subcategory': 'polo_shirts'},
+           {'dosiin': 'ao-croptop',
+            'subcategory': 'croptop'},
+           {'dosiin': 'ao-thun-basic',
+            'subcategory': 'tshirts'}]
+
+
+def temp():
+    for ss in sub_cat:
+        print(ss)
+        obj, is_created = ShopeeCategory.objects.get_or_create(display_name=ss['dosiin'], catid=1991)
+        subcategory_obj = ProductSubCategory.objects.get(name=ss['subcategory'])
+        obj.sub_category = subcategory_obj
+        obj.category = subcategory_obj.category
+        obj.no_sub = True
+        obj.is_default_subcat = True
+        obj.is_valid = True
+        obj.save()

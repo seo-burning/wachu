@@ -225,7 +225,7 @@ class ShopeeScraper:
             obj_product.discount_rate = data['show_discount']
             obj_product.currency = data['currency']
             if (obj_product.original_price == 0 or obj_product.discount_price == 0):
-                time.sleep(10000)
+                slack_notify('something wrong with ' + str(obj_product.pk))
         obj_product.save()
 
     def __update_product_option(self, obj_product, option_list):
@@ -251,6 +251,8 @@ class ShopeeScraper:
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         data = self.__request_url_item(shopid, itemid).json()['item']
+
+        # Data for Createion
         if is_created:
             # print(store_obj.insta_id, itemid)
             is_valid = self.__update_category(obj_product, data['categories'])
@@ -264,7 +266,6 @@ class ShopeeScraper:
             created.append(obj_product.product_link)
             obj_product.product_source = 'SHOPEE'
             obj_product.name = data['name']
-            obj_product.description = data['description']
             # image
             obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
                 data['image'] + '_tn'
@@ -285,12 +286,21 @@ class ShopeeScraper:
                     self.__update_color(obj_product, variation['options'])
                 else:
                     self.__update_extra_options(obj_product, variation)
+            print(obj_product.size.count())
+            if obj_product.size.count() == 0:
+                self.__update_size(obj_product, ['free'])
 
+        # Data for Daily Update
+        obj_product.description = data['description']
         if data['models']:
             self.__update_product_option(obj_product, data['models'])
         self.__update_price(obj_product, data)
         self.__update_rating(obj_product, data, view_count)
-        obj_product.is_free_ship = data['show_free_shipping']
+        if (data['show_free_shipping']):
+            obj_product.is_free_ship = data['show_free_shipping']
+            obj_product.shipping_price = 0
+        else:
+            obj_product.shipping_price = 25000
         obj_product.stock = data['stock']
         obj_product.save()
         return obj_product, created, need_to_update
@@ -399,7 +409,7 @@ def update_shopee():
         Q(store_type='IFSH') |
         Q(store_type='IF(P)SH') |
         Q(store_type='IS(P)')
-    )
+    ).filter(is_active=True)
     total_updated = 0
     total_created = 0
     total_need_to_update = 0

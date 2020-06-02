@@ -32,4 +32,10 @@ if __name__ == '__main__':
         store_obj.recent_post_1 = pic_1
         store_obj.recent_post_2 = pic_2
         store_obj.recent_post_3 = pic_3
+        if(pic_1 == None):
+            print(store_obj.insta_id)
+        if(pic_2 == None):
+            print(store_obj.insta_id)
+        if(pic_3 == None):
+            print(store_obj.insta_id)
         store_obj.save()

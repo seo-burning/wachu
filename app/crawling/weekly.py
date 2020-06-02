@@ -8,5 +8,5 @@ from ic_update import all_store_re_update_mp_post_with_video, update_product_cat
 if __name__ == '__main__':
     # print('update user profile image')
     update_user_profile_image()
-    video_credential_update_for_all()
-    update_product_category_to_store_category()
+    # video_credential_update_for_all()
+    # update_product_category_to_store_category()

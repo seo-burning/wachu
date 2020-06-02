@@ -7,7 +7,7 @@ from product.models import Product, ProductOption
 def make_active_product_by_store(store):
     product_list = Product.objects.filter(store=store)
     for product_obj in product_list:
-        product_obj.is_active = True
+        product_obj.is_active = False
         product_obj.save()
 
 
@@ -72,16 +72,19 @@ def make_product_options_from_product(product):
 
 
 if __name__ == '__main__':
-    product_list = Product.objects.filter(is_active=True, is_free_ship=False)
-    print(len(product_list))
-    for product_obj in product_list:
-        product_option_list = ProductOption.objects.filter(product=product_obj)
-        print(product_obj.name)
-        for product_option_obj in product_option_list:
-            print('saved')
-            product_option_obj.shipping_price = 25000
-            product_option_obj.save()
+    # product_list = Product.objects.filter(is_active=True, is_free_ship=False)
+    # print(len(product_list))
+    # for product_obj in product_list:
+    #     product_option_list = ProductOption.objects.filter(product=product_obj)
+    #     print(product_obj.name)
+    #     for product_option_obj in product_option_list:
+    #         print('saved')
+    #         product_option_obj.shipping_price = 25000
+    #         product_option_obj.save()
     # import multiprocessing as mp
     # pool = mp.Pool(processes=6)
     # pool.map(make_product_options_from_product, product_list)
     # pool.close()
+    store_list = Store.objects.filter(is_active=False)
+    for store_obj in store_list:
+        make_active_product_by_store(store_obj)
