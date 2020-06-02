@@ -86,22 +86,26 @@ def make_product_options_from_product(product):
         print('no options')
 
 
-if __name__ == '__main__':
-    # product_list = Product.objects.filter(is_active=True, is_free_ship=False)
-    # print(len(product_list))
-    # for product_obj in product_list:
-    #     product_option_list = ProductOption.objects.filter(product=product_obj)
-    #     print(product_obj.name)
-    #     for product_option_obj in product_option_list:
-    #         print('saved')
-    #         product_option_obj.shipping_price = 25000
-    #         product_option_obj.save()
-    # import multiprocessing as mp
-    # pool = mp.Pool(processes=6)
-    # pool.map(make_product_options_from_product, product_list)
-    # pool.close()
-    product_list = Product.objects.all()
+def _update_product_category_to_store_category(store_obj):
+    print(store_obj.insta_id)
+    product_list = Product.objects.filter(store=store_obj)
+    product_category_list = []
+    for product_obj in product_list:
+        if(product_obj.category):
+            if (product_obj.category not in product_category_list):
+                product_category_list.append(product_obj.category)
+    print(product_category_list)
+    for product_category in product_category_list:
+        store_obj.product_category.add(product_category)
+    store_obj.save()
+
+
+def update_product_category_to_store_category():
     pool = mp.Pool(processes=32)
-    print('setup multiprocessing')
-    pool.map(make_product_options_from_product, product_list)
+    store_list = Store.objects.filter(is_active=True)
+    pool.map(_update_product_category_to_store_category, store_list)
     pool.close()
+
+
+if __name__ == '__main__':
+    update_product_category_to_store_category()
