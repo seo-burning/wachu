@@ -89,7 +89,7 @@ class Store(ActiveModel, TimeStampedModel):
     post_num = models.IntegerField(_("Instagram Number of posts"), null=True)
     description = models.TextField(
         _("Instagram Description"), blank=True, null=True)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, blank=True)
     email = models.CharField(max_length=255)
 
     # Categorizing Fields ( updated by admin user )
