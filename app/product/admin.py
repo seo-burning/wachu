@@ -18,11 +18,19 @@ class ProductPatternAdmin(admin.ModelAdmin):
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name', 'is_active', 'ordering']
-    list_display = ['name', 'display_name', 'product_num']
+    list_display = ['name', 'display_name', 'product_active_num', 'product_num']
     actions = ['make_activate', 'make_deactivate', ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(category=obj).count()
+        return format_html('<a href="http://dabivn.com/'
+                           'admin/product/product/'
+                           '?category__id__exact=%s">%s</a>'
+                           % (obj.pk, product_num)
+                           )
+
+    def product_active_num(self, obj):
+        product_num = obj.product_set.filter(is_active=True).filter(category=obj).count()
         return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/'
                            '?category__id__exact=%s">%s</a>'
@@ -45,11 +53,19 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 @admin.register(models.ProductSubCategory)
 class ProductSubCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name', 'category', 'is_active', 'ordering']
-    list_display = ['name', 'display_name', 'product_num', 'category']
+    list_display = ['name', 'display_name', 'product_active_num', 'product_num', 'category']
     actions = ['make_activate', 'make_deactivate', ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(sub_category=obj).count()
+        return format_html('<a href="http://dabivn.com/'
+                           'admin/product/product/'
+                           '?sub_category__id__exact=%s">%s</a>'
+                           % (obj.pk, product_num)
+                           )
+
+    def product_active_num(self, obj):
+        product_num = obj.product_set.filter(is_active=True).filter(sub_category=obj).count()
         return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/'
                            '?sub_category__id__exact=%s">%s</a>'

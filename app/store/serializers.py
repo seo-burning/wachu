@@ -129,6 +129,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'facebook_id',
                   'facebook_numeric_id',
                   'facebook_url',
+                  'dosiin_url',
                   'homepage_url',
                   'recent_post_1',
                   'recent_post_2',

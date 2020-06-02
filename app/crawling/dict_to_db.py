@@ -44,6 +44,11 @@ def update_size(obj_product, options):
         else:
             # print("not exist : {}".format(size_obj.display_name))
             pass
+    if len(options) == 0:
+        obj_size = ProductSize.objects.get(
+            name='free')
+        obj_product.size.add(obj_size)
+
     obj_product.save()
 
 
@@ -67,12 +72,15 @@ def update_product_option(obj_product, option_list):
 
 def update_product_image(obj_product, product_image_list):
     for option in product_image_list:
-        obj_image, is_created = ProductImage.objects.get_or_create(
-            product=obj_product,
-            source=option['source'],
-            source_thumb=option['source'],
-            post_image_type=option['post_image_type']
-        )
+        try:
+            obj_image, is_created = ProductImage.objects.get_or_create(
+                product=obj_product,
+                source=option['source'],
+                source_thumb=option['source'],
+                post_image_type=option['post_image_type']
+            )
+        except:
+            pass
 
 
 def update_sub_category(obj_product, subcategory):
@@ -129,6 +137,8 @@ def update_product_object(product_source):
         update_sub_category(product_obj, product_source['subcategory'])
     if 'style' in product_source:
         update_style(product_obj, product_source['style'])
+    if store_obj.is_active == False:
+        product_obj.is_active = False
     product_obj.save()
 
 

@@ -27,6 +27,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'facebook_numeric_id',
                   'current_ranking',
                   'facebook_url',
+                  'dosiin_url',
                   'homepage_url', 'shopee_url',
                   'facebook_numeric_id',
                   'facebook_id',
