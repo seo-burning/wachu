@@ -177,7 +177,8 @@ class ProductBackEndRate(TimeStampedModel):
 CURRENCY_TYPE = (('VND', _('VND')), )
 PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
                        ('INSTAGRAM', _('Instagram')),
-                       ('HOMEPAGE', _('Homepage')), )
+                       ('HOMEPAGE', _('Homepage')),
+                       ('DOSIIN', _('Dosi-in')))
 
 PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
                       ('MP', _('Multiple Picture')), ('V', _('Video')))

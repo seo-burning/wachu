@@ -182,7 +182,7 @@ class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
     list_display = ['name', 'display_name', 'product_num', 'created_at']
     list_filter = ['name']
-    inlines = [ProductSizeThroughInline, ]
+    # inlines = [ProductSizeThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(size=obj).count()
@@ -194,7 +194,7 @@ class ProductColorAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
     list_display = ['name', 'display_name', 'product_num', 'created_at']
     search_fields = ['display_name']
-    list_filter = ['name']
+    # list_filter = ['name']
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(color=obj).count()
