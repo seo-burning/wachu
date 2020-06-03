@@ -21,7 +21,7 @@ class OrderedProductInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderedProductInline, ]
-    pass
+    list_display = ['is_active', 'order_status', 'created_at', 'slug', 'customer']
 
 
 @admin.register(OrderedProduct)

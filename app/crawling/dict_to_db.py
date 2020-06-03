@@ -117,9 +117,8 @@ def update_product_object(product_source):
         product_link=product_source['product_link'],
         store=store_obj
     )
-    product_obj.is_active = product_source['is_active']
+
     product_obj.is_discount = product_source['is_discount']
-    product_obj.current_review_rating = product_source['current_review_rating']
     product_obj.product_source = product_source['product_source']
     product_obj.description = product_source['description']
     product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
@@ -133,16 +132,23 @@ def update_product_object(product_source):
     product_obj.stock = product_source['stock']
     product_obj.size_chart = product_source['size_chart']
     product_obj.save()
+
     update_color(product_obj, product_source['shopee_color'])
     update_size(product_obj, product_source['shopee_size'])
     update_product_option(product_obj, product_source['productOption'])
     update_product_image(product_obj, product_source['product_image_list'])
-    if 'subcategory' in product_source:
-        update_sub_category(product_obj, product_source['subcategory'])
-    if 'style' in product_source:
-        update_style(product_obj, product_source['style'])
-    if store_obj.is_active == False:
-        product_obj.is_active = False
+
+    if is_created:
+        product_obj.current_review_rating = product_source['current_review_rating']
+        # 아래의 항목들은 최초 생성 후 수동으로 재분류를 하는 경우도 있으니 업데이트하지 않는다.
+        if 'subcategory' in product_source:
+            update_sub_category(product_obj, product_source['subcategory'])
+        product_obj.is_active = product_source['is_active']
+        if 'style' in product_source:
+            update_style(product_obj, product_source['style'])
+        if store_obj.is_active == False:
+            product_obj.is_active = False
+
     product_obj.save()
 
 

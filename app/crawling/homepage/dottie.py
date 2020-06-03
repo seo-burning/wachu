@@ -201,7 +201,7 @@ def get_product_sub_list(products_soup, obj, url_obj, duplicate_check_list):
                                'shopee_size': shopee_size_list,
                                'shopee_color': shopee_color_list,
                                'shopee_category': [],
-                               'size_chart': None,
+                               'size_chart': 'https://theme.hstatic.net/1000324561/1000468105/14/sizechart.jpg?v=1372',
                                'productOption': product_option_list,
                                'subcategory': url_obj,
                                'style': 'feminine'
