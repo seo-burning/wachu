@@ -35,7 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['order_status', 'applied_coupons', 'orderedproduct_set', 'slug', 'original_price', 'discount_price',
                   'discount_rate', 'is_free_ship', 'shipping_price', 'currency',
-                  'total_price',  'payment',
+                  'total_price',  'payment', 'coupon_discounted',
                   'recipient_name', 'contact_number', 'country',
                   'city', 'district', 'ward', 'additional_address',
                   'extra_message', 'created_at', 'updated_at', 'pk']

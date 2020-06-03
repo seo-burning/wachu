@@ -9,7 +9,10 @@ dateInfo = (datetime.now()).strftime('%Y-%m-%d')
 
 
 def _calculate_store_point(store_obj):
-    follower = store_obj.follower * 0.2
+    if store_obj.follower:
+        follower = store_obj.follower * 0.2
+    else:
+        follower = 0
     product_list = Product.objects.filter(store=store_obj)
     product_rate_sum = 0
     for product_obj in product_list:
@@ -169,13 +172,16 @@ def calculating_product_obj_rating(product_obj):
     product_infomation_quality = 0
     review_count = 0
     review_rate = 0
-    if product_obj.product_source == 'SHOPEE':
-        shopee_rating_obj = ShopeeRating.objects.get(product=product_obj)
-        shopee_review_count = shopee_rating_obj.shopee_review_count
-        shopee_review_rate = shopee_rating_obj.shopee_rating_star
-        shopee_view_count = shopee_rating_obj.shopee_view_count / 100
-        shopee_liked_count = shopee_rating_obj.shopee_liked_count / 4
-        shopee_sold_count = shopee_rating_obj.shopee_sold_count / 3
+    try:
+        if product_obj.product_source == 'SHOPEE':
+            shopee_rating_obj = ShopeeRating.objects.get(product=product_obj)
+            shopee_review_count = shopee_rating_obj.shopee_review_count
+            shopee_review_rate = shopee_rating_obj.shopee_rating_star
+            shopee_view_count = shopee_rating_obj.shopee_view_count / 100
+            shopee_liked_count = shopee_rating_obj.shopee_liked_count / 4
+            shopee_sold_count = shopee_rating_obj.shopee_sold_count / 3
+    except:
+        pass
     review_score = shopee_review_count*shopee_review_rate / 3
     if review_score > 70:
         review_score = 70
@@ -308,10 +314,13 @@ def calculating_product_list_rating(product_list):
 def _calculating_product_obj_review_rating(product_obj):
     product_point = 0
     review_count = 0
-    if product_obj.product_source == 'SHOPEE':
-        shopee_rating_obj = ShopeeRating.objects.get(product=product_obj)
-        review_count = shopee_rating_obj.shopee_review_count
-        product_point = shopee_rating_obj.shopee_rating_star * review_count
+    try:
+        if product_obj.product_source == 'SHOPEE':
+            shopee_rating_obj = ShopeeRating.objects.get(product=product_obj)
+            review_count = shopee_rating_obj.shopee_review_count
+            product_point = shopee_rating_obj.shopee_rating_star * review_count
+    except:
+        pass
     review_list = ProductReview.objects.filter(product=product_obj)
     for review_obj in review_list:
         review_count = review_count + 1
@@ -344,7 +353,7 @@ def _calculate_store_obj_review_rating(store_obj):
 
 # Export Functions
 def calculate_product_review_rating():
-    product_list = Product.objects.all()
+    product_list = Product.objects.filter(is_active=True)
     for product_obj in product_list:
         _calculating_product_obj_review_rating(product_obj)
 

@@ -19,8 +19,11 @@ def make_product_options_from_product(product):
     discount_price = product.discount_price
     discount_rate = product.discount_rate
     name = product.name
-    is_free_ship = True
-    shipping_price = 0
+    is_free_ship = product.is_free_ship
+    if is_free_ship:
+        shipping_price = 0
+    else:
+        shipping_price = 25000
     is_active = product.is_active
     stock = 999
     print('////', len(product_size_list), len(product_color_list))
@@ -107,5 +110,20 @@ def update_product_category_to_store_category():
     pool.close()
 
 
+# daily task
+def preview_image_update():
+    store_list = Store.objects.filter(is_active=True)
+    for store_obj in store_list:
+        product_list = Product.objects.filter(store=store_obj, is_active=True).order_by('-created_at')
+        store_obj.recent_post_1 = product_list[0].product_thumbnail_image
+        store_obj.recent_post_2 = product_list[1].product_thumbnail_image
+        store_obj.recent_post_3 = product_list[2].product_thumbnail_image
+        store_obj.save()
+
+
 if __name__ == '__main__':
-    update_product_category_to_store_category()
+    product_list = Product.objects.all()
+    pool = mp.Pool(processes=64)
+    product_list = Product.objects.all()
+    pool.map(make_product_options_from_product, product_list)
+    pool.close()

@@ -125,6 +125,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
     customer = models.ForeignKey(settings.AUTH_USER_MODEL,
                                  on_delete=models.SET_NULL, null=True)
     extra_message = models.CharField(max_length=255, blank=True)
+    coupon_discounted = models.IntegerField(default=0)
     total_price = models.IntegerField(default=0)
     # blank if it needs to be migrated to a model that didn't already have this
     slug = models.SlugField(max_length=8, blank=True)

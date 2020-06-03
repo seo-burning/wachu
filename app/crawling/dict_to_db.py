@@ -13,9 +13,10 @@ def update_color(obj_product, options):
     obj_product.color.clear()
     obj_product.shopee_color.clear()
     # print(len(options))
-    # print(options)
+    print(options)
     for option in options:
         option_string = option['display_name'].lower().strip()
+        print(option_string)
         obj_color, is_created = ShopeeColor.objects.get_or_create(
             display_name=option_string)
         obj_product.shopee_color.add(obj_color)
@@ -63,10 +64,13 @@ def update_product_option(obj_product, option_list):
         obj_option.discount_price = option['discount_price']
         obj_option.currency = option['currency']
         obj_option.stock = option['stock']
-        if 'size' in option_list:
+        if 'size' in option:
             obj_size = ShopeeSize.objects.get(
-                display_name=obj_option['size'])
+                display_name=option['size']['display_name'])
             obj_option.size = obj_size.size
+        if 'color' in option:
+            obj_color = ShopeeColor.objects.get(display_name=option['color']['display_name'])
+            obj_option.color = obj_color.color
         obj_option.save()
 
 
@@ -128,12 +132,12 @@ def update_product_object(product_source):
     product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
     product_obj.stock = product_source['stock']
     product_obj.size_chart = product_source['size_chart']
+    product_obj.save()
     update_color(product_obj, product_source['shopee_color'])
     update_size(product_obj, product_source['shopee_size'])
     update_product_option(product_obj, product_source['productOption'])
     update_product_image(product_obj, product_source['product_image_list'])
     if 'subcategory' in product_source:
-        print('this')
         update_sub_category(product_obj, product_source['subcategory'])
     if 'style' in product_source:
         update_style(product_obj, product_source['style'])
@@ -143,7 +147,8 @@ def update_product_object(product_source):
 
 
 def dict_to_product_model(product_list):
-    pool = mp.Pool(processes=32)
+    print(len(product_list))
+    pool = mp.Pool(processes=64)
     print('setup multiprocessing')
     pool.map(update_product_object, product_list)
     pool.close()
