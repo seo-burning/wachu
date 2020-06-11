@@ -101,6 +101,14 @@ class OrderedProduct(PriceModel, TimeStampedModel):
                                        on_delete=models.SET_NULL,
                                        null=True)
 
+    def __str__(self):
+        ordered_product_string = ''
+        if self.order:
+            ordered_product_string = 'order ' + str(self.order.pk)
+        ordered_product_string = ordered_product_string + ' / option ' + \
+            str(self.product_option) + ' / quantity ' + str(self.quantity)
+        return ordered_product_string
+
 
 class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
     class Meta:

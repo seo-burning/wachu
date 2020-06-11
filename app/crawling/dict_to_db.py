@@ -25,8 +25,7 @@ def update_color(obj_product, options):
                 # print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
                 obj_product.color.add(color_obj.color)
             else:
-                # print("not exist : {}".format(color_obj.display_name))
-                pass
+                obj_product.is_active = False
     obj_product.save()
 
 
@@ -44,18 +43,14 @@ def update_size(obj_product, options):
             obj_product.size.add(size_obj.size)
         else:
             # print("not exist : {}".format(size_obj.display_name))
-            pass
-    if len(options) == 0:
-        obj_size = ProductSize.objects.get(
-            name='free')
-        obj_product.size.add(obj_size)
+            obj_product.is_active = False
 
     obj_product.save()
 
 
 def update_product_option(obj_product, option_list):
     for option in option_list:
-        print(option['name'], 'created')
+        print(option['name'], 'created', option)
         obj_option, is_created = ProductOption.objects.get_or_create(
             product=obj_product, name=option['name'])
         obj_option.is_active = option['is_active']
@@ -64,13 +59,29 @@ def update_product_option(obj_product, option_list):
         obj_option.discount_price = option['discount_price']
         obj_option.currency = option['currency']
         obj_option.stock = option['stock']
-        if 'size' in option:
+        if ('size' in option) and (option['size']):
             obj_size = ShopeeSize.objects.get(
                 display_name=option['size']['display_name'])
             obj_option.size = obj_size.size
-        if 'color' in option:
+        if ('color' in option) and (option['color']):
             obj_color = ShopeeColor.objects.get(display_name=option['color']['display_name'])
             obj_option.color = obj_color.color
+        obj_option.save()
+    if len(option_list) == 0:
+        print(obj_product.pk, 'no option')
+        obj_size = ProductSize.objects.get(
+            name='free')
+        obj_product.size.add(obj_size)
+        print(option['name'], 'created', option)
+        obj.product.save()
+        obj_option, is_created = ProductOption.objects.get_or_create(
+            product=obj_product, name='free')
+        obj_option.is_active = True
+        obj_option.original_price = obj_product.original_price
+        obj_option.discount_price = obj_product.discount_price
+        obj_option.currency = obj_product.currency
+        obj_option.stock = obj_product.stock
+        obj_option.size = obj_size
         obj_option.save()
 
 
@@ -91,10 +102,12 @@ def update_sub_category(obj_product, subcategory):
     shopee_category, is_created = ShopeeCategory.objects.get_or_create(display_name=subcategory)
     print(shopee_category.sub_category)
     if shopee_category.sub_category:
+        obj_product.shopee_category.add(shopee_category)
         obj_product.sub_category = shopee_category.sub_category
         obj_product.category = shopee_category.category
         obj_product.is_active = True
     else:
+        obj_product.shopee_category.add(shopee_category)
         obj_product.is_active = False
     obj_product.save()
 
@@ -133,13 +146,10 @@ def update_product_object(product_source):
     product_obj.size_chart = product_source['size_chart']
     product_obj.save()
 
-    update_color(product_obj, product_source['shopee_color'])
-    update_size(product_obj, product_source['shopee_size'])
-    update_product_option(product_obj, product_source['productOption'])
-    update_product_image(product_obj, product_source['product_image_list'])
-
     if is_created:
+        print('this this this')
         product_obj.current_review_rating = product_source['current_review_rating']
+        update_product_image(product_obj, product_source['product_image_list'])
         # 아래의 항목들은 최초 생성 후 수동으로 재분류를 하는 경우도 있으니 업데이트하지 않는다.
         if 'subcategory' in product_source:
             update_sub_category(product_obj, product_source['subcategory'])
@@ -148,6 +158,10 @@ def update_product_object(product_source):
             update_style(product_obj, product_source['style'])
         if store_obj.is_active == False:
             product_obj.is_active = False
+
+    update_color(product_obj, product_source['shopee_color'])
+    update_size(product_obj, product_source['shopee_size'])
+    update_product_option(product_obj, product_source['productOption'])
 
     product_obj.save()
 

@@ -288,3 +288,11 @@ class ProductOption(PriceModel, TimeStampedModel):
     size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True)
     color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True)
     extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        option_string = 'product : ' + str(self.product.pk)
+        if self.size:
+            option_string = option_string + ' size : ' + self.size.name
+        if self.color:
+            option_string = option_string + ' color : ' + self.color.name
+        return option_string

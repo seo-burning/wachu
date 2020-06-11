@@ -14,6 +14,8 @@ import multiprocessing as mp
 from utils.slack import slack_notify, slack_upload_file
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize
 from store.models import Store, StorePost
+
+from manual_update import make_product_options_from_product
 PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
@@ -292,8 +294,8 @@ class ShopeeScraper:
 
         # Data for Daily Update
         obj_product.description = data['description']
-        if data['models']:
-            self.__update_product_option(obj_product, data['models'])
+        # if data['models']:
+        #     self.__update_product_option(obj_product, data['models'])
         self.__update_price(obj_product, data)
         self.__update_rating(obj_product, data, view_count)
         if (data['show_free_shipping']):
@@ -303,6 +305,8 @@ class ShopeeScraper:
             obj_product.shipping_price = 25000
         obj_product.stock = data['stock']
         obj_product.save()
+        if created:
+            make_product_options_from_product(obj_product)
         return obj_product, created, need_to_update
 
     def search_store(self, store_obj):

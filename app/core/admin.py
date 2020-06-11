@@ -6,9 +6,10 @@ from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
 from core import models
+from core.models import ExportCsvMixin
 
 
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(BaseUserAdmin, ExportCsvMixin):
     ordering = ['id']
     list_display = ['id', 'email', 'name', ]
     fieldsets = (
@@ -30,6 +31,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2')
         }),
     )
+    actions = ['export_as_csv']
     search_fields = ['email', 'name']
 
     def changelist_view(self, request, extra_context=None):

@@ -121,9 +121,39 @@ def preview_image_update():
         store_obj.save()
 
 
+def product_option_validate(option_obj):
+    if option_obj.size == None and option_obj.color == None:
+        option_obj.is_active = False
+        option_obj.save()
+        print('deactivate')
+
+
+def product_valid(product_obj):
+    length_option = len(product_obj.product_options.filter(is_active=True))
+    if length_option == 0:
+        product_obj.is_active = False
+        product_obj.save()
+        print('deactivate')
+
+
 if __name__ == '__main__':
-    product_list = Product.objects.all()
+    # option_list = ProductOption.objects.all()
+    # pool = mp.Pool(processes=64)
+    # pool.map(product_option_validate, option_list)
+    # pool.close()
+    product_list = Product.objects.filter(is_active=True)
     pool = mp.Pool(processes=64)
-    product_list = Product.objects.all()
-    pool.map(make_product_options_from_product, product_list)
+    pool.map(product_valid, product_list)
     pool.close()
+    # product_list = Product.objects.all()
+    # pool = mp.Pool(processes=64)
+    # product_list = Product.objects.all()
+    # pool.map(make_product_options_from_product, product_list)
+    # pool.close()
+    # store_list = Store.objects.filter(is_active=True)
+    # for store_obj in store_list:
+    #     product_list = Product.objects.filter(store=store_obj, is_active=True)
+    #     if len(product_list) == 0:
+    #         store_obj.is_active = False
+    #         store_obj.save()
+    # preview_image_update()
