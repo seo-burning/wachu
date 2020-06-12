@@ -374,7 +374,7 @@ class InstagramScraper:
 
 def update_user_profile_image():
     obj = InstagramScraper()
-    store_list = Store.objects.exclude(store_type='DS')[120:]
+    store_list = Store.objects.filter(is_active=True).exclude(store_type='DS')[44:]
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
     print('updates', len(content))

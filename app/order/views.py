@@ -33,7 +33,7 @@ class CouponListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.Coupon.objects.filter(is_active=True)
+        queryset = models.Coupon.objects.filter(is_active=True, is_public=True)
         return queryset
 
 

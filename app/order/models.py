@@ -5,7 +5,7 @@ from django.conf import settings
 from product.models import PriceModel, Product, ProductOption
 from user.models import RecipientModel
 
-from core.abstract_models import TimeStampedModel, ActiveModel
+from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, PublicModel
 # Create your models here.
 
 
@@ -67,7 +67,7 @@ class CouponRestrictionModel(models.Model):
 # Coupon Type 설계 필요.
 
 
-class Coupon(ActiveModel, CouponModel, TimeStampedModel, CouponRestrictionModel):
+class Coupon(ActiveModel, CouponModel, TimeStampedModel, CouponRestrictionModel, PublicModel):
     class Meta:
         verbose_name = u'쿠폰'
         verbose_name_plural = verbose_name
