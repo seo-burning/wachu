@@ -331,6 +331,7 @@ class Product(admin.ModelAdmin):
     raw_id_fields = ['store', 'post']
     list_display = [
         'is_active',
+        '__str__',
         'current_product_backend_rating',
         'product_source',
         'current_review_rating',
@@ -363,7 +364,15 @@ class Product(admin.ModelAdmin):
         'product_source',
     ]
     actions = ['make_activate', 'make_deactivate',
-               'categorize_bag', 'categorize_jewelry', 'categorize_shoes', 'product_type_instagram']
+               'categorize_bag', 'categorize_jewelry', 'categorize_shoes',
+               'product_type_instagram',
+               'product_pattern_print',
+               'product_pattern_floral',
+               'product_pattern_polka',
+               'product_pattern_striped',
+               'product_pattern_texture',
+               'product_pattern_caro',
+               ]
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
@@ -403,6 +412,72 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품을 INSTAGRAM 분류'.format(updated_count))
     product_type_instagram.short_description = 'product source instagram'
+
+    def product_pattern_print(self, request, queryset):
+        print_pattern = models.ProductPattern.objects.get(name='print')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(print_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
+    product_pattern_print.short_description = 'print 패턴 추가'
+
+    def product_pattern_floral(self, request, queryset):
+        floral_pattern = models.ProductPattern.objects.get(name='floral')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(floral_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 floral 패턴 추가'.format(updated_count))
+    product_pattern_floral.short_description = 'floral 패턴 추가'
+
+    def product_pattern_polka(self, request, queryset):
+        polka_pattern = models.ProductPattern.objects.get(name='polka')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(polka_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
+    product_pattern_polka.short_description = 'polka 패턴 추가'
+
+    def product_pattern_striped(self, request, queryset):
+        striped_pattern = models.ProductPattern.objects.get(name='striped')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(striped_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
+    product_pattern_striped.short_description = 'striped 패턴 추가'
+
+    def product_pattern_texture(self, request, queryset):
+        texture_pattern = models.ProductPattern.objects.get(name='texture')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(texture_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
+    product_pattern_texture.short_description = 'texture 패턴 추가'
+
+    def product_pattern_caro(self, request, queryset):
+        caro_pattern = models.ProductPattern.objects.get(name='caro')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(caro_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
+    product_pattern_caro.short_description = 'caro 패턴 추가'
 
     def changelist_view(self, request, extra_context=None):
         # Aggregate new subscribers per day

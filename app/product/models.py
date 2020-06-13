@@ -38,7 +38,7 @@ class ProductSize(TimeStampedModel, DispalyNameModel):
 
 class ProductPattern(TimeStampedModel, DispalyNameModel):
     class Meta:
-        verbose_name = u'제품 패턴 / Product Tag'
+        verbose_name = u'제품 패턴 / Product Pattern'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -267,7 +267,7 @@ class Product(TimeStampedModel, PriceModel, ActiveModel):
             thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
 
         return mark_safe('<img src="{url}" \
-        width="700" height="700" border="1" />'.format(
+        width="500" height="500" border="1" />'.format(
             url=thumb_image
         ))
 

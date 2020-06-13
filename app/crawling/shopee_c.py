@@ -304,6 +304,9 @@ class ShopeeScraper:
         else:
             obj_product.shipping_price = 25000
         obj_product.stock = data['stock']
+        if (obj_product.stock == 0):
+            obj_product.is_active = False
+            print('make it deactive, no stock // product no. ' + str(obj_product.pk))
         obj_product.save()
         if created:
             make_product_options_from_product(obj_product)
