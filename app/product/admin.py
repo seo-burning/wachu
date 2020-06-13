@@ -228,7 +228,11 @@ class ProductColorAdmin(admin.ModelAdmin):
 @admin.register(models.ProductStyle)
 class ProductStyleAdmin(admin.ModelAdmin):
     fields = ['name']
-    list_display = ['name', 'product_num']
+    list_display = ['name', 'product_active_num', 'product_num']
+
+    def product_active_num(self, obj):
+        product_num = obj.product_set.filter(is_active=True).filter(style=obj).count()
+        return product_num
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(style=obj).count()

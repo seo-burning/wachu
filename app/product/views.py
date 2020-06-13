@@ -29,6 +29,10 @@ class ProductCategoryListView(generics.ListAPIView):
         if (style):
             style_filter = style.split(',')
             queryset = queryset.filter(style__name__in=style_filter)
+        pattern = self.request.query_params.get('pattern')
+        if (pattern):
+            pattern_filter = pattern.split(',')
+            queryset = queryset.filter(pattern__name__in=pattern_filter)
         region = self.request.query_params.get('region')
         if (region):
             region_filter = region.split(',')
