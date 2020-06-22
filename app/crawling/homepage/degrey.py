@@ -215,7 +215,8 @@ def degrey_sub_crawler(obj, product_source):
                        'shopee_color': [],
                        'shopee_category': [],
                        'size_chart': None,
-                       'productOption': product_option_list
+                       'productOption': product_option_list,
+                       'style': 'street'
                        }
         product_list.append(product_obj)
     return product_list

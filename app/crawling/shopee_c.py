@@ -215,9 +215,13 @@ class ShopeeScraper:
         obj_rating.save()
 
     def __update_price(self, obj_product, data):
+        if (data['show_discount'] == 0) == obj_product.is_discount:
+            print('price changed')
         if data['show_discount'] == 0:
+            obj_product.is_discount = False
             obj_product.original_price = data['price'] / 100000
-            obj_product.discount_rate = data['show_discount']
+            obj_product.discount_price = 0
+            obj_product.discount_rate = 0
             obj_product.currency = data['currency']
         else:
             obj_product.is_discount = True
@@ -248,12 +252,12 @@ class ShopeeScraper:
             obj_option.shopee_sold_count = option['sold']
             obj_option.save()
 
-    def get_or_create_product(self, store_obj, itemid, view_count, created, need_to_update):
+    def get_or_create_product(self, store_obj, itemid, view_count=None, created=[], need_to_update=[]):
         shopid = store_obj.shopee_numeric_id
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         data = self.__request_url_item(shopid, itemid).json()['item']
-
+        # print(data)
         # Data for Createion
         if is_created:
             # print(store_obj.insta_id, itemid)
@@ -293,21 +297,26 @@ class ShopeeScraper:
                 self.__update_size(obj_product, ['free'])
 
         # Data for Daily Update
-        obj_product.description = data['description']
-        # if data['models']:
-        #     self.__update_product_option(obj_product, data['models'])
-        self.__update_price(obj_product, data)
-        self.__update_rating(obj_product, data, view_count)
-        if (data['show_free_shipping']):
-            obj_product.is_free_ship = data['show_free_shipping']
-            obj_product.shipping_price = 0
-        else:
-            obj_product.shipping_price = 25000
-        obj_product.stock = data['stock']
-        if (obj_product.stock == 0):
+        try:
+            obj_product.description = data['description']
+            self.__update_price(obj_product, data)
+            if view_count:
+                self.__update_rating(obj_product, data, view_count)
+            if (data['show_free_shipping']):
+                obj_product.is_free_ship = data['show_free_shipping']
+                obj_product.shipping_price = 0
+            else:
+                obj_product.shipping_price = 25000
+            obj_product.stock = data['stock']
+            if (obj_product.stock == 0):
+                obj_product.is_active = False
+                print('make it deactive, no stock // product no. ' + str(obj_product.pk))
+            obj_product.save()
+        except:
+            print('Cannot find page, Item might be deleted. Make it deactived.')
             obj_product.is_active = False
-            print('make it deactive, no stock // product no. ' + str(obj_product.pk))
-        obj_product.save()
+            obj_product.save()
+
         if created:
             make_product_options_from_product(obj_product)
         return obj_product, created, need_to_update
@@ -322,31 +331,33 @@ class ShopeeScraper:
         while list_length == 100:
             response = self.__request_url(
                 store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
-            try:
-                product_list = response.json()['items']
-                for j, product in enumerate(product_list):
-                    # print("{} - #{} product".format(store_id, i*list_length+j+1))
-                    try:
-                        product_obj, created, need_to_update = self.get_or_create_product(
-                            store_obj, product['itemid'], product['view_count'], created, need_to_update)
-                    except:
-                        slack_notify('error : {} #{} {}'.format(store_id, i, product['itemid']))
-                    if (i == 0 and j == 0):
-                        store_obj.recent_post_1 = product_obj.product_thumbnail_image
-                        # print(store_obj.recent_post_1)
-                    elif (i == 0 and j == 1):
-                        store_obj.recent_post_2 = product_obj.product_thumbnail_image
-                        # print(store_obj.recent_post_2)
-                    elif (i == 0 and j == 2):
-                        store_obj.recent_post_3 = product_obj.product_thumbnail_image
-                        # print(store_obj.recent_post_3)
-                    store_obj.save()
-                    pk += 1
-                list_length = len(product_list)
-                i = i+1
-            except:
-                slack_notify('error : {} #{} {}'.format(store_id, i*100, "fail to get list"))
-                i = i+1
+            # try:
+            product_list = response.json()['items']
+            for j, product in enumerate(product_list):
+                print("{} - #{} product".format(store_id, i*list_length+j+1))
+                # try:
+                product_obj, created, need_to_update = self.get_or_create_product(
+                    store_obj, product['itemid'], product['view_count'], created, need_to_update)
+                # except:
+                #     slack_notify('error : {} #{} {}'.format(store_id, i, product['itemid']))
+                #     pass
+                if (i == 0 and j == 0):
+                    store_obj.recent_post_1 = product_obj.product_thumbnail_image
+                    # print(store_obj.recent_post_1)
+                elif (i == 0 and j == 1):
+                    store_obj.recent_post_2 = product_obj.product_thumbnail_image
+                    # print(store_obj.recent_post_2)
+                elif (i == 0 and j == 2):
+                    store_obj.recent_post_3 = product_obj.product_thumbnail_image
+                    # print(store_obj.recent_post_3)
+                store_obj.save()
+                pk += 1
+            list_length = len(product_list)
+            i = i+1
+            # except:
+            #     slack_notify('error : {} #{} {}'.format(store_id, i*100, "fail to get list"))
+            #     i = i+1
+            #     pass
 
         return pk, len(created), len(need_to_update)
 
@@ -356,17 +367,13 @@ def _update_color_size_from_shopee_color_size(product_obj):
     product_obj.size.clear()
     for color_obj in product_obj.shopee_color.all():
         if color_obj.color:
-            # print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
             product_obj.color.add(color_obj.color)
         else:
-            # print("not exist : {}".format(color_obj.display_name))
             pass
     for size_obj in product_obj.shopee_size.all():
         if size_obj.size:
-            # print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
             product_obj.size.add(size_obj.size)
         else:
-            # print("not exist : {}".format(size_obj.display_name))
             pass
     product_obj.save()
 
@@ -434,3 +441,42 @@ def update_shopee():
                  '   need to update : '+str(total_need_to_update) + '\n')
     slack_upload_file(file_path)
     os.remove(file_path)
+
+
+def update_shopee_multiprocessing():
+    obj = ShopeeScraper()
+    store_list = Store.objects.filter(
+        Q(store_type='IS') |
+        Q(store_type='IFSH') |
+        Q(store_type='IF(P)SH') |
+        Q(store_type='IS(P)')
+    ).filter(is_active=True)
+    pool = mp.Pool(processes=64)
+    print('Set up Multiprocessing....')
+    pool.map(obj.search_store, store_list)
+    pool.close()
+
+
+def check_product_delete():
+    obj = ShopeeScraper()
+    store_list = Store.objects.filter(
+        Q(store_type='IS') |
+        Q(store_type='IFSH') |
+        Q(store_type='IF(P)SH') |
+        Q(store_type='IS(P)')
+    ).filter(is_active=True)
+    print(len(store_list))
+    for store_obj in store_list:
+
+        product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
+        for product_obj in product_list:
+            obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+
+
+if __name__ == "__main__":
+    obj = ShopeeScraper()
+    # store_obj = Store.objects.get(insta_id='trangsuchas')
+    # obj.get_or_create_product(store_obj, 6517246205, 0)
+    # obj.search_store(store_obj)
+    # update_shopee_multiprocessing()
+    check_product_delete()

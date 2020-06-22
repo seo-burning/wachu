@@ -72,8 +72,7 @@ def update_product_option(obj_product, option_list):
         obj_size = ProductSize.objects.get(
             name='free')
         obj_product.size.add(obj_size)
-        print(option['name'], 'created', option)
-        obj.product.save()
+        obj_product.save()
         obj_option, is_created = ProductOption.objects.get_or_create(
             product=obj_product, name='free')
         obj_option.is_active = True
@@ -147,7 +146,7 @@ def update_product_object(product_source):
     product_obj.save()
 
     if is_created:
-        print('this this this')
+        print('this is already created')
         product_obj.current_review_rating = product_source['current_review_rating']
         update_product_image(product_obj, product_source['product_image_list'])
         # 아래의 항목들은 최초 생성 후 수동으로 재분류를 하는 경우도 있으니 업데이트하지 않는다.

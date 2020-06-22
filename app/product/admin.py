@@ -305,6 +305,15 @@ class ProductOptionAdmin(admin.ModelAdmin):
     list_display = ['is_active', 'name', 'original_price', 'discount_price', 'stock']
 
 
+class ProductOptionInline(admin.StackedInline):
+    model = models.ProductOption
+    fields = ['is_active', 'name', 'original_price',
+              'discount_price', 'stock', 'size', 'color']
+    readonly_fields = ['is_active', 'name', 'original_price',
+                       'discount_price', 'stock', 'size', 'color']
+    extra = 0
+
+
 class ProductImageInline(admin.StackedInline):
     model = models.ProductImage
     fields = ['post_image_type', 'source', 'source_thumb']
@@ -327,7 +336,7 @@ class ShopeeRatingInline(admin.StackedInline):
 
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
-    inlines = [ShopeeRatingInline, ProductImageInline, ]
+    inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
     raw_id_fields = ['store', 'post']
     list_display = [
         'is_active',
