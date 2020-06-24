@@ -214,13 +214,13 @@ class Product(TimeStampedModel, PriceModel, ActiveModel):
                               on_delete=models.CASCADE)
     name = models.CharField(_('Product Name'),
                             max_length=255, blank=True)
-    description = models.TextField()
+    description = models.TextField(null=True)
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
     # image
     product_image_type = models.CharField(
         choices=PRODUCT_IMAGE_TYPE, max_length=255, default='MP')
-    product_thumbnail_image = models.CharField(null=True, max_length=1024)
+    product_thumbnail_image = models.CharField(null=True, max_length=1024, default="https://dabivn.com")
     video_source = models.CharField(null=True, max_length=1024)
 
     stock = models.IntegerField(default=0)

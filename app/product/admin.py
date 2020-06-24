@@ -170,6 +170,31 @@ class ProductShopeeColorThroughInline(admin.TabularInline):
         ))
 
 
+class ProductShopeeSizeThroughInline(admin.TabularInline):
+    model = models.Product.shopee_size.through
+    fields = ['product_thumbnail_image', 'product_link',
+              'product_out_link', ]
+    readonly_fields = ['product_thumbnail_image',
+                       'product_link', 'product_out_link']
+    extra = 0
+
+    def product_thumbnail_image(self, instance):
+        return mark_safe('<img src="{url}" \
+        width="400" height="400" border="1" />'.format(
+            url=instance.product.product_thumbnail_image
+        ))
+
+    def product_link(self, instance):
+        return mark_safe(
+            '<a href="http://dabivn.com/admin/product/product/%s" target="_blank">%s</a>'
+            % (instance.product.pk, "product page"))
+
+    def product_out_link(self, instance):
+        return mark_safe('<a href="%s" target="_blank">%s</a>' % (
+            instance.product.product_link, "product_out_link"
+        ))
+
+
 @admin.register(models.ProductBackEndRate)
 class ProductBackEndRateAdmin(admin.ModelAdmin):
     list_display = ['product_backend_rating', 'product',
@@ -265,7 +290,7 @@ class ShopeeSizeAdmin(admin.ModelAdmin):
     list_display = ['is_valid', 'display_name', 'size', 'product_num']
     list_filter = ['is_valid', ]
     search_fields = ['display_name', ]
-    # inlines = [ProductShopeeSizeThroughInline, ]
+    inlines = [ProductShopeeSizeThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(shopee_size=obj).count()
