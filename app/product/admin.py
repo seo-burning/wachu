@@ -364,6 +364,7 @@ class Product(admin.ModelAdmin):
     list_display = [
         'is_active',
         '__str__',
+        'created_at',
         'current_product_backend_rating',
         'product_source',
         'current_review_rating',

@@ -199,7 +199,7 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
     class Meta:
         verbose_name = u'제품'
         verbose_name_plural = verbose_name
-        ordering = ['current_product_backend_rating', ]
+        ordering = ['-created_at', 'current_product_backend_rating', ]
 
     stock_available = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
