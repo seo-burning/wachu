@@ -135,7 +135,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     fieldsets = [
         (_("User Profile"), {'fields': ['is_new_post',
                                         'is_active',
-                                        'is_updated',
                                         'store_type',
                                         'current_ranking',
                                         'current_ranking_changed',
@@ -172,7 +171,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     'primary_style',
                     'secondary_style', 'post_num',
                     'post_product_num', 'need_to_update', ]
-    list_filter = ['is_active', 'is_updated', 'store_type']
+    list_filter = ['is_active', 'store_type']
     list_display_links = ["insta_id"]
     search_fields = ["insta_id",
                      "primary_style__name", "secondary_style__name", ]

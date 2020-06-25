@@ -375,8 +375,9 @@ class Product(admin.ModelAdmin):
         'discount_price',
         'color_num',
         'size_num',
+        'product_thumbnail_image'
     ]
-    fieldsets = [('Status', {'fields': ['is_active', 'current_product_backend_rating']}),
+    fieldsets = [('Status', {'fields': ['is_active', 'stock_available', 'view', 'current_product_backend_rating']}),
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
                  ('Product Info', {'fields': ['name', 'shopee_item_id',
                                               'description', 'product_thumbnail_image']}),

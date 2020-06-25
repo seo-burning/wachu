@@ -26,3 +26,10 @@ class DispalyNameModel(models.Model):
         abstract = True
     name = models.CharField(max_length=255)
     display_name = models.CharField(default='Need to tranlate', max_length=255)
+
+
+# https://stackoverflow.com/questions/28832731/django-view-counter
+class ViewModel(models.Model):
+    class Meta:
+        abstract = True
+    views = models.PositiveIntegerField(default=0)

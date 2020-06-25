@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
-from core.abstract_models import ActiveModel, TimeStampedModel
+from utils.helper.model.abstract_model import ActiveModel, TimeStampedModel, ViewModel
 from django.utils.translation import ugettext_lazy as _
 from product.models import ProductCategory
 
@@ -67,13 +67,12 @@ STORE_TYPE = (('IF', _('-')),
               )
 
 
-class Store(ActiveModel, TimeStampedModel):
+class Store(ActiveModel, TimeStampedModel, ViewModel):
     class Meta:
         ordering = ('-is_active', 'current_ranking',)
     store_type = models.CharField(
         max_length=25, choices=STORE_TYPE, default='IF', null=True)
     """Store object"""
-    is_updated = models.BooleanField(default=False)
     is_new_post = models.BooleanField(default=False)
 
     insta_id = models.CharField(_("Instagram ID"), max_length=255, unique=True)

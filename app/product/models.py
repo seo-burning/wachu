@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
-from core.abstract_models import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel
+from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel, ViewModel
 
 
 class ProductCategory(TimeStampedModel, DispalyNameModel, ActiveModel, OrderingModel):
@@ -195,12 +195,13 @@ class PriceModel(models.Model):
     shipping_price = models.IntegerField(default=0)
 
 
-class Product(TimeStampedModel, PriceModel, ActiveModel):
+class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
     class Meta:
         verbose_name = u'제품'
         verbose_name_plural = verbose_name
         ordering = ['current_product_backend_rating', ]
 
+    stock_available = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
     current_review_rating = models.DecimalField(_('Review'),
                                                 max_digits=2, decimal_places=1, default=0)
@@ -261,10 +262,8 @@ class Product(TimeStampedModel, PriceModel, ActiveModel):
     def __str__(self):
         if self.product_thumbnail_image:
             thumb_image = self.product_thumbnail_image
-        elif self.thumb_image_pk == 1:
-            thumb_image = self.post.post_thumb_image
         else:
-            thumb_image = self.post.post_image_set.all()[self.thumb_image_pk-1]
+            thumb_image = "http://dabivn.comm"
 
         return mark_safe('<img src="{url}" \
         width="500" height="500" border="1" />'.format(
