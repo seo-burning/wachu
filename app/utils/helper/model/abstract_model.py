@@ -39,4 +39,4 @@ class DispalyNameModel(models.Model):
 class ViewModel(models.Model):
     class Meta:
         abstract = True
-    views = models.PositiveIntegerField(default=0)
+    view = models.PositiveIntegerField(default=0)
