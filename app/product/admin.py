@@ -334,8 +334,8 @@ class ProductOptionInline(admin.StackedInline):
     model = models.ProductOption
     fields = ['is_active', 'name', 'original_price',
               'discount_price', 'stock', 'size', 'color']
-    readonly_fields = ['is_active', 'name', 'original_price',
-                       'discount_price', 'stock', 'size', 'color']
+    readonly_fields = ['name', 'original_price',
+                       'discount_price', 'stock', ]
     extra = 0
 
 
