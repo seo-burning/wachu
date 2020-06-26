@@ -7,6 +7,12 @@ from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
     ProductOption, ShopeeColor, ShopeeSize, ProductSubCategory, ProductCategory,\
     ProductStyle
 from store.models import Store, StorePost, Primary_Style, Age, Category
+from datetime import datetime
+
+
+def get_cleaned_text(text):
+    clean_text = text.lower().replace('size', '').replace(' ', '').strip()
+    return clean_text
 
 
 def update_color(obj_product, options):
@@ -15,7 +21,7 @@ def update_color(obj_product, options):
     # print(len(options))
     print(options)
     for option in options:
-        option_string = option['display_name'].lower().strip()
+        option_string = get_cleaned_text(option['display_name'])
         print(option_string)
         obj_color, is_created = ShopeeColor.objects.get_or_create(
             display_name=option_string)
@@ -60,11 +66,12 @@ def update_product_option(obj_product, option_list):
         obj_option.currency = option['currency']
         obj_option.stock = option['stock']
         if ('size' in option) and (option['size']):
+            print(option['size']['display_name'])
             obj_size = ShopeeSize.objects.get(
-                display_name=option['size']['display_name'])
+                display_name=get_cleaned_text(option['size']['display_name']))
             obj_option.size = obj_size.size
         if ('color' in option) and (option['color']):
-            obj_color = ShopeeColor.objects.get(display_name=option['color']['display_name'])
+            obj_color = ShopeeColor.objects.get(display_name=get_cleaned_text(option['color']['display_name']))
             obj_option.color = obj_color.color
         obj_option.save()
     if len(option_list) == 0:
@@ -125,30 +132,44 @@ def update_product_object(product_source):
         store_obj = Store.objects.get(insta_id=store_name)
         print(store_name)
     product_obj, is_created = Product.objects.get_or_create(
-        name=product_source['name'],
         product_link=product_source['product_link'],
         store=store_obj
     )
-
     product_obj.is_discount = product_source['is_discount']
-    product_obj.product_source = product_source['product_source']
-    product_obj.description = product_source['description']
-    product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
-    product_obj.video_source = product_source['video_source']
     product_obj.original_price = product_source['original_price']
     product_obj.discount_price = product_source['discount_price']
     product_obj.discount_rate = product_source['discount_rate']
-    product_obj.currency = product_source['currency']
     product_obj.is_free_ship = product_source['is_free_ship']
-    product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
     product_obj.stock = product_source['stock']
-    product_obj.size_chart = product_source['size_chart']
+
+    if (product_source['product_thumbnail_image'] == None) or (product_source['product_thumbnail_image'] == ''):
+        product_obj.product_thumbnail_image = "http://dabivn.com"
+    else:
+        product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
+    update_product_image(product_obj, product_source['product_image_list'])
+    product_obj.video_source = product_source['video_source']
     product_obj.save()
 
+    if 'created_at' in product_source:
+        if product_source['created_at']:
+            try:
+                created_at = datetime.strptime(product_source['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
+            except:
+                created_at = datetime.strptime(product_source['created_at'], "%Y-%m-%dT%H:%M:%S")
+            product_obj.created_at = created_at
     if is_created:
-        print('this is already created')
+        product_obj.name = product_source['name']
         product_obj.current_review_rating = product_source['current_review_rating']
-        update_product_image(product_obj, product_source['product_image_list'])
+        product_obj.product_source = product_source['product_source']
+        product_obj.size_chart = product_source['size_chart']
+        update_color(product_obj, product_source['shopee_color'])
+        update_size(product_obj, product_source['shopee_size'])
+        update_product_option(product_obj, product_source['productOption'])
+        product_obj.currency = product_source['currency']
+        if product_source['description'] == None:
+            product_obj.description = product_source['name']
+        else:
+            product_obj.description = product_source['description']
         # 아래의 항목들은 최초 생성 후 수동으로 재분류를 하는 경우도 있으니 업데이트하지 않는다.
         if 'subcategory' in product_source:
             update_sub_category(product_obj, product_source['subcategory'])
@@ -158,21 +179,17 @@ def update_product_object(product_source):
         if store_obj.is_active == False:
             product_obj.is_active = False
 
-    update_color(product_obj, product_source['shopee_color'])
-    update_size(product_obj, product_source['shopee_size'])
-    update_product_option(product_obj, product_source['productOption'])
-
     product_obj.save()
 
 
 def dict_to_product_model(product_list):
     print(len(product_list))
-    pool = mp.Pool(processes=64)
-    print('setup multiprocessing')
-    pool.map(update_product_object, product_list)
-    pool.close()
-    # for product_obj in product_list:
-    #     update_product_object(product_obj)
+    # pool = mp.Pool(processes=64)
+    # print('setup multiprocessing')
+    # pool.map(update_product_object, product_list)
+    # pool.close()
+    for product_obj in product_list:
+        update_product_object(product_obj)
 
 
 #  {'insta_id': 'dam',

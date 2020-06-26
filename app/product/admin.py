@@ -393,6 +393,7 @@ class Product(admin.ModelAdmin):
     search_fields = ['store__insta_id', 'name']
     list_filter = [
         'is_active',
+        'stock_available',
         'product_image_type',
         'sub_category',
         'product_source',

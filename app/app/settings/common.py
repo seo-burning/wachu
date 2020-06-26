@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'store',
     'report',
     'order',
+    'preorder',
     'user',
 ]
 

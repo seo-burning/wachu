@@ -12,6 +12,23 @@ def make_deactive_product_by_store(store):
         product_obj.save()
 
 
+def get_duplicated_link_product():
+    pl = Product.objects.filter(product_source='HOMEPAGE')
+    for po in pl:
+        duplicated = Product.objects.filter(product_link=po.product_link)
+        if po.store.insta_id == '5thewayvietnam':
+            continue
+        if len(duplicated) > 1:
+            for i, obj in enumerate(duplicated):
+                print('https://dabivn.com/admin/product/product/'+str(obj.pk))
+                # if i == 0:
+                #     obj.delete()
+                if obj.sub_category == None:
+                    print('No cate')
+                    obj.delete()
+                print('\n')
+
+
 def make_product_options_from_product(product):
     product_size_list = product.size.all()
     product_color_list = product.color.all()
@@ -141,10 +158,10 @@ if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
     # pool.map(product_option_validate, option_list)
     # pool.close()
-    product_list = Product.objects.filter(is_active=True)
-    pool = mp.Pool(processes=64)
-    pool.map(product_valid, product_list)
-    pool.close()
+    # product_list = Product.objects.filter(is_active=True)
+    # pool = mp.Pool(processes=64)
+    # pool.map(product_valid, product_list)
+    # pool.close()
     # product_list = Product.objects.all()
     # pool = mp.Pool(processes=64)
     # product_list = Product.objects.all()
@@ -157,3 +174,4 @@ if __name__ == '__main__':
     #         store_obj.is_active = False
     #         store_obj.save()
     # preview_image_update()
+    get_duplicated_link_product()

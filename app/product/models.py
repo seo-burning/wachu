@@ -3,6 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel, ViewModel
 
+from preorder.models import PreorderCampaign
+
 
 class ProductCategory(TimeStampedModel, DispalyNameModel, ActiveModel, OrderingModel):
 
@@ -203,6 +205,11 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
 
     stock_available = models.BooleanField(default=False)
     is_discount = models.BooleanField(default=False)
+    is_preorder = models.BooleanField(default=False)
+    preorder_campaign = models.ForeignKey(
+        PreorderCampaign, on_delete=models.SET_NULL,
+        null=True, blank=True)
+
     current_review_rating = models.DecimalField(_('Review'),
                                                 max_digits=2, decimal_places=1, default=0)
     current_product_backend_rating = models.DecimalField(_('Point'),

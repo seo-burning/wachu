@@ -171,6 +171,7 @@ class ShopeeScraper:
                 # print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
                 obj_product.size.add(size_obj.size)
             else:
+                obj_product.is_active = False
                 # print("not exist : {}".format(size_obj.display_name))
                 pass
         obj_product.save()
@@ -190,6 +191,7 @@ class ShopeeScraper:
                 obj_product.color.add(color_obj.color)
             else:
                 # print("not exist : {}".format(color_obj.display_name))
+                obj_product.is_active = False
                 pass
         obj_product.save()
 
@@ -430,13 +432,16 @@ def update_shopee():
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
-            updated, created, need_to_update = obj.search_store(store_obj)
-            result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
-                '   need to update : '+str(need_to_update) + '\n'
-            f.writelines(result_text)
-            total_updated += updated
-            total_created += created
-            total_need_to_update += need_to_update
+            try:
+                updated, created, need_to_update = obj.search_store(store_obj)
+                result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
+                    '   need to update : '+str(need_to_update) + '\n'
+                f.writelines(result_text)
+                total_updated += updated
+                total_created += created
+                total_need_to_update += need_to_update
+            except:
+                pass
     slack_notify('>total : ' + str(total_updated) + '  created : ' + str(total_created) +
                  '   need to update : '+str(total_need_to_update) + '\n')
     slack_upload_file(file_path)
@@ -479,4 +484,6 @@ if __name__ == "__main__":
     # obj.get_or_create_product(store_obj, 6517246205, 0)
     # obj.search_store(store_obj)
     # update_shopee_multiprocessing()
-    check_product_delete()
+    # check_product_delete()
+    store_obj = Store.objects.get(insta_id="chicbae21")
+    obj.search_store(store_obj)

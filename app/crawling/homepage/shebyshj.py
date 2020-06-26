@@ -1,25 +1,17 @@
-
-
 import requests
 import json
 from random import choice
 from bs4 import BeautifulSoup
 import csv
 import re
-# In[3]:
-
+from decimal import Decimal
 
 _user_agents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
-    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
 ]
+
+shopee_color_list_duplicate = []
+shopee_size_list_duplicate = []
 
 
 def get_proxies():
@@ -79,19 +71,40 @@ def extract_json_data(html):
     return json.loads(raw_string)
 
 
+# In[8]:
+
+
+def get_cleaned_price(price):
+    return int(price/100)
+
+
+def calculate_discount_rate(original_price, discount_price):
+    discount_rate = int((1 - Decimal(discount_price)/Decimal(original_price))*100)
+    return discount_rate
+
+
 def get_cleaned_text(text):
     text = text.replace(' ', '').replace('\x08', '').strip().lower()
     return text
+
+
+def get_product_image_dict(source):
+    product_image = {
+        'source': source,
+        'source_thumb': source,
+        'post_image_type': 'P'
+    }
+    return product_image
 
 
 def get_option_from_script(script_list):
     option_json = None
     for script in script_list:
         try:
-            script = script.string
-            option_string = re.search(r'(?<="product-select",).*', script)
+            script = script.string.replace("'", '"')
+            option_string = re.search(r'(?<=product:).*', script)
             option_string = option_string.group().replace('});', '').replace(
-                ', onVariantSelected: selectCallback', '').replace('{ product: ', '').strip()
+                '\n', '').replace('product,', '').strip()[:-1]
             option_json = option_string
             print(option_json)
         except:
@@ -102,7 +115,8 @@ def get_option_from_script(script_list):
 def define_type(option_a, option_b):
     option_a = get_cleaned_text(option_a)
     option_b = get_cleaned_text(option_b)
-    size_option_list = ['xs', 's', 'm', 'l', 'xl', 'free']
+    size_option_list = ['defaulttitle', 'xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '27', '28',
+                        '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '1', '2', '3', '4', '5']
     if option_a in size_option_list:
         size_obj = {'display_name': get_cleaned_text(option_a)}
         color_obj = {'display_name': get_cleaned_text(option_b)}
@@ -114,7 +128,8 @@ def define_type(option_a, option_b):
 
 def define_type_single(option):
     option = get_cleaned_text(option)
-    size_option_list = ['xs', 's', 'm', 'l', 'xl', 'free', 'defaulttitle']
+    size_option_list = ['defaulttitle', 'xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '27', '28',
+                        '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '1', '2', '3', '4', '5']
     if option in size_option_list:
         size_obj = {'display_name': get_cleaned_text(option)}
         color_obj = None
@@ -123,81 +138,65 @@ def define_type_single(option):
         color_obj = {'display_name': get_cleaned_text(option)}
     return size_obj, color_obj
 
-# In[32]:
+
+# In[11]:
 
 
 def sub_crawler(obj, product_source):
     obj = HomepageCrawler()
     product_list = []
-    store = 293
+    store = 618
     for product_obj in product_source:
         is_discount = False
-    #     thumbnail / link
+        #     link and get json
         product_link_soup = product_obj.find("a", href=True)
-        product_link = "https://hades.vn"+product_link_soup.get('href')
-        product_thumbnail_image = "http:"+product_link_soup.find("img", class_="img-loop").get('src').replace('grande',
-                                                                                                              'large').replace('large', 'large').replace('medium', 'large')
+        product_link = "https://shebyshj.com"+product_link_soup.get('href')
+        print(product_link)
 
-    #     title
-        created_at = None
         response = obj.request_url(product_link)
         product_soup = BeautifulSoup(response.text, 'html.parser')
-        name = product_soup.find('h1').text
-        description = product_soup.find('div', class_='description-content').find('p')
-        if description:
-            description = description.text
-        else:
-            description = name
+        script_list = product_soup.find_all('script')
+        option_json = get_option_from_script(script_list)
+        option_json = json.loads(option_json)
 
-    #     product image list
-        product_images = product_soup.find_all('img', class_='product-image-feature')
-        product_image_list = []
-        for product_image_obj in product_images:
-            source = "http:" + product_image_obj.get('src')
-            product_image = {
-                'source': source,
-                'source_thumb': source,
-                'post_image_type': 'P'
-            }
-            product_image_list.append(product_image)
+        #     title / description
+        name = option_json['title']
+        description = option_json['description']
+        created_at = option_json['published_at'].replace('Z', '')
 
-    #     product price
-        product_price = product_soup.find('div', class_='product-price')
-        if product_price.find('span', class_='pro-sale'):
+        original_price = get_cleaned_price(option_json['price'])
+        discount_price = None
+        discount_rate = None
+        is_discount = False
+        if (option_json['compare_at_price_max'] != 0.0) & (option_json['price'] != option_json['compare_at_price_max']):
             is_discount = True
-            original_price = product_price.find('del').text.replace(',', '').replace('₫', '').replace(' ', '')
-            discount_price = product_price.find(
-                'span', class_='pro-price').text.replace(',', '').replace('₫', '').replace(' ', '')
-            discount_rate = product_price.find(
-                'span', class_='pro-sale').text.replace('-', '').replace('%', '').replace(' ', '')
+            discount_price = get_cleaned_price(option_json['price'])
+            original_price = get_cleaned_price(option_json['compare_at_price_max'])
+            discount_rate = calculate_discount_rate(original_price, discount_price)
         else:
-            original_price = product_price.find(
-                'span', class_='pro-price').text.replace(',', '').replace('₫', '').replace(' ', '')
             discount_price = None
             discount_rate = None
             is_discount = False
+        print(original_price, discount_price)
 
-    #     product stock
-        product_stock_soup = product_soup.find('button', class_='disabled add-to-cartProduct')
-        if product_stock_soup:
-            stock = 0
-        else:
-            stock = 99999
+        #      images
+        product_image_list = []
+        product_images = option_json['images']
+        for product_image in product_images:
+            source = product_image
+            product_image = get_product_image_dict(source)
+            product_image_list.append(product_image)
+        product_thumbnail_image = option_json['featured_image'].replace(
+            '.jpg', '_large.jpg').replace('.jpeg', '_large.jpeg')
 
     #     product options
-        script_list = product_soup.find_all('script')
-        option_json = get_option_from_script(script_list)
         product_option_list = []
         shopee_size_list = []
         shopee_color_list = []
         stock = 99999
         if option_json:
-            option_json = json.loads(option_json)
             stock = 0
-            created_at = option_json['published_at'].replace('Z', '')
-
             for product_option in option_json['variants']:
-                print(product_option)
                 option1 = product_option['option1']
                 option2 = product_option['option2']
                 if option2:
@@ -250,22 +249,22 @@ def sub_crawler(obj, product_source):
                        'shopee_category': [],
                        'size_chart': None,
                        'productOption': product_option_list,
-                       'style': 'street'
+                       'style': 'sexy'
                        }
         product_list.append(product_obj)
     return product_list
 
 
-def get_hades():
+def get_shebyshj():
+    print('operating shebyshj crawler')
     obj = HomepageCrawler()
-#     category_list = ['top','outwear', 'sweater-1', 'bottoms', 'hat']
     i = 1
     product_list = []
     while True:
-        url = "https://hades.vn/collections/all?page=" + str(i)
+        url = "https://shebyshj.com/collections/all?page=" + str(i)
         response = obj.request_url(url)
         soup = BeautifulSoup(response.text, 'html.parser')
-        product_source = soup.find_all("div", class_="product-block")
+        product_source = soup.find_all("div", class_="single-product")
         product_sub_list = sub_crawler(obj, product_source)
         product_list = product_list + product_sub_list
         length = len(product_source)

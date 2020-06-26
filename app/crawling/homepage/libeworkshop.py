@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf-8
 import requests
 import json
 from random import choice
@@ -7,16 +9,11 @@ import re
 from decimal import Decimal
 
 _user_agents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
-    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
 ]
+
+shopee_color_list_duplicate = []
+shopee_size_list_duplicate = []
 
 
 def get_proxies():
@@ -64,8 +61,6 @@ class HomepageCrawler:
         else:
             return response
 
-#     @staticmethod
-
 
 def extract_json_data(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -82,9 +77,12 @@ def get_cleaned_price(price):
 
 def calculate_discount_rate(original_price, discount_price):
     discount_rate = int((1 - Decimal(discount_price)/Decimal(original_price))*100)
-    print(int(discount_price), int(original_price))
-    print(1 - Decimal(discount_price)/Decimal(original_price), discount_rate)
     return discount_rate
+
+
+def get_cleaned_text(text):
+    text = text.replace(' ', '').replace('\x08', '').strip().lower()
+    return text
 
 
 def get_product_image_dict(source):
@@ -96,19 +94,16 @@ def get_product_image_dict(source):
     return product_image
 
 
-def get_cleaned_text(text):
-    text = text.replace(' ', '').replace('\x08', '').replace('\n', '').strip().lower()
-    return text
-
-
 def get_option_from_script(script_list):
     option_json = None
     for script in script_list:
         try:
-            script = script.string.replace("'", '"')
-            option_string = re.search(r'(?<=product:).*', script)
-            option_string = option_string.group().replace('});', '').strip()[:-1]
+            script = script.string
+            option_string = re.search(r'(?<="product-select",).*', script)
+            option_string = option_string.group().replace('});', '').replace(
+                ', onVariantSelected: selectCallback', '').replace('{ product: ', '').strip()
             option_json = option_string
+            print(option_json)
         except:
             pass
     return option_json
@@ -141,25 +136,33 @@ def define_type_single(option):
     return size_obj, color_obj
 
 
-def get_product_sub_list(obj, products_soup, duplicate_check_list):
-    store = 296
+# In[29]:
+
+
+def sub_crawler(obj, product_source, url_obj, duplicate_check_list):
+    obj = HomepageCrawler()
     product_list = []
-    for ps in products_soup:
-        product_link = 'http://swe.vn' + ps.find('div', class_='product-img').find('a').get('href')
+    store = 9
+    for product_obj in product_source:
+        #     link and get json
+        product_link_soup = product_obj.find("a", href=True)
+        product_link = "https://libeworkshop.com"+product_link_soup.get('href')
         print(product_link)
         if product_link not in duplicate_check_list:
-            response = obj.request_url(product_link)
-            product_soup = BeautifulSoup(response.text, 'html.parser')
-            script_list = product_soup.find_all('script')
-            option_json = get_option_from_script(script_list)
-            option_json = json.loads(option_json)
+            try:
+                response = obj.request_url(product_link)
+                product_soup = BeautifulSoup(response.text, 'html.parser')
+                script_list = product_soup.find_all('script')
+                option_json = get_option_from_script(script_list)
+                option_json = json.loads(option_json)
+            except:
+                continue
 
-        #     title / description
+            #     title / description
             name = option_json['title']
             description = option_json['description']
             created_at = option_json['published_at'].replace('Z', '')
 
-        #     product price
             original_price = get_cleaned_price(option_json['price'])
             discount_price = None
             discount_rate = None
@@ -174,20 +177,17 @@ def get_product_sub_list(obj, products_soup, duplicate_check_list):
                 discount_rate = None
                 is_discount = False
 
-#             product_thumbnail_image = "http:"+ps.find('div', class_='product-img').find('img', class_='visible-xs').get('src').replace('grande',
-#                                                                                     'compact').replace('large', 'compact').replace('medium','compact')
-            product_thumbnail_image = option_json['featured_image'].replace(
-                '.jpg', '_large.jpg').replace('.jpeg', '_large.jpeg')
-            print(product_thumbnail_image)
+            #      images
             product_image_list = []
             product_images = option_json['images']
             for product_image in product_images:
                 source = product_image
                 product_image = get_product_image_dict(source)
                 product_image_list.append(product_image)
+            product_thumbnail_image = option_json['featured_image'].replace(
+                '.jpg', '_large.jpg').replace('.jpeg', '_large.jpeg')
 
         #     product options
-
             product_option_list = []
             shopee_size_list = []
             shopee_color_list = []
@@ -195,8 +195,15 @@ def get_product_sub_list(obj, products_soup, duplicate_check_list):
             if option_json:
                 stock = 0
                 for product_option in option_json['variants']:
-                    option_name = product_option['option1']
-                    size_obj, color_obj = define_type_single(option_name)
+                    option1 = product_option['option1']
+                    option2 = product_option['option2']
+                    option3 = product_option['option3']
+                    if option3:
+                        size_obj, color_obj = define_type(option1, option3)
+                    elif option2:
+                        size_obj, color_obj = define_type(option1, option2)
+                    else:
+                        size_obj, color_obj = define_type_single(option1)
                     if color_obj and color_obj not in shopee_color_list:
                         shopee_color_list.append(color_obj)
                     if size_obj and size_obj not in shopee_size_list:
@@ -207,7 +214,7 @@ def get_product_sub_list(obj, products_soup, duplicate_check_list):
                     stock = stock + option_stock
                     product_option_obj = {
                         'is_active': product_option['available'],
-                        'name': option_name,
+                        'name': product_option['title'],
                         'original_price': original_price,
                         'discount_price': discount_price,
                         'currency': 'VND',
@@ -216,6 +223,9 @@ def get_product_sub_list(obj, products_soup, duplicate_check_list):
                         'stock': option_stock, }
                     product_option_list.append(product_option_obj)
 
+        #     product size
+
+            print(shopee_size_list)
             product_obj = {'is_active': False,
                            'is_discount': is_discount,
                            'created_at': created_at,
@@ -240,7 +250,8 @@ def get_product_sub_list(obj, products_soup, duplicate_check_list):
                            'shopee_category': [],
                            'size_chart': None,
                            'productOption': product_option_list,
-                           'style': 'street'
+                           'subcategory': 'libe-'+url_obj,
+                           'style': 'feminine'
                            }
             product_list.append(product_obj)
         else:
@@ -248,25 +259,25 @@ def get_product_sub_list(obj, products_soup, duplicate_check_list):
     return product_list, duplicate_check_list
 
 
-def get_swe():
+def get_libeworkshop():
+    print('operating degrey crawler')
     obj = HomepageCrawler()
+    url_list = ['t-shirt-1', 'shirt-1', 'camisole',
+                'bottom', 'skirt', 'dresses-jumpsuits', 'outer-wear', 'swimwear', 'lookbook-home-alone']
     product_list = []
     duplicate_check_list = []
-    url_list = [
-        #                 'new-arrivals',
-        'tops', 'outerwear', 'bottoms', 'accessories']
-
     for url_obj in url_list:
         i = 1
         while True:
-            url = "https://swe.vn/collections/" + url_obj+"?page=" + str(i)
-            print(url)
+            url = "https://libeworkshop.com/collections/"+url_obj+"?page=" + str(i)
             response = obj.request_url(url)
             soup = BeautifulSoup(response.text, 'html.parser')
-            products_soup = soup.find('body').find_all('div', class_='single-product')
-            product_sub_list, duplicate_check_list = get_product_sub_list(obj, products_soup, duplicate_check_list)
+            product_source = soup.find_all("div", class_="product-block")
+            product_sub_list, duplicate_check_list = sub_crawler(obj, product_source,
+                                                                 url_obj,
+                                                                 duplicate_check_list)
             product_list = product_list + product_sub_list
-            length = len(products_soup)
+            length = len(product_source)
             print(length)
             if length == 0:
                 break
