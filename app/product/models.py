@@ -273,7 +273,7 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
             thumb_image = "http://dabivn.comm"
 
         return mark_safe('<img src="{url}" \
-        width="500" height="500" border="1" />'.format(
+        width="350" height="350" border="1" />'.format(
             url=thumb_image
         ))
 

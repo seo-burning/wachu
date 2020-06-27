@@ -363,6 +363,7 @@ class Product(admin.ModelAdmin):
     raw_id_fields = ['store', 'post']
     list_display = [
         'is_active',
+        'stock',
         '__str__',
         'created_at',
         'current_product_backend_rating',
