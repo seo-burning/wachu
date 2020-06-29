@@ -548,13 +548,18 @@ class Product(admin.ModelAdmin):
                         h4 {color:black}\
                         p { color: black;font-size:10px;font-weight:400} \
                         p.bold { font-weight:500; font-size:12px}\
-                        p.None { color:red; font-weight:600; opacity:1}\
+                        p.None { color:red; font-weight:600; opacity:1; background-color:pink}\
+                        p.no-stock {color: red; font-weight:600; opacity:0.2 }\
                         p.False { color:grey; opacity:0.2 }\
+                        div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
+                        div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
+                        div.active { background-color : rgba(223, 245, 223,0.3) }\
                 </style> "
-        product_info = '<img src="{url}" width="200" height="200" border="1" />\
+        stock_is_null = 'no-stock' if obj.stock == 0 else ''
+        product_info = '<img src="{url}" width="200" height="200" border="1" style="padding:10px"/>\
                         <p class="bold {subcategory}">{category} > {subcategory}</p>\
                         <h4>{name}</h4>\
-                        <p>재고 / stock : {stock}</p>\
+                        <p class={stock_is_null}>재고 / stock : {stock}</p>\
                         <p>가격 {original_price} VND</p>\
                         <p class={is_discount}>할인가격 {discount_price} VND ({discount_rate}% OFF)</p>'.format(
             url=obj.product_thumbnail_image,
@@ -562,12 +567,19 @@ class Product(admin.ModelAdmin):
             subcategory=obj.sub_category,
             name=obj.name,
             stock=obj.stock,
+            stock_is_null=stock_is_null,
             is_discount=obj.is_discount,
             original_price=obj.original_price,
             discount_price=obj.discount_price,
             discount_rate=obj.discount_rate
         )
-        return mark_safe(style+'<div style="row">' +
+        if obj.is_valid == False:
+            status = 'not-valid'
+        elif obj.is_active == False:
+            status = 'not-active'
+        elif obj.is_active == True:
+            status = 'active'
+        return mark_safe(style+'<div class="{status}">'.format(status=status) +
                          product_info+'</div>')
 
     def option_summary(self, obj):
@@ -576,7 +588,11 @@ class Product(admin.ModelAdmin):
                 th, td { padding-left:10px; \
                     margin:0px; font-size:10px; color:black;font-weight:400}\
                 td.False {color: grey; opacity:0.2}\
-                td.null {color: red; font-weight:600; opacity:1}\
+                td.no-stock {color: red; font-weight:600; }\
+                td.null {color: red; font-weight:600; opacity:1; background-color:pink}\
+                div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
+                div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
+                div.active { background-color : rgba(223, 245, 223,0.3) }\
         </style> "
         size_list = obj.size.all()
         size_info = '<h4>사이즈 종류 / size ({len}): </h4><p>'.format(len=len(size_list))
@@ -602,20 +618,27 @@ class Product(admin.ModelAdmin):
                 </tr>'.format(len=len(option_list))
 
         for i, option_obj in enumerate(option_list):
-            size_is_null = 'null'if option_obj.size is None else ''
-            color_is_null = 'null'if option_obj.color is None else ''
+            size_is_null = 'null' if option_obj.size is None else ''
+            color_is_null = 'null' if option_obj.color is None else ''
+            stock_is_null = 'no-stock' if option_obj.stock == 0 else ''
             option_info += '<tr>\
                                 <td class="{is_active}">{i} </td>\
                                 <td class="{is_active}">{name} </td>\
                                 <td class="{is_active} {size_is_null}">{size}</td>\
                                 <td class="{is_active} {color_is_null}">{color} </td>\
-                                <td class="{is_active}">{stock}</td>\
+                                <td class="{is_active} {stock_is_null}">{stock}</td>\
                             </tr>'.format(is_active=option_obj.is_active, i=i, name=option_obj.name,
                                           size=option_obj.size, size_is_null=size_is_null,
                                           color=option_obj.color, color_is_null=color_is_null,
-                                          stock=option_obj.stock)
+                                          stock=option_obj.stock, stock_is_null=stock_is_null)
         option_info += '</table>'
-        return mark_safe(style+'<div style="row">' +
+        if obj.is_valid == False:
+            status = 'not-valid'
+        elif obj.is_active == False:
+            status = 'not-active'
+        elif obj.is_active == True:
+            status = 'active'
+        return mark_safe(style+'<div class="{status}">' +
                          size_info +
                          color_info +
                          option_info + '</div>')
