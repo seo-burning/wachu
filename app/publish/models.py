@@ -5,31 +5,15 @@ from store.models import StorePost
 from product import models as p_models
 from store.models import Store
 # Create your models here.
-
-
-class PostGroup(TimeStampedModel):
-    ordering = models.IntegerField(default=999, null=True)
-    title = models.CharField(_('Post Group Title'), max_length=50)
-    cover_picture = models.ImageField(
-        blank=True, upload_to='post-group-cover/%Y/%m')
-    list_thumb_picture = models.ImageField(
-        blank=True, upload_to='post-group-list-thumb/%Y/%m')
-    post_list = models.ManyToManyField(StorePost, blank=True,
-                                       symmetrical=False,
-                                       related_name="post_set")
-    published_banner = models.ForeignKey(
-        'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
-    published_magazine = models.ForeignKey(
-        'MagazinePublish', on_delete=models.SET_NULL, null=True, blank=True,)
-
-    def __str__(self):
-        return self.title
-
-
 BANNER_TYPE = [('linking', 'LINKING'), ('base', 'BASIC'), ('coupon', 'COUPON')]
 
 
 class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
+    class Meta:
+        ordering = ('-is_active', 'ordering',)
+        verbose_name = u'배너 / Banner'
+        verbose_name_plural = verbose_name
+
     title = models.CharField(_('Post Group Title'), max_length=50)
     list_thumb_picture = models.ImageField(
         blank=True, upload_to='post-group-list-thumb/%Y/%m')
@@ -49,16 +33,40 @@ class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
     primary_color = models.CharField(max_length=20, blank=True)
     secondary_color = models.CharField(max_length=20, blank=True)
 
+    def __str__(self):
+        return self.title
+
+
+class PostGroup(TimeStampedModel):
     class Meta:
-        ordering = ('-is_active', 'ordering',)
+        ordering = ('ordering',)
+        verbose_name = u'상품 그룹 / Product Group'
+        verbose_name_plural = verbose_name
+
+    ordering = models.IntegerField(default=999, null=True)
+    title = models.CharField(_('Post Group Title'), max_length=50)
+    cover_picture = models.ImageField(
+        blank=True, upload_to='post-group-cover/%Y/%m')
+    list_thumb_picture = models.ImageField(
+        blank=True, upload_to='post-group-list-thumb/%Y/%m')
+    post_list = models.ManyToManyField(StorePost, blank=True,
+                                       symmetrical=False,
+                                       related_name="post_set")
+    published_banner = models.ForeignKey(
+        'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
+    published_magazine = models.ForeignKey(
+        'MagazinePublish', on_delete=models.SET_NULL, null=True, blank=True,)
 
     def __str__(self):
         return self.title
 
 
 class PostTagGroup(TimeStampedModel):
+
     class Meta:
         ordering = ('ordering',)
+        verbose_name = u'상품 그룹 태그 / Product Group by Tag'
+        verbose_name_plural = verbose_name
 
     ordering = models.IntegerField(default=999, null=True)
     category = models.ForeignKey(
@@ -102,6 +110,9 @@ class PostTagGroup(TimeStampedModel):
 
 
 class MainPagePublish(TimeStampedModel):
+    class Meta:
+        verbose_name = u'홈 화면 발행 / Home Pulish'
+        verbose_name_plural = verbose_name
     is_published = models.BooleanField(default=False)
     date = models.DateField(_('Published Date'))
 
@@ -110,6 +121,10 @@ class MainPagePublish(TimeStampedModel):
 
 
 class BannerPublish(TimeStampedModel):
+    class Meta:
+        verbose_name = u'배너 발행 / Banner Publish'
+        verbose_name_plural = verbose_name
+
     is_published = models.BooleanField(default=False)
     date = models.DateField(_('Published Date'))
 

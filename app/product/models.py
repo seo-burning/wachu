@@ -56,17 +56,30 @@ class ProductColor(TimeStampedModel, DispalyNameModel):
         return self.display_name
 
 
-class ProductStyle(TimeStampedModel):
-    name = models.CharField(_('Product Style'),
-                            max_length=255, unique=True)
-    display_name = models.CharField(max_length=255)
+class ProductStyle(TimeStampedModel, DispalyNameModel):
+    class Meta:
+        verbose_name = u'제품 스타일 / Product Style'
+        verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.name
 
 
-class ProductExtraOption(TimeStampedModel):
-    variation_group = models.CharField(max_length=255)
+class ProductExtraOption(TimeStampedModel, DispalyNameModel):
+    class Meta:
+        verbose_name = u'제품 기타 옵션 / Product Extra Option'
+        verbose_name_plural = verbose_name
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class ProductSourceExtraOption(TimeStampedModel):
+    class Meta:
+        verbose_name = u'제품 기타 옵션 / Product Extra Option'
+        verbose_name_plural = verbose_name
+    variation_group = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255)
     source_thumb = models.CharField(max_length=1024, null=True)
     source = models.CharField(max_length=1024, null=True)
@@ -250,7 +263,8 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
         ShopeeColor, blank=True)
     shopee_size = models.ManyToManyField(
         ShopeeSize, blank=True)
-
+    source_extra_option = models.ManyToManyField(
+        ProductSourceExtraOption, blank=True)
     size = models.ManyToManyField(
         ProductSize, blank=True)
 
@@ -291,10 +305,9 @@ class ProductOption(PriceModel, TimeStampedModel):
     name = models.CharField(max_length=255, blank=True)
     stock = models.IntegerField(default=0)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='product_options')
-    shopee_sold_count = models.IntegerField(default=0)
     size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, blank=True)
     color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True, blank=True)
-    extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True)
+    extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         option_string = 'product : ' + str(self.product.pk)

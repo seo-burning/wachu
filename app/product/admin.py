@@ -226,6 +226,31 @@ class ProductExtraOptionThroughInline(admin.TabularInline):
         ))
 
 
+class ProductSourceExtraOptionThroughInline(admin.TabularInline):
+    model = models.Product.source_extra_option.through
+    fields = ['product_thumbnail_image', 'product_link',
+              'product_out_link', ]
+    readonly_fields = ['product_thumbnail_image',
+                       'product_link', 'product_out_link']
+    extra = 0
+
+    def product_thumbnail_image(self, instance):
+        return mark_safe('<img src="{url}" \
+        width="400" height="400" border="1" />'.format(
+            url=instance.product.product_thumbnail_image
+        ))
+
+    def product_link(self, instance):
+        return mark_safe(
+            '<a href="http://dabivn.com/admin/product/product/%s" target="_blank">%s</a>'
+            % (instance.product.pk, "product page"))
+
+    def product_out_link(self, instance):
+        return mark_safe('<a href="%s" target="_blank">%s</a>' % (
+            instance.product.product_link, "product_out_link"
+        ))
+
+
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
@@ -309,9 +334,19 @@ class ShopeeColorAdmin(admin.ModelAdmin):
         return product_num
 
 
+@admin.register(models.ProductSourceExtraOption)
+class ProductSourceExtraOptionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'product_num', 'variation_group']
+    inlines = [ProductSourceExtraOptionThroughInline, ]
+
+    def product_num(self, obj):
+        product_num = obj.product_set.all().filter(source_extra_option=obj).count()
+        return product_num
+
+
 @admin.register(models.ProductExtraOption)
 class ProductExtraOptionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'variation_group', 'product_num']
+    list_display = ['name', 'product_num']
     inlines = [ProductExtraOptionThroughInline, ]
 
     def product_num(self, obj):
@@ -333,7 +368,7 @@ class ProductOptionAdmin(admin.ModelAdmin):
 class ProductOptionInline(admin.StackedInline):
     model = models.ProductOption
     fields = ['is_active', 'name', 'original_price',
-              'discount_price', 'stock', 'size', 'color']
+              'discount_price', 'stock', 'size', 'color', 'extra_option']
     extra = 0
 
 

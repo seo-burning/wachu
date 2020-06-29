@@ -231,7 +231,6 @@ class PostRankingFilter(admin.SimpleListFilter):
             ('store__current_ranking <= 800', 'store__current_ranking <= 800'),
             ('store__current_ranking <= 1000',
              'store__current_ranking <= 1000'),
-
         )
 
     def queryset(self, request, queryset):
