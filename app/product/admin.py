@@ -362,17 +362,12 @@ class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
     raw_id_fields = ['store', 'post']
     list_display = [
-        '__str__',
         'is_active',
         'is_valid',
-        'name',
-        'get_product_link',
-        'store',
-        'sub_category',
-        'original_price',
-        'discount_price',
-        'color_num',
-        'size_num',
+        'product_summary',
+        'option_summary',
+        'store'
+
     ]
     fieldsets = [('Status', {'fields': ['is_active',
                                         'is_valid',
@@ -388,7 +383,7 @@ class Product(admin.ModelAdmin):
                  ('Shopee Info', {'fields': ['shopee_category', 'shopee_color', 'shopee_size', ]}),
                  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
                  ]
-    list_display_links = ['is_active', 'name', ]
+    list_display_links = ['product_summary', ]
     search_fields = ['store__insta_id', 'name']
     list_filter = [
         'is_active',
@@ -547,3 +542,80 @@ class Product(admin.ModelAdmin):
         )
     get_product_link.short_description = "Link"
     get_product_link.allow_tags = True
+
+    def product_summary(self, obj):
+        style = "<style>\
+                        h4 {color:black}\
+                        p { color: black;font-size:10px;font-weight:400} \
+                        p.bold { font-weight:500; font-size:12px}\
+                        p.None { color:red; font-weight:600; opacity:1}\
+                        p.False { color:grey; opacity:0.2 }\
+                </style> "
+        product_info = '<img src="{url}" width="200" height="200" border="1" />\
+                        <p class="bold {subcategory}">{category} > {subcategory}</p>\
+                        <h4>{name}</h4>\
+                        <p>재고 / stock : {stock}</p>\
+                        <p>가격 {original_price} VND</p>\
+                        <p class={is_discount}>할인가격 {discount_price} VND ({discount_rate}% OFF)</p>'.format(
+            url=obj.product_thumbnail_image,
+            category=obj.category,
+            subcategory=obj.sub_category,
+            name=obj.name,
+            stock=obj.stock,
+            is_discount=obj.is_discount,
+            original_price=obj.original_price,
+            discount_price=obj.discount_price,
+            discount_rate=obj.discount_rate
+        )
+        return mark_safe(style+'<div style="row">' +
+                         product_info+'</div>')
+
+    def option_summary(self, obj):
+        style = "<style>\
+                h4 {color:black}\
+                th, td { padding-left:10px; \
+                    margin:0px; font-size:10px; color:black;font-weight:400}\
+                td.False {color: grey; opacity:0.2}\
+                td.null {color: red; font-weight:600; opacity:1}\
+        </style> "
+        size_list = obj.size.all()
+        size_info = '<h4>사이즈 종류 / size ({len}): </h4><p>'.format(len=len(size_list))
+        for size_obj in size_list:
+            size_info += '{size}, '.format(size=size_obj)
+        size_info += '</p>'
+
+        color_list = obj.color.all()
+        color_info = '<h4>색상 종류 / color ({len}) : </h4><p>'.format(len=len(color_list))
+        for color_obj in color_list:
+            color_info += '{color}, '.format(color=color_obj)
+        color_info += '</p>'
+
+        option_list = obj.product_options.all()
+        option_info = '<h4>상품 옵션 / Options ({len}) : </h4>\
+            <table>\
+                <tr>\
+                    <td>No</td>\
+                    <td>name</td>\
+                    <td>size</td>\
+                    <td>color</td>\
+                    <td>stock</td>\
+                </tr>'.format(len=len(option_list))
+
+        for i, option_obj in enumerate(option_list):
+            size_is_null = 'null'if option_obj.size == None else ''
+            color_is_null = 'null'if option_obj.color == None else ''
+            option_info += '<tr>\
+                                <td class="{is_active}">{i} </td>\
+                                <td class="{is_active}">{name} </td>\
+                                <td class="{is_active} {size_is_null}">{size}</td>\
+                                <td class="{is_active} {color_is_null}">{color} </td>\
+                                <td class="{is_active}">{stock}</td>\
+                            </tr>'.format(is_active=option_obj.is_active, i=i, name=option_obj.name,
+                                          size=option_obj.size, size_is_null=size_is_null,
+                                          color=option_obj.color, color_is_null=color_is_null,
+                                          stock=option_obj.stock)
+        option_info += '</table>'
+        return mark_safe(style+'<div style="row">' +
+                         size_info +
+                         color_info +
+                         option_info + '</div>')
