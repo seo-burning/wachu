@@ -226,7 +226,7 @@ class ProductExtraOptionThroughInline(admin.TabularInline):
         ))
 
 
-class ProductSourceExtraOptionThroughInline(admin.TabularInline):
+class SourceExtraOptionThroughInline(admin.TabularInline):
     model = models.Product.source_extra_option.through
     fields = ['product_thumbnail_image', 'product_link',
               'product_out_link', ]
@@ -334,10 +334,10 @@ class ShopeeColorAdmin(admin.ModelAdmin):
         return product_num
 
 
-@admin.register(models.ProductSourceExtraOption)
-class ProductSourceExtraOptionAdmin(admin.ModelAdmin):
+@admin.register(models.SourceExtraOption)
+class SourceExtraOptionAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_num', 'variation_group']
-    inlines = [ProductSourceExtraOptionThroughInline, ]
+    inlines = [SourceExtraOptionThroughInline, ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(source_extra_option=obj).count()
@@ -435,7 +435,12 @@ class Product(admin.ModelAdmin):
                'product_pattern_striped',
                'product_pattern_texture',
                'product_pattern_caro',
-               'product_style_simple'
+               'product_style_simple',
+               'product_style_lovely',
+               'product_style_sexy',
+               'product_style_vintage',
+               'product_style_street',
+               'product_style_feminine',
                ]
 
     def make_activate(self, request, queryset):

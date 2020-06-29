@@ -75,9 +75,9 @@ class ProductExtraOption(TimeStampedModel, DispalyNameModel):
         return self.name
 
 
-class ProductSourceExtraOption(TimeStampedModel):
+class SourceExtraOption(TimeStampedModel):
     class Meta:
-        verbose_name = u'제품 기타 옵션 / Product Extra Option'
+        verbose_name = u'소스 - 기타 옵션 / Product Source Extra Option'
         verbose_name_plural = verbose_name
     variation_group = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255)
@@ -212,7 +212,7 @@ class PriceModel(models.Model):
 
 class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
     class Meta:
-        verbose_name = u'제품'
+        verbose_name = u'제품 / Product'
         verbose_name_plural = verbose_name
         ordering = ['-created_at', 'current_product_backend_rating', ]
 
@@ -264,7 +264,7 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
     shopee_size = models.ManyToManyField(
         ShopeeSize, blank=True)
     source_extra_option = models.ManyToManyField(
-        ProductSourceExtraOption, blank=True)
+        SourceExtraOption, blank=True)
     size = models.ManyToManyField(
         ProductSize, blank=True)
 
