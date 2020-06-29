@@ -367,7 +367,6 @@ class Product(admin.ModelAdmin):
         'product_summary',
         'option_summary',
         'store'
-
     ]
     fieldsets = [('Status', {'fields': ['is_active',
                                         'is_valid',
@@ -527,14 +526,6 @@ class Product(admin.ModelAdmin):
         # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
 
-    def color_num(self, obj):
-        color_num = obj.color.count()
-        return color_num
-
-    def size_num(self, obj):
-        size_num = obj.size.count()
-        return size_num
-
     def get_product_link(self, obj):
         return format_html(
             '<a href="%s" target="_blank">%s</a>' % (
@@ -573,11 +564,11 @@ class Product(admin.ModelAdmin):
             discount_price=obj.discount_price,
             discount_rate=obj.discount_rate
         )
-        if obj.is_valid == False:
+        if obj.is_valid is False:
             status = 'not-valid'
-        elif obj.is_active == False:
+        elif obj.is_active is False:
             status = 'not-active'
-        elif obj.is_active == True:
+        elif obj.is_active is True:
             status = 'active'
         return mark_safe(style+'<div class="{status}">'.format(status=status) +
                          product_info+'</div>')
@@ -620,7 +611,7 @@ class Product(admin.ModelAdmin):
         for i, option_obj in enumerate(option_list):
             size_is_null = 'null' if option_obj.size is None else ''
             color_is_null = 'null' if option_obj.color is None else ''
-            stock_is_null = 'no-stock' if option_obj.stock == 0 else ''
+            stock_is_null = 'no-stock' if option_obj.stock is 0 else ''
             option_info += '<tr>\
                                 <td class="{is_active}">{i} </td>\
                                 <td class="{is_active}">{name} </td>\
@@ -632,13 +623,13 @@ class Product(admin.ModelAdmin):
                                           color=option_obj.color, color_is_null=color_is_null,
                                           stock=option_obj.stock, stock_is_null=stock_is_null)
         option_info += '</table>'
-        if obj.is_valid == False:
+        if obj.is_valid is False:
             status = 'not-valid'
-        elif obj.is_active == False:
+        elif obj.is_active is False:
             status = 'not-active'
-        elif obj.is_active == True:
+        elif obj.is_active is True:
             status = 'active'
-        return mark_safe(style+'<div class="{status}">' +
+        return mark_safe(style+'<div class="{status}">'.format(status=status) +
                          size_info +
                          color_info +
                          option_info + '</div>')
