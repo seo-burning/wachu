@@ -292,8 +292,8 @@ class ProductOption(PriceModel, TimeStampedModel):
     stock = models.IntegerField(default=0)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='product_options')
     shopee_sold_count = models.IntegerField(default=0)
-    size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True)
-    color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True)
+    size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, blank=True)
+    color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True, blank=True)
     extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
