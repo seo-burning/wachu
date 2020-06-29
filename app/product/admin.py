@@ -365,12 +365,7 @@ class Product(admin.ModelAdmin):
         '__str__',
         'is_active',
         'is_valid',
-        'stock',
         'name',
-        'created_at',
-        'current_product_backend_rating',
-        'product_source',
-        'current_review_rating',
         'get_product_link',
         'store',
         'sub_category',
@@ -378,7 +373,6 @@ class Product(admin.ModelAdmin):
         'discount_price',
         'color_num',
         'size_num',
-        'product_thumbnail_image'
     ]
     fieldsets = [('Status', {'fields': ['is_active',
                                         'is_valid',
