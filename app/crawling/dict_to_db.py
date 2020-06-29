@@ -150,15 +150,15 @@ def update_product_object(product_source):
     product_obj.video_source = product_source['video_source']
     product_obj.save()
 
-    if 'created_at' in product_source:
-        if product_source['created_at']:
-            try:
-                created_at = datetime.strptime(product_source['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
-            except:
-                created_at = datetime.strptime(product_source['created_at'], "%Y-%m-%dT%H:%M:%S")
-            product_obj.created_at = created_at
     if is_created:
         product_obj.name = product_source['name']
+        if 'created_at' in product_source:
+            if product_source['created_at']:
+                try:
+                    created_at = datetime.strptime(product_source['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
+                except:
+                    created_at = datetime.strptime(product_source['created_at'], "%Y-%m-%dT%H:%M:%S")
+                product_obj.created_at = created_at
         product_obj.current_review_rating = product_source['current_review_rating']
         product_obj.product_source = product_source['product_source']
         product_obj.size_chart = product_source['size_chart']

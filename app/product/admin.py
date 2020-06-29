@@ -602,8 +602,8 @@ class Product(admin.ModelAdmin):
                 </tr>'.format(len=len(option_list))
 
         for i, option_obj in enumerate(option_list):
-            size_is_null = 'null'if option_obj.size == None else ''
-            color_is_null = 'null'if option_obj.color == None else ''
+            size_is_null = 'null'if option_obj.size is None else ''
+            color_is_null = 'null'if option_obj.color is None else ''
             option_info += '<tr>\
                                 <td class="{is_active}">{i} </td>\
                                 <td class="{is_active}">{name} </td>\
