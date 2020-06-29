@@ -611,7 +611,7 @@ class Product(admin.ModelAdmin):
         for i, option_obj in enumerate(option_list):
             size_is_null = 'null' if option_obj.size is None else ''
             color_is_null = 'null' if option_obj.color is None else ''
-            stock_is_null = 'no-stock' if option_obj.stock is 0 else ''
+            stock_is_null = 'no-stock' if option_obj.stock == 0 else ''
             option_info += '<tr>\
                                 <td class="{is_active}">{i} </td>\
                                 <td class="{is_active}">{name} </td>\
