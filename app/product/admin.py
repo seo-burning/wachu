@@ -363,6 +363,7 @@ class Product(admin.ModelAdmin):
     raw_id_fields = ['store', 'post']
     list_display = [
         'is_active',
+        'is_valid',
         'stock',
         '__str__',
         'created_at',
@@ -379,7 +380,10 @@ class Product(admin.ModelAdmin):
         'size_num',
         'product_thumbnail_image'
     ]
-    fieldsets = [('Status', {'fields': ['is_active', 'stock_available', 'view', 'current_product_backend_rating']}),
+    fieldsets = [('Status', {'fields': ['is_active',
+                                        'is_valid',
+                                        'stock_available',
+                                        'view', 'current_product_backend_rating']}),
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
                  ('Product Info', {'fields': ['name', 'shopee_item_id',
                                               'description', 'product_thumbnail_image']}),
@@ -394,6 +398,7 @@ class Product(admin.ModelAdmin):
     search_fields = ['store__insta_id', 'name']
     list_filter = [
         'is_active',
+        'is_valid',
         'stock_available',
         'product_image_type',
         'sub_category',

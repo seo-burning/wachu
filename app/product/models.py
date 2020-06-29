@@ -204,6 +204,7 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
         ordering = ['-created_at', 'current_product_backend_rating', ]
 
     stock_available = models.BooleanField(default=False)
+    is_valid = models.BooleanField(default=True)
     is_discount = models.BooleanField(default=False)
     is_preorder = models.BooleanField(default=False)
     preorder_campaign = models.ForeignKey(
