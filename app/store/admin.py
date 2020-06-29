@@ -131,7 +131,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         'follower',
         'following',
         'post_num',
-        'description',)
+    )
     fieldsets = [
         (_("User Profile"), {'fields': ['is_new_post',
                                         'is_active',
@@ -163,43 +163,21 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
              'recent_post_3'),
         )}),
     ]
-    list_display = ["instagram_link",
+    list_display = ["is_active",
                     "store_type",
                     'current_ranking',
                     "insta_id", 'profile_thumb',
-                    'follower',
                     'primary_style',
-                    'secondary_style', 'post_num',
-                    'post_product_num', 'need_to_update', ]
+                    'secondary_style',
+                    'product_num', ]
     list_filter = ['is_active', 'store_type']
     list_display_links = ["insta_id"]
     search_fields = ["insta_id",
                      "primary_style__name", "secondary_style__name", ]
-    actions = ['export_as_csv', 'make_activate',
-               'make_deactivate', 'make_deactivate_under_5000',
-               'make_is_updated', 'make_is_not_updated',
-               'make_deactivate_not_categorized']
-
-    def make_deactivate_not_categorized(self, request, queryset):
-        num = 0
-        for q in queryset:
-            if (len(q.category.all()) == 0):
-                print(q.insta_id)
-                num = num + 1
-                q.is_active = False
-                q.save()
-        self.message_user(
-            request, '분류되지 않은 {}의 계정을 deactivate로 변경'.format(num))
-
-    def make_deactivate_under_5000(self, request, queryset):
-        num = 0
-        for q in queryset:
-            if (int(q.follower) < 5000):
-                num = num+1
-                q.is_active = False
-                q.save()
-        self.message_user(
-            request, '5000 follower 이하인 {}의 계정을 deactivate로 변경'.format(num))
+    actions = ['export_as_csv',
+               'make_activate',
+               'make_deactivate',
+               ]
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
@@ -212,18 +190,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         self.message_user(
             request, '{}건의 포스팅을 Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = '지정 스토어를 Deactivate 상태로 변경'
-
-    def make_is_updated(self, request, queryset):
-        updated_count = queryset.update(is_updated=True)
-        self.message_user(
-            request, '{}건의 포스팅을 Updated 상태로 변경'.format(updated_count))
-    make_is_updated.short_description = '지정 스토어를 Updated 상태로 변경'
-
-    def make_is_not_updated(self, request, queryset):
-        updated_count = queryset.update(is_updated=False)
-        self.message_user(
-            request, '{}건의 포스팅을 Not Updated 상태로 변경'.format(updated_count))
-    make_is_not_updated.short_description = '지정 스토어를 Not Updated 상태로 변경'
 
     def profile_image_shot(self, obj):
         return mark_safe('<img src="{url}" \
@@ -242,25 +208,12 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             '<a href="%s" target="_blank">%s</a>' % (obj.insta_url, 'Insta')
         )
 
-    def post_product_num(self, obj):
-        product_num = obj.store_post_set.all().filter(product__gte=1).count()
+    def product_num(self, obj):
+        product_num = obj.product_set.all().count()
         return format_html('<a href="http://dabivn.com/'
                            'admin/product/product/?q=%s">%s</a>'
                            % (obj.insta_id, product_num)
                            )
-
-    def need_to_update(self, obj):
-        product_num = obj.store_post_set.all().filter(
-            product__isnull=True, is_product='P').count()
-        return format_html(
-            '<a style="color: red" href="'
-            'http://dabivn.com/admin/store/'
-            'storepost/?is_product__exact=P'
-            '&is_active=1'
-            '&product=related_product_not_exist'
-            '&q=%s">%s</a>'
-            % (obj.insta_id, product_num)
-        )
 
     instagram_link.short_description = "Link"
     instagram_link.allow_tags = True
