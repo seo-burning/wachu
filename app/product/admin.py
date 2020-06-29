@@ -362,10 +362,10 @@ class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
     raw_id_fields = ['store', 'post']
     list_display = [
-        'is_active',
-        'is_valid',
         'product_summary',
         'option_summary',
+        'is_active',
+        'is_valid',
         'store'
     ]
     fieldsets = [('Status', {'fields': ['is_active',
@@ -388,7 +388,6 @@ class Product(admin.ModelAdmin):
         'is_active',
         'is_valid',
         'stock_available',
-        'product_image_type',
         'sub_category',
         'product_source',
     ]
@@ -401,6 +400,7 @@ class Product(admin.ModelAdmin):
                'product_pattern_striped',
                'product_pattern_texture',
                'product_pattern_caro',
+               'product_style_simple'
                ]
 
     def make_activate(self, request, queryset):
@@ -508,6 +508,72 @@ class Product(admin.ModelAdmin):
             request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
     product_pattern_caro.short_description = 'caro 패턴 추가'
 
+    def product_style_simple(self, request, queryset):
+        simple_style = models.ProductStyle.objects.get(name='simple')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.style = simple_style
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 simple 스타일 분류'.format(updated_count))
+    product_style_simple.short_description = '스타일 분류 - simple'
+
+    def product_style_lovely(self, request, queryset):
+        lovely_style = models.ProductStyle.objects.get(name='lovely')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.style = lovely_style
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 lovely 스타일 분류'.format(updated_count))
+    product_style_lovely.short_description = '스타일 분류 - lovely'
+
+    def product_style_lovely(self, request, queryset):
+        lovely_style = models.ProductStyle.objects.get(name='lovely')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.style = lovely_style
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 lovely 스타일 분류'.format(updated_count))
+    product_style_lovely.short_description = '스타일 분류 - lovely'
+
+    def product_style_feminine(self, request, queryset):
+        feminine_style = models.ProductStyle.objects.get(name='feminine')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.style = feminine_style
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 feminine 스타일 분류'.format(updated_count))
+    product_style_feminine.short_description = '스타일 분류 - feminine'
+
+    def product_style_sexy(self, request, queryset):
+        sexy_style = models.ProductStyle.objects.get(name='sexy')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.style = sexy_style
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 sexy 스타일 분류'.format(updated_count))
+    product_style_sexy.short_description = '스타일 분류 - sexy'
+
+    def product_style_vintage(self, request, queryset):
+        vintage_style = models.ProductStyle.objects.get(name='vintage')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.style = vintage_style
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 vintage 스타일 분류'.format(updated_count))
+    product_style_vintage.short_description = '스타일 분류 - vintage'
+
     def changelist_view(self, request, extra_context=None):
         # Aggregate new subscribers per day
         # https://findwork.dev/blog/integrating-chartjs-django-admin/
@@ -536,27 +602,33 @@ class Product(admin.ModelAdmin):
 
     def product_summary(self, obj):
         style = "<style>\
-                        h4 {color:black}\
-                        p { color: black;font-size:10px;font-weight:400} \
+                        h4 {color:black; margin-bottom:0px}\
+                        p { color: black;font-size:10px;font-weight:400; margin-bottom:4px} \
+                        p.light { font-weight:400; font-size:9px; color:grey}\
+                        p.right { text-align:right}\
                         p.bold { font-weight:500; font-size:12px}\
                         p.None { color:red; font-weight:600; opacity:1; background-color:pink}\
-                        p.no-stock {color: red; font-weight:600; opacity:0.2 }\
-                        p.False { color:grey; opacity:0.2 }\
+                        span.False,p.False { color:grey; opacity:0.2 }\
                         div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
                         div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
                         div.active { background-color : rgba(223, 245, 223,0.3) }\
                 </style> "
-        stock_is_null = 'no-stock' if obj.stock == 0 else ''
+        stock_is_null = 'False' if obj.stock == 0 else ''
         product_info = '<img src="{url}" width="200" height="200" border="1" style="padding:10px"/>\
                         <p class="bold {subcategory}">{category} > {subcategory}</p>\
                         <h4>{name}</h4>\
-                        <p class={stock_is_null}>재고 / stock : {stock}</p>\
-                        <p>가격 {original_price} VND</p>\
-                        <p class={is_discount}>할인가격 {discount_price} VND ({discount_rate}% OFF)</p>'.format(
+                        <p class="light right">{created_at}</p>\
+                        <p class="{style}">스타일 : {style}</p>\
+                        <p>가격 :{original_price} VND \
+                            <span class={is_discount}>/ 할인가격 :{discount_price} VND ({discount_rate}%)</span>\
+                        </p>\
+                        <p class={stock_is_null}>재고 / stock : {stock}</p>'.format(
             url=obj.product_thumbnail_image,
             category=obj.category,
             subcategory=obj.sub_category,
+            created_at=obj.created_at,
             name=obj.name,
+            style=obj.style,
             stock=obj.stock,
             stock_is_null=stock_is_null,
             is_discount=obj.is_discount,
@@ -585,6 +657,12 @@ class Product(admin.ModelAdmin):
                 div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
                 div.active { background-color : rgba(223, 245, 223,0.3) }\
         </style> "
+        pattern_list = obj.pattern.all()
+        pattern_info = '<h4>패턴 종류 / pattern ({len}) : </h4><p>'.format(len=len(pattern_list))
+        for pattern_obj in pattern_list:
+            pattern_info += '{pattern}, '.format(pattern=pattern_obj)
+        pattern_info += '</p>'
+
         size_list = obj.size.all()
         size_info = '<h4>사이즈 종류 / size ({len}): </h4><p>'.format(len=len(size_list))
         for size_obj in size_list:
@@ -597,6 +675,12 @@ class Product(admin.ModelAdmin):
             color_info += '{color}, '.format(color=color_obj)
         color_info += '</p>'
 
+        extra_option_list = obj.extra_option.all()
+        extra_option_info = '<h4>기타 옵션 / extra_option ({len}) : </h4><p>'.format(len=len(extra_option_list))
+        for extra_option_obj in extra_option_list:
+            extra_option_info += '{extra_option}, '.format(extra_option=extra_option_obj)
+        extra_option_info += '</p>'
+
         option_list = obj.product_options.all()
         option_info = '<h4>상품 옵션 / Options ({len}) : </h4>\
             <table>\
@@ -605,22 +689,26 @@ class Product(admin.ModelAdmin):
                     <td>name</td>\
                     <td>size</td>\
                     <td>color</td>\
+                    <td>extra</td>\
                     <td>stock</td>\
                 </tr>'.format(len=len(option_list))
 
         for i, option_obj in enumerate(option_list):
             size_is_null = 'null' if option_obj.size is None else ''
             color_is_null = 'null' if option_obj.color is None else ''
+            extra_is_null = 'False' if option_obj.extra_option is None else ''
             stock_is_null = 'no-stock' if option_obj.stock == 0 else ''
             option_info += '<tr>\
                                 <td class="{is_active}">{i} </td>\
                                 <td class="{is_active}">{name} </td>\
                                 <td class="{is_active} {size_is_null}">{size}</td>\
                                 <td class="{is_active} {color_is_null}">{color} </td>\
+                                <td class="{is_active} {extra_is_null}">{extra}</td>\
                                 <td class="{is_active} {stock_is_null}">{stock}</td>\
                             </tr>'.format(is_active=option_obj.is_active, i=i, name=option_obj.name,
                                           size=option_obj.size, size_is_null=size_is_null,
                                           color=option_obj.color, color_is_null=color_is_null,
+                                          extra=option_obj.extra_option, extra_is_null=extra_is_null,
                                           stock=option_obj.stock, stock_is_null=stock_is_null)
         option_info += '</table>'
         if obj.is_valid is False:
@@ -630,6 +718,8 @@ class Product(admin.ModelAdmin):
         elif obj.is_active is True:
             status = 'active'
         return mark_safe(style+'<div class="{status}">'.format(status=status) +
+                         pattern_info +
                          size_info +
                          color_info +
+                         extra_option_info +
                          option_info + '</div>')
