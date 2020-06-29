@@ -362,16 +362,16 @@ class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
     raw_id_fields = ['store', 'post']
     list_display = [
+        '__str__',
         'is_active',
         'is_valid',
         'stock',
-        '__str__',
+        'name',
         'created_at',
         'current_product_backend_rating',
         'product_source',
         'current_review_rating',
         'get_product_link',
-        'name',
         'store',
         'sub_category',
         'original_price',
