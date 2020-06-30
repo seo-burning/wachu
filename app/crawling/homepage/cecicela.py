@@ -379,12 +379,3 @@ def get_cecicela():
                 break
             i = i+1
     return product_list
-
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-# In[ ]:

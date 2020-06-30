@@ -395,6 +395,7 @@ class ShopeeRatingInline(admin.StackedInline):
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
+    list_per_page = 20
     raw_id_fields = ['store', 'post']
     list_display = [
         'product_summary',
@@ -650,6 +651,7 @@ class Product(admin.ModelAdmin):
                         p.None { color:red; font-weight:600; opacity:1; background-color:pink}\
                         span.False,p.False { color:grey; opacity:0.2 }\
                         div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
+                        div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
                         div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
                         div.active { background-color : rgba(223, 245, 223,0.3) }\
                 </style> "
@@ -678,6 +680,8 @@ class Product(admin.ModelAdmin):
         )
         if obj.is_valid is False:
             status = 'not-valid'
+        elif obj.is_active is False and obj.stock == 0:
+            status = 'no-stock'
         elif obj.is_active is False:
             status = 'not-active'
         elif obj.is_active is True:
@@ -694,6 +698,7 @@ class Product(admin.ModelAdmin):
                 td.no-stock {color: red; font-weight:600; }\
                 td.null {color: red; font-weight:600; opacity:1; background-color:pink}\
                 div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
+                div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
                 div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
                 div.active { background-color : rgba(223, 245, 223,0.3) }\
         </style> "
@@ -753,6 +758,8 @@ class Product(admin.ModelAdmin):
         option_info += '</table>'
         if obj.is_valid is False:
             status = 'not-valid'
+        elif obj.is_active is False and obj.stock == 0:
+            status = 'no-stock'
         elif obj.is_active is False:
             status = 'not-active'
         elif obj.is_active is True:

@@ -6,43 +6,6 @@ from random import choice
 from bs4 import BeautifulSoup
 import csv
 import re
-
-# product_obj = {'is_active':False,
-#            'is_discount':is_discount,
-#            'current_review_rating':0,
-#            'product_source':'HOMEPAGE',
-#               'product_link':product_link,
-#            'store':store,
-#          'name':name,
-#            'description':description,
-#            'product_image_type': 'MP',
-#            'product_thumbnail_image':product_thumbnail_image,
-#            'video_source':None,
-#            'original_price':original_price,
-#            'discount_price':discount_price,
-#            'discount_rate':discount_rate,
-#            'currency':'VND',
-#            'is_free_ship':False,
-#            'stock':stock,
-#            'shopee_color':shopee_color_list,
-#            'shopee_size':[],
-#            'shopee_category':[],
-#            'size_chart':None,
-#                'productOption':product_option_list
-#           }
-# product_option_obj = {
-#            'is_active':True,
-#            'name':name,
-#            'original_price':original_price,
-#            'discount_price':discount_price,
-#            'currency':'VND',
-#            'stock':stock,
-# }
-
-
-# In[5]:
-
-
 _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',

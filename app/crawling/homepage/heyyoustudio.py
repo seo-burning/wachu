@@ -64,8 +64,10 @@ class HomepageCrawler:
             raise requests.RequestException
         else:
             return response
-    
+
 #     @staticmethod
+
+
 def extract_json_data(html):
     soup = BeautifulSoup(html, 'html.parser')
     body = soup.find('body')
@@ -81,20 +83,22 @@ def extract_json_data(html):
 def get_cleaned_price(price):
     return int(price/100)
 
+
 def calculate_discount_rate(original_price, discount_price):
     discount_rate = int((1 - Decimal(discount_price)/Decimal(original_price))*100)
     return discount_rate
 
+
 def get_cleaned_text(text):
-    text = text.lower().replace(' ', '').replace('\x08','').replace('size','').strip()
+    text = text.lower().replace(' ', '').replace('\x08', '').replace('size', '').strip()
     return text
 
 
 def get_product_image_dict(source):
     product_image = {
         'source': source,
-        'source_thumb':source,
-        'post_image_type':'P'
+        'source_thumb': source,
+        'post_image_type': 'P'
     }
     return product_image
 
@@ -104,8 +108,9 @@ def get_option_from_script(script_list):
     for script in script_list:
         try:
             script = script.string
-            option_string = re.search(r'(?<=product:).*',script)
-            option_string = option_string.group().replace('});','').replace(', onVariantSelected: selectCallback','').replace('{ product: ','').strip()
+            option_string = re.search(r'(?<=product:).*', script)
+            option_string = option_string.group().replace('});', '').replace(
+                ', onVariantSelected: selectCallback', '').replace('{ product: ', '').strip()
             option_json = option_string[:-1]
             print(option_json)
             break
@@ -114,12 +119,10 @@ def get_option_from_script(script_list):
     return option_json
 
 
-
-
 def define_type(option_a, option_b):
     option_a = get_cleaned_text(option_a)
     option_b = get_cleaned_text(option_b)
-    size_option_list = [ 'xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '27', '28',
+    size_option_list = ['xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '27', '28',
                         '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '1', '2', '3', '4', '5']
     if option_a in size_option_list:
         size_obj = {'display_name': get_cleaned_text(option_a)}
@@ -132,7 +135,7 @@ def define_type(option_a, option_b):
 
 def define_type_single(option):
     option = get_cleaned_text(option)
-    size_option_list = [ 'xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '27', '28',
+    size_option_list = ['xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '27', '28',
                         '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '1', '2', '3', '4', '5']
     if option in size_option_list:
         size_obj = {'display_name': get_cleaned_text(option)}
@@ -143,14 +146,12 @@ def define_type_single(option):
     return size_obj, color_obj
 
 
-
 # In[3]:
-
 
 
 def get_product_obj_from_json(store, url_obj, product_link, option_json):
         #     title / description
-    created_at = option_json['published_at'].replace('Z','')
+    created_at = option_json['published_at'].replace('Z', '')
     name = option_json['title']
     description = option_json['description']
 
@@ -172,7 +173,7 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
     product_image_list = []
     product_images = option_json['images']
     for product_image in product_images:
-        source =  product_image
+        source = product_image
         product_image = get_product_image_dict(source)
         product_image_list.append(product_image)
     product_thumbnail_image = option_json['featured_image'].replace(
@@ -183,17 +184,17 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
     shopee_size_list = []
     shopee_color_list = []
     if option_json:
-        stock = 0 
+        stock = 0
         for product_option in option_json['variants']:
             option1 = product_option['option1']
             option2 = product_option['option2']
             option3 = product_option['option3']
             if option3:
-                size_obj, color_obj = define_type(option1,option2)
+                size_obj, color_obj = define_type(option1, option2)
             elif option2:
-                size_obj, color_obj = define_type(option1,option2)
+                size_obj, color_obj = define_type(option1, option2)
             else:
-                size_obj, color_obj =  define_type_single(option1)
+                size_obj, color_obj = define_type_single(option1)
             if color_obj and color_obj not in shopee_color_list:
                 shopee_color_list.append(color_obj)
             if size_obj and size_obj not in shopee_size_list:
@@ -208,8 +209,8 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
                 'original_price': original_price,
                 'discount_price': discount_price,
                 'currency': 'VND',
-                'size':size_obj,
-                'color':color_obj,
+                'size': size_obj,
+                'color': color_obj,
                 'stock': option_stock, }
             product_option_list.append(product_option_obj)
 
@@ -217,7 +218,7 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
     print(shopee_size_list)
     product_obj = {'is_active': False,
                    'is_discount': is_discount,
-                   'created_at':created_at,
+                   'created_at': created_at,
                    'current_review_rating': 0,
                    'product_source': 'HOMEPAGE',
                    'product_link': product_link,
@@ -226,7 +227,7 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
                    'description': description,
                    'product_image_type': 'MP',
                    'product_thumbnail_image': product_thumbnail_image,
-                   'product_image_list':product_image_list,
+                   'product_image_list': product_image_list,
                    'video_source': None,
                    'original_price': original_price,
                    'discount_price': discount_price,
@@ -239,8 +240,8 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
                    'shopee_category': [],
                    'size_chart': None,
                    'productOption': product_option_list,
-                  'style':'street',
-#                      'subcategory': str(store)+'-'+url_obj,
+                   'style': 'street',
+                   #                      'subcategory': str(store)+'-'+url_obj,
                    }
     return product_obj
 
@@ -248,12 +249,12 @@ def get_product_obj_from_json(store, url_obj, product_link, option_json):
 # In[4]:
 
 
-def get_product_obj_from_soup(store,url_obj,  product_link,product_soup):
+def get_product_obj_from_soup(store, url_obj,  product_link, product_soup):
     is_discount = False
     created_at = None
 #     thumbnail
-    product_thumbnail_image = "http:" +             product_soup.find("img", class_="product-image-feature").get('src').replace('grande',
-                                                                            'large').replace('1024x1024','large')
+    product_thumbnail_image = "http:" + product_soup.find("img", class_="product-image-feature").get('src').replace('grande',
+                                                                                                                    'large').replace('1024x1024', 'large')
 
 #     title
     name = product_soup.find('h1').text
@@ -268,8 +269,8 @@ def get_product_obj_from_soup(store,url_obj,  product_link,product_soup):
         source = "http:" + product_image_obj.get('src')
         product_image = {
             'source': source,
-            'source_thumb':source,
-            'post_image_type':'P'
+            'source_thumb': source,
+            'post_image_type': 'P'
         }
         product_image_list.append(product_image)
 
@@ -277,57 +278,58 @@ def get_product_obj_from_soup(store,url_obj,  product_link,product_soup):
     product_price = product_soup.find('div', class_='product-price')
     if product_price.find('span', class_='pro-sale'):
         is_discount = True
-        original_price = product_price.find('del').text.replace(',', '').replace('₫', '').replace(' ','')
+        original_price = product_price.find('del').text.replace(',', '').replace('₫', '').replace(' ', '')
         discount_price = product_price.find(
-            'span', class_='pro-price').text.replace(',', '').replace('₫', '').replace(' ','')
-        discount_rate = product_price.find('span', class_='pro-sale').text.replace('-', '').replace('%', '').replace(' ','')
+            'span', class_='pro-price').text.replace(',', '').replace('₫', '').replace(' ', '')
+        discount_rate = product_price.find('span', class_='pro-sale').text.replace('-',
+                                                                                   '').replace('%', '').replace(' ', '')
     else:
         original_price = product_price.find(
-            'span', class_='pro-price').text.replace(',', '').replace('₫', '').replace(' ','')
+            'span', class_='pro-price').text.replace(',', '').replace('₫', '').replace(' ', '')
         discount_price = None
         discount_rate = None
         is_discount = False
-        
+
 #      stock
-    stock = product_soup.find('button',class_='disabled')
+    stock = product_soup.find('button', class_='disabled')
     if stock:
         stock = 0
     else:
         stock = 9999
     product_obj = {'is_active': False,
-               'is_discount': is_discount,
-               'created_at':created_at,
-               'current_review_rating': 0,
-               'product_source': 'HOMEPAGE',
-               'product_link': product_link,
-               'store': store,
-               'name': name,
-               'description': description,
-               'product_image_type': 'MP',
-               'product_thumbnail_image': product_thumbnail_image,
-               'product_image_list':product_image_list,
-               'video_source': None,
-               'original_price': original_price,
-               'discount_price': discount_price,
-               'discount_rate': discount_rate,
-               'currency': 'VND',
-               'is_free_ship': False,
-               'stock': stock,
-               'shopee_size': [],
-               'shopee_color': [],
-               'shopee_category': [],
-               'size_chart': None,
-               'productOption': [],
-              'style':'street',
-#               'subcategory': str(store)+'-'+url_obj,
-               }
+                   'is_discount': is_discount,
+                   'created_at': created_at,
+                   'current_review_rating': 0,
+                   'product_source': 'HOMEPAGE',
+                   'product_link': product_link,
+                   'store': store,
+                   'name': name,
+                   'description': description,
+                   'product_image_type': 'MP',
+                   'product_thumbnail_image': product_thumbnail_image,
+                   'product_image_list': product_image_list,
+                   'video_source': None,
+                   'original_price': original_price,
+                   'discount_price': discount_price,
+                   'discount_rate': discount_rate,
+                   'currency': 'VND',
+                   'is_free_ship': False,
+                   'stock': stock,
+                   'shopee_size': [],
+                   'shopee_color': [],
+                   'shopee_category': [],
+                   'size_chart': None,
+                   'productOption': [],
+                   'style': 'street',
+                   #               'subcategory': str(store)+'-'+url_obj,
+                   }
     return product_obj
 
 
 # In[5]:
 
 
-def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
+def sub_crawler(obj, product_source, url_obj, duplicate_check_list):
     obj = HomepageCrawler()
     product_list = []
     store = 637
@@ -343,15 +345,13 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
                 script_list = product_soup.find_all('script')
                 option_json = get_option_from_script(script_list)
                 option_json = json.loads(option_json)
-                product_obj = get_product_obj_from_json(store, url_obj, product_link,option_json)
+                product_obj = get_product_obj_from_json(store, url_obj, product_link, option_json)
             except:
-                product_obj = get_product_obj_from_soup(store, url_obj, product_link,product_soup)
+                product_obj = get_product_obj_from_soup(store, url_obj, product_link, product_soup)
             product_list.append(product_obj)
         else:
             print('duplicated')
     return product_list, duplicate_check_list
-
-
 
 
 def get_heyyoustudio():
@@ -369,9 +369,9 @@ def get_heyyoustudio():
                 break
             soup = BeautifulSoup(response.text, 'html.parser')
             product_source = soup.find_all("div", class_="single-product")
-            product_sub_list,duplicate_check_list = sub_crawler(obj, product_source,
-                                          url_obj,
-                                        duplicate_check_list)
+            product_sub_list, duplicate_check_list = sub_crawler(obj, product_source,
+                                                                 url_obj,
+                                                                 duplicate_check_list)
             product_list = product_list + product_sub_list
             length = len(product_source)
             print(length)
@@ -379,16 +379,3 @@ def get_heyyoustudio():
                 break
             i = i+1
     return product_list
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

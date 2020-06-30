@@ -64,8 +64,10 @@ class HomepageCrawler:
             raise requests.RequestException
         else:
             return response
-    
+
 #     @staticmethod
+
+
 def extract_json_data(html):
     soup = BeautifulSoup(html, 'html.parser')
     body = soup.find('body')
@@ -81,20 +83,22 @@ def extract_json_data(html):
 def get_cleaned_price(price):
     return int(price/100)
 
+
 def calculate_discount_rate(original_price, discount_price):
     discount_rate = int((1 - Decimal(discount_price)/Decimal(original_price))*100)
     return discount_rate
 
+
 def get_cleaned_text(text):
-    text = text.replace(' ', '').replace('\x08','').strip().lower()
+    text = text.replace(' ', '').replace('\x08', '').strip().lower()
     return text
 
 
 def get_product_image_dict(source):
     product_image = {
         'source': source,
-        'source_thumb':source,
-        'post_image_type':'P'
+        'source_thumb': source,
+        'post_image_type': 'P'
     }
     return product_image
 
@@ -104,14 +108,16 @@ def get_option_from_script(script_list):
     for script in script_list:
         try:
             script = script.string
-            option_string = re.search(r'(?<=product:).*',script)
-            option_string = option_string.group().replace('});','').replace(', onVariantSelected: selectCallback','').replace('{ product: ','').strip()
+            option_string = re.search(r'(?<=product:).*', script)
+            option_string = option_string.group().replace('});', '').replace(
+                ', onVariantSelected: selectCallback', '').replace('{ product: ', '').strip()
             option_json = option_string[:-1]
             print(option_json)
             break
         except:
             pass
     return option_json
+
 
 def define_type(option_a, option_b):
     option_a = get_cleaned_text(option_a)
@@ -143,7 +149,7 @@ def define_type_single(option):
 # In[33]:
 
 
-def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
+def sub_crawler(obj, product_source, url_obj, duplicate_check_list):
     obj = HomepageCrawler()
     product_list = []
     store = 371
@@ -164,7 +170,7 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
                 continue
 
             #     title / description
-            created_at = option_json['published_at'].replace('Z','')
+            created_at = option_json['published_at'].replace('Z', '')
             name = option_json['title']
             description = option_json['description']
 
@@ -186,29 +192,29 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
             product_image_list = []
             product_images = option_json['images']
             for product_image in product_images:
-                source =  product_image
+                source = product_image
                 product_image = get_product_image_dict(source)
                 product_image_list.append(product_image)
             product_thumbnail_image = option_json['featured_image'].replace(
                 '.jpg', '_large.jpg').replace('.jpeg', '_large.jpeg')
-            
+
         #     product options
             product_option_list = []
             shopee_size_list = []
             shopee_color_list = []
             stock = 99999
             if option_json:
-                stock = 0 
+                stock = 0
                 for product_option in option_json['variants']:
                     option1 = product_option['option1']
                     option2 = product_option['option2']
                     option3 = product_option['option3']
                     if option3:
-                        size_obj, color_obj = define_type(option1,option2)
+                        size_obj, color_obj = define_type(option1, option2)
                     elif option2:
-                        size_obj, color_obj = define_type(option1,option2)
+                        size_obj, color_obj = define_type(option1, option2)
                     else:
-                        size_obj, color_obj =  define_type_single(option1)
+                        size_obj, color_obj = define_type_single(option1)
                     if color_obj and color_obj not in shopee_color_list:
                         shopee_color_list.append(color_obj)
                     if size_obj and size_obj not in shopee_size_list:
@@ -223,8 +229,8 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
                         'original_price': original_price,
                         'discount_price': discount_price,
                         'currency': 'VND',
-                        'size':size_obj,
-                        'color':color_obj,
+                        'size': size_obj,
+                        'color': color_obj,
                         'stock': option_stock, }
                     product_option_list.append(product_option_obj)
 
@@ -232,7 +238,7 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
             print(shopee_size_list)
             product_obj = {'is_active': False,
                            'is_discount': is_discount,
-                           'created_at':created_at,
+                           'created_at': created_at,
                            'current_review_rating': 0,
                            'product_source': 'HOMEPAGE',
                            'product_link': product_link,
@@ -241,7 +247,7 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
                            'description': description,
                            'product_image_type': 'MP',
                            'product_thumbnail_image': product_thumbnail_image,
-                           'product_image_list':product_image_list,
+                           'product_image_list': product_image_list,
                            'video_source': None,
                            'original_price': original_price,
                            'discount_price': discount_price,
@@ -254,8 +260,8 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
                            'shopee_category': [],
                            'size_chart': None,
                            'productOption': product_option_list,
-                          'style':'street'
-                           
+                           'style': 'street'
+
                            }
             product_list.append(product_obj)
         else:
@@ -263,11 +269,10 @@ def sub_crawler(obj, product_source,url_obj, duplicate_check_list):
     return product_list, duplicate_check_list
 
 
-
 def get_xxme():
     print('operating xxme crawler')
     obj = HomepageCrawler()
-    url_list = ['all',]
+    url_list = ['all', ]
     product_list = []
     duplicate_check_list = []
     for url_obj in url_list:
@@ -277,9 +282,9 @@ def get_xxme():
             response = obj.request_url(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             product_source = soup.find_all("div", class_="product-item")
-            product_sub_list,duplicate_check_list = sub_crawler(obj, product_source,
-                                          url_obj,
-                                        duplicate_check_list)
+            product_sub_list, duplicate_check_list = sub_crawler(obj, product_source,
+                                                                 url_obj,
+                                                                 duplicate_check_list)
             product_list = product_list + product_sub_list
             length = len(product_source)
             print(length)
@@ -287,22 +292,3 @@ def get_xxme():
                 break
             i = i+1
     return product_list
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

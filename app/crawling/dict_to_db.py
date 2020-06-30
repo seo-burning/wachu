@@ -1,3 +1,5 @@
+from random import choice
+import requests
 import multiprocessing as mp
 from functools import partial
 
@@ -164,7 +166,6 @@ def update_product_object(product_source):
         product_obj.size_chart = product_source['size_chart']
         update_color(product_obj, product_source['shopee_color'])
         update_size(product_obj, product_source['shopee_size'])
-        update_product_option(product_obj, product_source['productOption'])
         product_obj.currency = product_source['currency']
         if product_source['description'] == None:
             product_obj.description = product_source['name']
@@ -178,18 +179,23 @@ def update_product_object(product_source):
             update_style(product_obj, product_source['style'])
         if store_obj.is_active == False:
             product_obj.is_active = False
-
+    option_list = ProductOption.objects.filter(product=product_obj)
+    for obj in option_list:
+        obj.delete()
+        print("d", end='')
+    print('make options')
+    update_product_option(product_obj, product_source['productOption'])
     product_obj.save()
 
 
 def dict_to_product_model(product_list):
     print(len(product_list))
-    # pool = mp.Pool(processes=64)
-    # print('setup multiprocessing')
-    # pool.map(update_product_object, product_list)
-    # pool.close()
-    for product_obj in product_list:
-        update_product_object(product_obj)
+    pool = mp.Pool(processes=64)
+    print('setup multiprocessing')
+    pool.map(update_product_object, product_list)
+    pool.close()
+    # for product_obj in product_list:
+    #     update_product_object(product_obj)
 
 
 #  {'insta_id': 'dam',
@@ -253,3 +259,31 @@ def temp():
         obj.is_default_subcat = True
         obj.is_valid = True
         obj.save()
+
+
+_user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
+]
+
+
+def check_delete():
+    product_list = Product.objects.filter(product_source='HOMEPAGE')
+    for product_obj in product_list:
+        response = requests.get(product_obj.product_link,
+                                headers={'User-Agent': choice(_user_agents),
+                                         'X-Requested-With': 'XMLHttpRequest',
+                                         },)
+        if response.status_code == 404:
+            print(response, 'deactivate')
+            # product_obj.is_active = False
+            # product_obj.name = '[DELETED FROM SOURCE PAGE]' + product_obj.name
+            # product_obj.save()
+            product_obj.delete()

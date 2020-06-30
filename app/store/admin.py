@@ -169,6 +169,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     "insta_id", 'profile_thumb',
                     'primary_style',
                     'secondary_style',
+                    'need_to_update_num',
                     'product_num', ]
     list_filter = ['is_active', 'store_type']
     list_display_links = ["insta_id"]
@@ -214,6 +215,14 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                            'admin/product/product/?q=%s">%s</a>'
                            % (obj.insta_id, product_num)
                            )
+
+    def need_to_update_num(self, obj):
+        product_num = obj.product_set.filter(is_valid=False).count()
+        return format_html('<a href="http://dabivn.com/'
+                           'admin/product/product/?q=%s&is_valid__exact=0">%s</a>'
+                           % (obj.insta_id, product_num)
+                           )
+    need_to_update_num.short_description = '업데이트 필요'
 
     instagram_link.short_description = "Link"
     instagram_link.allow_tags = True

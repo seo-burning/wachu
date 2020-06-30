@@ -135,7 +135,6 @@ def get_option_from_script(script_list):
             option_string = option_string.group().replace('});', '').replace(
                 '\n', '').replace('product,', '').strip()[:-1]
             option_json = option_string
-            print(option_json)
             break
         except:
             pass

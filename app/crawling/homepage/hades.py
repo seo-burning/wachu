@@ -93,7 +93,6 @@ def get_option_from_script(script_list):
             option_string = option_string.group().replace('});', '').replace(
                 ', onVariantSelected: selectCallback', '').replace('{ product: ', '').strip()
             option_json = option_string
-            print(option_json)
         except:
             pass
     return option_json
@@ -197,7 +196,7 @@ def sub_crawler(obj, product_source):
             created_at = option_json['published_at'].replace('Z', '')
 
             for product_option in option_json['variants']:
-                print(product_option)
+                # print(product_option)
                 option1 = product_option['option1']
                 option2 = product_option['option2']
                 if option2:
@@ -225,7 +224,7 @@ def sub_crawler(obj, product_source):
 
     #     product size
 
-        print(shopee_size_list)
+        # print(shopee_size_list)
         product_obj = {'is_active': False,
                        'is_discount': is_discount,
                        'created_at': created_at,
@@ -269,7 +268,7 @@ def get_hades():
         product_sub_list = sub_crawler(obj, product_source)
         product_list = product_list + product_sub_list
         length = len(product_source)
-        print(length)
+        # print(length)
         if length == 0:
             break
         i = i+1
