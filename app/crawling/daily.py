@@ -23,6 +23,6 @@ if __name__ == '__main__':
     # slack_notify('*instagram update*')
     # update_instagram()
     # slack_notify('*shopee update*')
-    # update_shopee()
+    update_shopee()
 
     # check deactivated item.

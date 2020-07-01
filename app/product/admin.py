@@ -408,6 +408,7 @@ class Product(admin.ModelAdmin):
                                         'is_valid',
                                         'stock_available',
                                         'view', 'current_product_backend_rating']}),
+                 ('Preorder', {'fields': ['is_preorder', 'preorder_campaign']}),
                  ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
                  ('Product Info', {'fields': ['name', 'shopee_item_id',
                                               'description', 'product_thumbnail_image']}),

@@ -224,7 +224,7 @@ class ShopeeScraper:
                 product=obj_product, shopee_item_id=option['modelid'])
             obj_option.is_active = option['status']
             obj_option.name = option['name']
-            splited_list = option['name'].split(',')
+            splited_list = option['name'].lower().split(',')
 
             print('>>>>>', splited_list, color_index, size_index)
             if color_index != None:
@@ -333,21 +333,21 @@ class ShopeeScraper:
                     product=obj_product,
                     post_image_type='P')
 
-            color_index = None
-            size_index = None
-            for i, variation in enumerate(data['tier_variations']):
-                # print(variation['name'])
-                variation_name = variation['name'].lower().strip()
-                if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
-                    self.__update_size(obj_product, variation['options'])
-                    size_index = i
-                elif 'màu' in variation_name or 'color' in variation_name:
-                    self.__update_color(obj_product, variation['options'])
-                    color_index = i
-                else:
-                    self.__update_extra_options(obj_product, variation)
-            if obj_product.size.count() == 0:
-                self.__update_size(obj_product, ['free'])
+        color_index = None
+        size_index = None
+        for i, variation in enumerate(data['tier_variations']):
+            # print(variation['name'])
+            variation_name = variation['name'].lower().strip()
+            if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
+                self.__update_size(obj_product, variation['options'])
+                size_index = i
+            elif 'màu' in variation_name or 'color' in variation_name:
+                self.__update_color(obj_product, variation['options'])
+                color_index = i
+            else:
+                self.__update_extra_options(obj_product, variation)
+        if obj_product.size.count() == 0:
+            self.__update_size(obj_product, ['free'])
 
         # Data for Daily Update
         try:
@@ -374,9 +374,11 @@ class ShopeeScraper:
             obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
 
-        if created:
+        # if created:
             # make_product_options_from_product(obj_product)
-            obj.__update_product_option(obj_product, data['models'], color_index, size_index)
+        for obj in ProductOption.objects.filter(product=obj_product):
+            obj.delete()
+        self.__update_product_option(obj_product, data['models'], color_index, size_index)
         if obj_product.is_valid == False:
             obj_product.is_active = False
         return obj_product, created, need_to_update
@@ -487,6 +489,7 @@ def update_shopee():
                 total_created += created
                 total_need_to_update += need_to_update
             except:
+                slack_notify('error' + str(store_obj.insta_id))
                 pass
     slack_notify('>total : ' + str(total_updated) + '  created : ' + str(total_created) +
                  '   need to update : '+str(total_need_to_update) + '\n')
@@ -528,7 +531,11 @@ if __name__ == "__main__":
     # store_obj = Store.objects.get(insta_id='trangsuchas')
     # obj.get_or_create_product(store_obj, 6517246205, 0)
     # obj.search_store(store_obj)
-    # update_shopee_multiprocessing()
-    check_product_delete()
-    # store_obj = Store.objects.get(insta_id="minastore.vn")
-    # obj.search_store(store_obj)
+    update_shopee_multiprocessing()
+    # check_product_delete()
+    # store_obj = Store.objects.get(insta_id="jem.closet")
+    # # obj.search_store(store_obj)
+    # product_list = Product.objects.filter(store=store_obj)
+    # for po in product_list:
+    #     print(po.pk, po.store)
+    #     obj.get_or_create_product(po.store, po.shopee_item_id)
