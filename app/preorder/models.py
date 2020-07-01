@@ -1,6 +1,5 @@
 from django.db import models
 from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel, ViewModel
-
 # Create your models here.
 
 

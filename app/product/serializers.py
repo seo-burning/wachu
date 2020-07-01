@@ -104,6 +104,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'original_price',
             'discount_price',
             'discount_rate',
+            'sold',
 
             'stock',
             'size',

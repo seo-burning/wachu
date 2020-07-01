@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel, ViewModel
-
+from .abstract_model import SoldModel
 from preorder.models import PreorderCampaign
 
 
@@ -210,7 +210,7 @@ class PriceModel(models.Model):
     shipping_price = models.IntegerField(default=0)
 
 
-class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel):
+class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
     class Meta:
         verbose_name = u'제품 / Product'
         verbose_name_plural = verbose_name

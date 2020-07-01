@@ -4,8 +4,6 @@ from product.serializers import ProductSerializer
 
 
 class PreorderCampaignSerialzier(serializers.ModelSerializer):
-    start_at = serializers.DateTimeField(format="%d-%m-%Y")
-    end_at = serializers.DateTimeField(format="%d-%m-%Y")
 
     class Meta:
         model = PreorderCampaign
@@ -25,8 +23,6 @@ class PreorderCampaignProductSerialzier(serializers.ModelSerializer):
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
-        queryset = queryset.select_related(
-        )
         queryset = queryset.prefetch_related(
             'product_set__category',
             'product_set__shopee_rating',
