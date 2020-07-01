@@ -417,7 +417,8 @@ class Product(admin.ModelAdmin):
                  ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price', 'shipping_price',
                                        'discount_price', 'discount_rate', 'currency', 'stock']}),
                  ('Product Category', {'fields': ['category', 'sub_category', 'style', ]}),
-                 ('Product Detail', {'fields': ['size', 'size_chart', 'color', 'pattern', 'extra_option']}),
+                 ('Product Detail', {'fields': ['size', 'size_chart', 'size_chart_url',
+                                                'color', 'pattern', 'extra_option']}),
                  ('Shopee Info', {'fields': ['shopee_category', 'shopee_color', 'shopee_size', ]}),
                  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
                  ]

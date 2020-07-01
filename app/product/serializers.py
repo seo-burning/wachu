@@ -108,7 +108,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
             'stock',
             'size',
-            'size_chart',
+            'size_chart_url',
 
             'category',
             'sub_category',

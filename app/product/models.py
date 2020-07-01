@@ -268,7 +268,9 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
     size = models.ManyToManyField(
         ProductSize, blank=True)
 
-    size_chart = models.CharField(null=True, max_length=1024, blank=True)
+    size_chart_url = models.URLField(null=True, max_length=1024, blank=True)
+    size_chart = models.ImageField(null=True,
+                                   blank=True, upload_to='size-chart/%Y/%m')
     color = models.ManyToManyField(
         ProductColor, blank=True, related_name='product_set')
     extra_option = models.ManyToManyField(
@@ -291,6 +293,11 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
         width="250" height="250" border="1" />'.format(
             url=thumb_image
         ))
+
+    def save(self, *args, **kwargs):
+        if self.size_chart and not self.size_chart_url:
+            self.size_chart_url = self.size_chart
+        super(Product, self).save(*args, **kwargs)
 
 
 class ProductOption(PriceModel, TimeStampedModel):
