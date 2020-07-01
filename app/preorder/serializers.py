@@ -4,15 +4,22 @@ from product.serializers import ProductSerializer
 
 
 class PreorderCampaignSerialzier(serializers.ModelSerializer):
-    product_set = ProductSerializer(many=True)
-    start_at = serializers.DateField(format="%d-%m-%Y")
-    end_at = serializers.DateField(format="%d-%m-%Y")
+    start_at = serializers.DateTimeField(format="%d-%m-%Y")
+    end_at = serializers.DateTimeField(format="%d-%m-%Y")
 
     class Meta:
         model = PreorderCampaign
         fields = ['start_at', 'end_at', 'estimated_delivery_date',
                   'cover_picture', 'list_thumb_picture', 'name',
-                  'display_name', 'product_set']
+                  'display_name', 'pk']
+
+
+class PreorderCampaignProductSerialzier(serializers.ModelSerializer):
+    product_set = ProductSerializer(many=True)
+
+    class Meta:
+        model = PreorderCampaign
+        fields = ['product_set']
 
     @staticmethod
     def setup_eager_loading(queryset):
