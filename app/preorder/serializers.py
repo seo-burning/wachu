@@ -5,6 +5,8 @@ from product.serializers import ProductSerializer
 
 class PreorderCampaignSerialzier(serializers.ModelSerializer):
     product_set = ProductSerializer(many=True)
+    start_at = serializers.DateField(format="%d-%m-%Y")
+    end_at = serializers.DateField(format="%d-%m-%Y")
 
     class Meta:
         model = PreorderCampaign
