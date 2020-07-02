@@ -294,11 +294,6 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
             url=thumb_image
         ))
 
-    def save(self, *args, **kwargs):
-        if self.size_chart and not self.size_chart_url:
-            self.size_chart_url = self.size_chart
-        super(Product, self).save(*args, **kwargs)
-
 
 class ProductOption(PriceModel, TimeStampedModel):
     class Meta:

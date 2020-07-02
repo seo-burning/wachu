@@ -61,20 +61,21 @@ def update_product_option(obj_product, option_list):
         print(option['name'], 'created', option)
         obj_option, is_created = ProductOption.objects.get_or_create(
             product=obj_product, name=option['name'])
+        if is_created:
+            obj_option.name = option['name']
+            obj_option.original_price = option['original_price']
+            obj_option.discount_price = option['discount_price']
+            obj_option.currency = option['currency']
+            if ('size' in option) and (option['size']):
+                print(option['size']['display_name'])
+                obj_size = ShopeeSize.objects.get(
+                    display_name=get_cleaned_text(option['size']['display_name']))
+                obj_option.size = obj_size.size
+            if ('color' in option) and (option['color']):
+                obj_color = ShopeeColor.objects.get(display_name=get_cleaned_text(option['color']['display_name']))
+                obj_option.color = obj_color.color
         obj_option.is_active = option['is_active']
-        obj_option.name = option['name']
-        obj_option.original_price = option['original_price']
-        obj_option.discount_price = option['discount_price']
-        obj_option.currency = option['currency']
         obj_option.stock = option['stock']
-        if ('size' in option) and (option['size']):
-            print(option['size']['display_name'])
-            obj_size = ShopeeSize.objects.get(
-                display_name=get_cleaned_text(option['size']['display_name']))
-            obj_option.size = obj_size.size
-        if ('color' in option) and (option['color']):
-            obj_color = ShopeeColor.objects.get(display_name=get_cleaned_text(option['color']['display_name']))
-            obj_option.color = obj_color.color
         obj_option.save()
     if len(option_list) == 0:
         print(obj_product.pk, 'no option')
@@ -137,23 +138,15 @@ def update_product_object(product_source):
         product_link=product_source['product_link'],
         store=store_obj
     )
-    product_obj.is_discount = product_source['is_discount']
-    product_obj.original_price = product_source['original_price']
-    product_obj.discount_price = product_source['discount_price']
-    product_obj.discount_rate = product_source['discount_rate']
-    product_obj.is_free_ship = product_source['is_free_ship']
-    product_obj.stock = product_source['stock']
-
-    if (product_source['product_thumbnail_image'] == None) or (product_source['product_thumbnail_image'] == ''):
-        product_obj.product_thumbnail_image = "http://dabivn.com"
-    else:
-        product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
-    update_product_image(product_obj, product_source['product_image_list'])
-    product_obj.video_source = product_source['video_source']
-    product_obj.save()
 
     if is_created:
         product_obj.name = product_source['name']
+        if (product_source['product_thumbnail_image'] == None) or (product_source['product_thumbnail_image'] == ''):
+            product_obj.product_thumbnail_image = "http://dabivn.com"
+        else:
+            product_obj.product_thumbnail_image = product_source['product_thumbnail_image']
+        update_product_image(product_obj, product_source['product_image_list'])
+        product_obj.video_source = product_source['video_source']
         if 'created_at' in product_source:
             if product_source['created_at']:
                 try:
@@ -179,11 +172,18 @@ def update_product_object(product_source):
             update_style(product_obj, product_source['style'])
         if store_obj.is_active == False:
             product_obj.is_active = False
-    option_list = ProductOption.objects.filter(product=product_obj)
-    for obj in option_list:
-        obj.delete()
-        print("d", end='')
-    print('make options')
+        product_obj.save()
+    # option_list = ProductOption.objects.filter(product=product_obj)
+    # for obj in option_list:
+    #     obj.delete()
+    #     print("d", end='')
+    # print('make options')
+    product_obj.is_discount = product_source['is_discount']
+    product_obj.original_price = product_source['original_price']
+    product_obj.discount_price = product_source['discount_price']
+    product_obj.discount_rate = product_source['discount_rate']
+    product_obj.is_free_ship = product_source['is_free_ship']
+    product_obj.stock = product_source['stock']
     update_product_option(product_obj, product_source['productOption'])
     product_obj.save()
 
@@ -287,3 +287,19 @@ def check_delete():
             # product_obj.name = '[DELETED FROM SOURCE PAGE]' + product_obj.name
             # product_obj.save()
             product_obj.delete()
+
+
+# def check():
+
+
+# product_list = Product.objects.filter(product_source='HOMEPAGE')
+# for product_obj in product_list:
+#     # du = Product.objects.filter(product_link=product_obj.product_link)
+#     # if len(du) > 1:
+#     #     print(product_obj.pk)
+#     po = ProductOption.objects.filter(product=product_obj)
+#     for obj in po:
+#         d = ProductOption.objects.filter(product=product_obj, name=obj.name)
+#         if len(d) > 1:
+#             obj.delete()
+#             print(obj.pk)

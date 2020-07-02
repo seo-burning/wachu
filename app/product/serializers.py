@@ -108,7 +108,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
             'stock',
             'size',
-            'size_chart_url',
+            'size_chart',
 
             'category',
             'sub_category',
@@ -121,7 +121,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'post',
 
             'product_options',
-            'favorite_users_count'
+            'favorite_users_count',
+            'updated_at'
         )
 
     @staticmethod

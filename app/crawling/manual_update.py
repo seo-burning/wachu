@@ -132,10 +132,14 @@ def preview_image_update():
     store_list = Store.objects.filter(is_active=True)
     for store_obj in store_list:
         product_list = Product.objects.filter(store=store_obj, is_active=True).order_by('-created_at')
-        store_obj.recent_post_1 = product_list[0].product_thumbnail_image
-        store_obj.recent_post_2 = product_list[1].product_thumbnail_image
-        store_obj.recent_post_3 = product_list[2].product_thumbnail_image
-        store_obj.save()
+        if len(product_list) < 3:
+            store_obj.is_active = False
+            store_obj.save()
+        else:
+            store_obj.recent_post_1 = product_list[0].product_thumbnail_image
+            store_obj.recent_post_2 = product_list[1].product_thumbnail_image
+            store_obj.recent_post_3 = product_list[2].product_thumbnail_image
+            store_obj.save()
 
 
 def product_option_validate(option_obj):
@@ -173,5 +177,5 @@ if __name__ == '__main__':
     #     if len(product_list) == 0:
     #         store_obj.is_active = False
     #         store_obj.save()
-    # preview_image_update()
-    get_duplicated_link_product()
+    preview_image_update()
+    # get_duplicated_link_product()
