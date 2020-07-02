@@ -231,7 +231,7 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
     product_source = models.CharField(
         choices=PRODUCT_SOURCE_TYPE, max_length=255)
     product_link = models.URLField(
-        max_length=1024, blank=True, null=True)
+        max_length=1024, blank=True, null=True, unique=True)
     store = models.ForeignKey('store.Store',
                               on_delete=models.CASCADE)
     name = models.CharField(_('Product Name'),
@@ -300,13 +300,14 @@ class ProductOption(PriceModel, TimeStampedModel):
         verbose_name = u'제품 옵션 / Product Option'
         verbose_name_plural = verbose_name
         ordering = ['-created_at', 'product']
+        # unique_together = ['name', 'product']
 
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     name = models.CharField(max_length=255, blank=True)
     stock = models.IntegerField(default=0)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='product_options')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name='product_options')
     size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, blank=True)
     color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True, blank=True)
     extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True, blank=True)
