@@ -3,6 +3,8 @@ import requests
 import multiprocessing as mp
 from functools import partial
 
+
+import re
 import os_setup
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
     ProductSize, ProductColor, ProductExtraOption, \
@@ -12,19 +14,39 @@ from store.models import Store, StorePost, Primary_Style, Age, Category
 from datetime import datetime
 
 
+def remove_html_tags(text):
+    text = text.replace('</p>', '\n')
+    clean = re.compile('<.*?>')
+    text = re.sub(clean, '', text)
+    return text
+
+
 def get_cleaned_text(text):
     clean_text = text.lower().replace('size', '').replace(' ', '').strip()
     return clean_text
+
+
+def get_default_description(product_obj):
+    text = product_obj.name + '\n\n'
+    text += 'store : ' + product_obj.store.insta_id
+    if product_obj.style:
+        text += '\n\nstyle : ' + str(product_obj.style)
+    text += '\n\n\n\nsize option : '
+    for obj in product_obj.size.all():
+        text += str(obj) + ' '
+    text += '\n\ncolor option : '
+    for obj in product_obj.color.all():
+        text += str(obj) + ' '
+    text += '\n\n' + product_obj.product_link
+    return text
 
 
 def update_color(obj_product, options):
     obj_product.color.clear()
     obj_product.shopee_color.clear()
     # print(len(options))
-    print(options)
     for option in options:
         option_string = get_cleaned_text(option['display_name'])
-        print(option_string)
         obj_color, is_created = ShopeeColor.objects.get_or_create(
             display_name=option_string)
         obj_product.shopee_color.add(obj_color)
@@ -52,7 +74,6 @@ def update_size(obj_product, options):
         else:
             # print("not exist : {}".format(size_obj.display_name))
             obj_product.is_active = False
-
     obj_product.save()
 
 
@@ -140,6 +161,7 @@ def update_product_object(product_source):
     )
 
     if is_created:
+        product_obj.is_valid = False
         product_obj.name = product_source['name']
         if (product_source['product_thumbnail_image'] == None) or (product_source['product_thumbnail_image'] == ''):
             product_obj.product_thumbnail_image = "http://dabivn.com"
@@ -160,10 +182,7 @@ def update_product_object(product_source):
         update_color(product_obj, product_source['shopee_color'])
         update_size(product_obj, product_source['shopee_size'])
         product_obj.currency = product_source['currency']
-        if product_source['description'] == None:
-            product_obj.description = product_source['name']
-        else:
-            product_obj.description = product_source['description']
+
         # 아래의 항목들은 최초 생성 후 수동으로 재분류를 하는 경우도 있으니 업데이트하지 않는다.
         if 'subcategory' in product_source:
             update_sub_category(product_obj, product_source['subcategory'])
@@ -184,7 +203,17 @@ def update_product_object(product_source):
     product_obj.discount_rate = product_source['discount_rate']
     product_obj.is_free_ship = product_source['is_free_ship']
     product_obj.stock = product_source['stock']
+    if product_source['stock'] == 0:
+        product_obj.is_active = False
+        product_obj.stock_available = False
+    else:
+        product_obj.stock_available = True
     update_product_option(product_obj, product_source['productOption'])
+
+    if product_source['description'] == None:
+        product_obj.description = get_default_description(product_obj)
+    else:
+        product_obj.description = remove_html_tags(product_source['description'])
     product_obj.save()
 
 
@@ -292,14 +321,15 @@ def check_delete():
 # def check():
 
 
-# product_list = Product.objects.filter(product_source='HOMEPAGE')
+# product_list = Product.objects.all()
 # for product_obj in product_list:
-#     # du = Product.objects.filter(product_link=product_obj.product_link)
-#     # if len(du) > 1:
-#     #     print(product_obj.pk)
-#     po = ProductOption.objects.filter(product=product_obj)
-#     for obj in po:
-#         d = ProductOption.objects.filter(product=product_obj, name=obj.name)
-#         if len(d) > 1:
-#             obj.delete()
-#             print(obj.pk)
+#     du = Product.objects.filter(product_link=product_obj.product_link)
+#     if len(du) > 1:
+#         print("http://dabivn.com/admin/product/product/"+str(product_obj.pk))
+
+# from product.models import ProductOption
+# product_option_list = ProductOption.objects.all()
+# for obj in product_option_list:
+#     if not obj.product:
+#         print(obj.pk)
+#         obj.delete()

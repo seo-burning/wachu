@@ -259,8 +259,7 @@ def get_product_obj_from_soup(store, url_obj,  product_link, product_soup):
 #     title
     name = product_soup.find('h1').text
     print(name)
-    description = product_soup.find('h1').text
-
+    description = ''
 
 #     product image list
     product_images = product_soup.find_all('img', class_='product-image-feature')

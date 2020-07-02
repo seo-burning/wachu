@@ -107,8 +107,7 @@ def degrey_sub_crawler(obj, product_source):
         response = obj.request_url(product_link)
         product_soup = BeautifulSoup(response.text, 'html.parser')
         name = product_soup.find('h1').text
-        print(name)
-        description = product_soup.find('h1').text
+        description = ''
 
     #     product image list
         product_images = product_soup.find_all('img', class_='product-image-feature')

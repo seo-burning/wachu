@@ -165,7 +165,7 @@ def sub_crawler(obj, product_source, url_obj, duplicate_check_list):
             name = option_json['title']
             description = option_json['metadescription']
             if description == None:
-                description = name
+                description = ''
             created_at = option_json['published_at'].replace('Z', '')
 
             original_price = get_cleaned_price(option_json['price'])

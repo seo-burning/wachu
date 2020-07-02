@@ -146,7 +146,7 @@ def sub_crawler(obj, product_source):
         if description:
             description = description.text
         else:
-            description = name
+            description = ''
 
     #     product image list
         product_images = product_soup.find_all('img', class_='product-image-feature')
