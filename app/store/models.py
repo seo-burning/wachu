@@ -62,8 +62,8 @@ STORE_TYPE = (('IF', _('-')),
               ('IS(P)', _('Shopee w/P')),
               ('IFSH', _('Shopee HP')),
               ('IF(P)SH', _('INS w/P SH')),
-              ('DS', _('Dosi-in')
-               )
+              ('DS', _('Dosi-in')),
+              ('PO', _('Preorder'))
               )
 
 
