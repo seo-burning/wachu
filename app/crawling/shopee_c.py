@@ -60,11 +60,10 @@ class ShopeeScraper:
 
     def __request_url_item(self, store_id, item_id):
         try:
-            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}".format(item_id=item_id, store_id=store_id), headers={'User-Agent': self.__random_agent(),
+            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}".format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
                                                                                                                                                                 'X-Requested-With': 'XMLHttpRequest',
                                                                                                                                                                 'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
-                                                                                                                                                                },
-                                    proxies={'http': self.proxy, 'https': self.proxy})
+                                                                                                                                                                },)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -163,10 +162,13 @@ class ShopeeScraper:
         if len(option_list) > 1 and (len(obj_product.size.all()) == 1 and len(obj_product.color.all()) == 0):
             obj_product.validation = 'R'
             print('multiple options but no size and color')
+            obj_product.save()
         print('update option')
         if len(option_list) == 0:
             obj_option, is_created = ProductOption.objects.get_or_create(
                 product=obj_product, shopee_item_id=obj_product.shopee_item_id)
+            if is_created:
+                print('created new options')
             obj_option.stock = obj_product.stock
             if obj_product.stock > 0:
                 obj_option.is_active = True
@@ -186,7 +188,6 @@ class ShopeeScraper:
             obj_option.name = option['name']
             splited_list = option['name'].lower().split(',')
 
-            print('>>>>>', splited_list, color_index, size_index)
             if color_index != None:
                 obj_color, is_created = ShopeeColor.objects.get_or_create(
                     display_name=self.__get_cleaned_text(splited_list[color_index]))
@@ -216,7 +217,6 @@ class ShopeeScraper:
             obj_option.stock = option['stock']
             if option['stock'] == 0:
                 obj_option.is_active = False
-                print('>>>>>no stock')
             obj_option.shopee_sold_count = option['sold']
             obj_option.save()
             obj_product.save()
@@ -333,12 +333,13 @@ class ShopeeScraper:
                 obj_product.stock_available = True
             obj_product.save()
 
+            print('https://dabivn.com/admin/product/product/' + str(obj_product.pk))
+            self.__update_product_option(obj_product, data['models'], color_index, size_index)
             if created:
-                self.__update_product_option(obj_product, data['models'], color_index, size_index)
-                if obj_product.is_valid = 'V':
+                if obj_product.validation == 'V':
                     obj_product.is_active = True
                     obj_product.save()
-            if obj_product.is_valid == 'False':
+            if obj_product.validation == 'R':
                 obj_product.is_active = False
                 obj_product.save()
         return obj_product, created, need_to_update
@@ -386,17 +387,17 @@ def update_shopee():
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
-            try:
-                updated, created, need_to_update = obj.search_store(store_obj)
-                result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
-                    '   need to update : '+str(need_to_update) + '\n'
-                f.writelines(result_text)
-                total_updated += updated
-                total_created += created
-                total_need_to_update += need_to_update
-            except:
-                slack_notify('error' + str(store_obj.insta_id))
-                pass
+            # try:
+            updated, created, need_to_update = obj.search_store(store_obj)
+            result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
+                '   need to update : '+str(need_to_update) + '\n'
+            f.writelines(result_text)
+            total_updated += updated
+            total_created += created
+            total_need_to_update += need_to_update
+            # except:
+            #     slack_notify('error' + str(store_obj.insta_id))
+            #     pass
     slack_notify('>total : ' + str(total_updated) + '  created : ' + str(total_created) +
                  '   need to update : '+str(total_need_to_update) + '\n')
     slack_upload_file(file_path)
