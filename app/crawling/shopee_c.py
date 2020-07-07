@@ -37,59 +37,18 @@ _user_agents = [
 ]
 
 
-def get_proxies():
-    url = 'https://free-proxy-list.net/'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    proxy_list = soup.find('tbody')
-    proxies = set()
-    for rows in proxy_list.find_all('tr')[:5]:
-        proxies.add(rows.find_all('td')[0].text +
-                    ':'+rows.find_all('td')[1].text)
-    return proxies
-
-
 class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.proxy = proxy
 
-    def __random_agent(self):
-        if self.user_agents and isinstance(self.user_agents, list):
-            return choice(self.user_agents)
-        return choice(_user_agents)
-
-    def __random_proxies(self):
-        if self.proxy and isinstance(self.proxy, list):
-            print('execute')
-            return choice(self.proxy)
-        proxies = get_proxies()
-        return random.sample(get_proxies(), 1)[0]
-
     def __request_url(self, store_id, limit='100', newest='0'):
         try:
             response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'.format(limit=limit, store_id=store_id, newest=newest),
-                                    headers={'User-Agent': self.__random_agent(),
+                                    headers={'User-Agent': choice(_user_agents),
                                              'X-Requested-With': 'XMLHttpRequest',
                                              'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                             },
-                                    proxies={'http': self.proxy, 'https': self.proxy})
-            response.raise_for_status()
-        except requests.HTTPError as e:
-            print(e)
-            pass
-        except requests.RequestException:
-            raise requests.RequestException
-        else:
-            return response
-
-    def request_url_item(self, store_id, item_id):
-        try:
-            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}".format(item_id=item_id, store_id=store_id), headers={'User-Agent': self.__random_agent(),
-                                                                                                                                                                'X-Requested-With': 'XMLHttpRequest',
-                                                                                                                                                                'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
-                                                                                                                                                                },
-                                    proxies={'http': self.proxy, 'https': self.proxy})
+                                             },)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -378,8 +337,12 @@ class ShopeeScraper:
             if created:
                 # make_product_options_from_product(obj_product)
                 self.__update_product_option(obj_product, data['models'], color_index, size_index)
+                if obj_product.is_valid = True:
+                    obj_product.is_active = True
+                    obj_product.save()
             if obj_product.is_valid == False:
                 obj_product.is_active = False
+                obj_product.save()
         return obj_product, created, need_to_update
 
     def search_store(self, store_obj):
@@ -409,60 +372,6 @@ class ShopeeScraper:
             i = i+1
 
         return pk, len(created), len(need_to_update)
-
-
-def _update_color_size_from_shopee_color_size(product_obj):
-    product_obj.color.clear()
-    product_obj.size.clear()
-    for color_obj in product_obj.shopee_color.all():
-        if color_obj.color:
-            product_obj.color.add(color_obj.color)
-        else:
-            pass
-    for size_obj in product_obj.shopee_size.all():
-        if size_obj.size:
-            product_obj.size.add(size_obj.size)
-        else:
-            pass
-    product_obj.save()
-
-
-def update_color_size_from_shopee_color_size():
-    # print('Update Color&Size from Shopee Color&Size')
-    product_list = Product.objects.filter(product_source='SHOPEE')
-    # print(product_list.count())
-    # pool = mp.Pool(processes=6)
-    # print('Set up Multiprocessing....')
-    # pool.map(_update_color_size_from_shopee_color_size, product_list)
-    for product_obj in product_list:
-        _update_color_size_from_shopee_color_size(product_obj)
-    # pool.close()
-
-
-def _update_product_category_from_shopee(obj_product):
-    shopee_category = obj_product.shopee_category
-    for obj_cat in shopee_category.all():
-        if obj_cat.is_valid:
-            # print(obj_cat.display_name)
-            if obj_cat.category:
-                obj_product.category = obj_cat.category
-                # print('category added')
-            if obj_cat.sub_category:
-                obj_product.sub_category = obj_cat.sub_category
-                # print('sub-category added')
-    if obj_product.sub_category:
-        obj_product.is_valid = True
-    else:
-        obj_product.is_valid = False
-    obj_product.save()
-
-
-def update_product_category_from_shopee():
-    # print('Update Category from Shopee')
-    product_list = Product.objects.filter(product_source='SHOPEE')
-    # print(product_list.count())
-    for product_obj in product_list:
-        _update_product_category_from_shopee(product_obj)
 
 
 def update_shopee():
@@ -496,47 +405,11 @@ def update_shopee():
     os.remove(file_path)
 
 
-def update_shopee_multiprocessing():
-    obj = ShopeeScraper()
-    store_list = Store.objects.filter(
-        Q(store_type='IS')
-    ).filter(is_active=False)
-    pool = mp.Pool(processes=64)
-    print('Set up Multiprocessing....')
-    pool.map(obj.search_store, store_list)
-    pool.close()
-
-
 def check_product_delete():
-    print('this')
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(
-        Q(store_type='IS') |
-        Q(store_type='IS(P)')
-    ).filter(is_active=True)
-    print(len(store_list))
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
     for store_obj in store_list:
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
             print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
             obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
-
-
-if __name__ == "__main__":
-    obj = ShopeeScraper()
-    # store_obj = Store.objects.get(insta_id='trangsuchas')
-    # obj.get_or_create_product(store_obj, 6517246205, 0)
-    # obj.search_store(store_obj)
-    update_shopee_multiprocessing()
-    # check_product_delete()
-    # store_obj = Store.objects.get(insta_id="jem.closet")
-    # # obj.search_store(store_obj)
-    # product_list = Product.objects.filter(store=store_obj)
-    # for po in product_list:
-    #     print(po.pk, po.store)
-    #     obj.get_or_create_product(po.store, po.shopee_item_id)
-
-
-# 필요한 시나리오들
-# 재고 파악시에 재고가 없으면 기존에 Active 든 뭐든 전부 No 로 바꿔야함.
-# 재고가 새로 생긴 상품에 대한 파악이 필요함.
