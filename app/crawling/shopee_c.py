@@ -334,17 +334,18 @@ class ShopeeScraper:
 
         color_index = None
         size_index = None
-        for i, variation in enumerate(data['tier_variations']):
-            # print(variation['name'])
-            variation_name = variation['name'].lower().strip()
-            if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
-                self.__update_size(obj_product, variation['options'])
-                size_index = i
-            elif 'màu' in variation_name or 'color' in variation_name:
-                self.__update_color(obj_product, variation['options'])
-                color_index = i
-            else:
-                self.__update_extra_options(obj_product, variation)
+        if 'tier_variations' in data:
+            for i, variation in enumerate(data['tier_variations']):
+                # print(variation['name'])
+                variation_name = variation['name'].lower().strip()
+                if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
+                    self.__update_size(obj_product, variation['options'])
+                    size_index = i
+                elif 'màu' in variation_name or 'color' in variation_name:
+                    self.__update_color(obj_product, variation['options'])
+                    color_index = i
+                else:
+                    self.__update_extra_options(obj_product, variation)
         if obj_product.size.count() == 0:
             self.__update_size(obj_product, ['free'])
 
