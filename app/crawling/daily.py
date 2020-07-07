@@ -9,10 +9,10 @@ from utils.slack import slack_notify
 
 
 if __name__ == '__main__':
-    date = datetime.datetime.now().strftime('%Y-%m-%d')
-    slack_notify('_daily update execute_ @'+date)
-    check_product_delete()
-    update_homepage()
+    # date = datetime.datetime.now().strftime('%Y-%m-%d')
+    # slack_notify('_daily update execute_ @'+date)
+    # check_product_delete()
+    # update_homepage()
     # slack_notify('*product review rating update*')
     # calculate_product_review_rating()
     # slack_notify('*store review rating update*')
