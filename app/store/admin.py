@@ -210,9 +210,9 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         )
 
     def product_num(self, obj):
-        product_num = obj.product_set.all().count()
+        product_num = obj.product_set.filter(is_active=True, stock_available=True).count()
         return format_html('<a href="http://dabivn.com/'
-                           'admin/product/product/?q=%s">%s</a>'
+                           'admin/product/product/?q=%s&is_active_exact=1&stock_available__exact=1">%s</a>'
                            % (obj.insta_id, product_num)
                            )
 
