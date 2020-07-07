@@ -197,6 +197,8 @@ PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
 
 PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
                       ('MP', _('Multiple Picture')), ('V', _('Video')))
+PRODUCT_VALIDATION_TYPE = (('R', _('확인 필요')),
+                           ('V', _('확인 완료')), ('N', _('비정상 상품')))
 
 
 class PriceModel(models.Model):
@@ -217,6 +219,8 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
         ordering = ['-created_at', 'current_product_backend_rating', ]
 
     stock_available = models.BooleanField(default=False)
+    validation = models.CharField(
+        choices=PRODUCT_VALIDATION_TYPE, max_length=255, default='R')
     is_valid = models.BooleanField(default=True)
     is_discount = models.BooleanField(default=False)
     is_preorder = models.BooleanField(default=False)

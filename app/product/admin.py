@@ -403,10 +403,12 @@ class Product(admin.ModelAdmin):
         'product_summary',
         'option_summary',
         'is_active',
+        'validation',
         'is_valid',
         'store'
     ]
     fieldsets = [('Status', {'fields': ['is_active',
+                                        'validation',
                                         'is_valid',
                                         'stock_available',
                                         'view',
@@ -464,10 +466,16 @@ class Product(admin.ModelAdmin):
     make_deactivate.short_description = '지정 상품을 Deactivate 상태로 변경'
 
     def make_valid(self, request, queryset):
-        updated_count = queryset.update(is_valid=True)
+        updated_count = queryset.update(validation='V')
         self.message_user(
-            request, '{}건의 상품을 Valid 상태로 변경'.format(updated_count))
-    make_activate.short_description = '지정 상품을 Valid 상태로 변경'
+            request, '{}건의 상품을 확인 완료 상태로 변경'.format(updated_count))
+    make_valid.short_description = '지정 상품을 확인 완료 상태로 변경'
+
+    def make_not_valid(self, request, queryset):
+        updated_count = queryset.update(validation='N')
+        self.message_user(
+            request, '{}건의 상품을 비정상상품 상태로 변경'.format(updated_count))
+    make_not_valid.short_description = '지정 상품을 비정상상품 상태로 변경'
 
     def categorize_bag(self, request, queryset):
         category_bag = models.ProductCategory.objects.get(name='bag')
