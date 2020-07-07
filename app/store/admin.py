@@ -212,7 +212,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     def product_num(self, obj):
         product_num = obj.product_set.filter(is_active=True, stock_available=True).count()
         return format_html('<a href="http://dabivn.com/'
-                           'admin/product/product/?q=%s&is_active_exact=1&stock_available__exact=1">%s</a>'
+                           'admin/product/product/?q=%s&is_active__exact=1&stock_available__exact=1">%s</a>'
                            % (obj.insta_id, product_num)
                            )
 
@@ -223,7 +223,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                            % (obj.insta_id, product_num)
                            )
     need_to_update_num.short_description = '업데이트 필요'
-
+    product_num.short_description = '유효 상품'
     instagram_link.short_description = "Link"
     instagram_link.allow_tags = True
 
