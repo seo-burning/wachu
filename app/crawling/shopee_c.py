@@ -308,11 +308,13 @@ class ShopeeScraper:
             shopee_item_id=itemid, store=store_obj)
         data = self.__request_url_item(shopid, itemid).json()['item']
         if data == None:
+            # 삭제 확인
             print('Cannot find page, Item might be deleted! Make it deactived.')
             obj_product.is_active = False
             obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
         else:
+            # 재고 재 생성 확인을 해야함.
             if is_created:
                 print(store_obj.insta_id, itemid)
                 is_valid = self.__update_category(obj_product, data['categories'])
