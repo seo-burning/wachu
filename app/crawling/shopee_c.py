@@ -298,6 +298,7 @@ class ShopeeScraper:
                         product=obj_product,
                         post_image_type='P')
 
+            if obj_product.validation is not 'N':
                 color_index = None
                 size_index = None
 
@@ -314,8 +315,6 @@ class ShopeeScraper:
                         self.__update_extra_options(obj_product, variation)
                 if obj_product.size.count() == 0:
                     self.__update_size(obj_product, ['free'])
-
-            if obj_product.validation is not 'N':
                 # Data for Daily Update
                 obj_product.description = data['description']
                 self.__update_price(obj_product, data)
