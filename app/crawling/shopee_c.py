@@ -154,7 +154,7 @@ class ShopeeScraper:
                 source_thumb = None
             obj_extra_option, is_created = SourceExtraOption.objects.get_or_create(
                 name=option_string, source=source, source_thumb=source_thumb, variation_group=variation_group)
-            obj_product.extra_option.add(obj_extra_option)
+            obj_product.source_extra_option.add(obj_extra_option)
         obj_product.save()
 
     def __update_size(self, obj_product, options):
