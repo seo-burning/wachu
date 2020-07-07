@@ -12,7 +12,7 @@ from django.db.models import Q
 import os_setup
 import multiprocessing as mp
 from utils.slack import slack_notify, slack_upload_file
-from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize
+from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize, SourceExtraOption
 from store.models import Store, StorePost
 
 from manual_update import make_product_options_from_product
@@ -152,7 +152,7 @@ class ShopeeScraper:
             except:
                 source = None
                 source_thumb = None
-            obj_extra_option, is_created = ProductExtraOption.objects.get_or_create(
+            obj_extra_option, is_created = SourceExtraOption.objects.get_or_create(
                 name=option_string, source=source, source_thumb=source_thumb, variation_group=variation_group)
             obj_product.extra_option.add(obj_extra_option)
         obj_product.save()
@@ -312,8 +312,7 @@ class ShopeeScraper:
         if is_created:
             print(store_obj.insta_id, itemid)
             is_valid = self.__update_category(obj_product, data['categories'])
-            if (is_valid == False):
-                need_to_update.append(obj_product.product_link)
+
             obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
             obj_product.created_at = datetime.datetime.fromtimestamp(
                 int(data['ctime']), pytz.UTC)
@@ -534,3 +533,8 @@ if __name__ == "__main__":
     # for po in product_list:
     #     print(po.pk, po.store)
     #     obj.get_or_create_product(po.store, po.shopee_item_id)
+
+
+# 필요한 시나리오들
+# 재고 파악시에 재고가 없으면 기존에 Active 든 뭐든 전부 No 로 바꿔야함.
+# 재고가 새로 생긴 상품에 대한 파악이 필요함.
