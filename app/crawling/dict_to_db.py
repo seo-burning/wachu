@@ -210,7 +210,7 @@ def update_product_object(product_source):
         product_obj.stock_available = True
     update_product_option(product_obj, product_source['productOption'])
 
-    if product_source['description'] == None:
+    if product_source['description'] == None or product_source['description'] == '':
         product_obj.description = get_default_description(product_obj)
     else:
         product_obj.description = remove_html_tags(product_source['description'])
@@ -219,12 +219,12 @@ def update_product_object(product_source):
 
 def dict_to_product_model(product_list):
     print(len(product_list))
-    pool = mp.Pool(processes=64)
-    print('setup multiprocessing')
-    pool.map(update_product_object, product_list)
-    pool.close()
-    # for product_obj in product_list:
-    #     update_product_object(product_obj)
+    # pool = mp.Pool(processes=64)
+    # print('setup multiprocessing')
+    # pool.map(update_product_object, product_list)
+    # pool.close()
+    for product_obj in product_list:
+        update_product_object(product_obj)
 
 
 #  {'insta_id': 'dam',

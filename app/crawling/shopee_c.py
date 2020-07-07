@@ -374,11 +374,9 @@ class ShopeeScraper:
             obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
 
-        # if created:
+        if created:
             # make_product_options_from_product(obj_product)
-        for obj in ProductOption.objects.filter(product=obj_product):
-            obj.delete()
-        self.__update_product_option(obj_product, data['models'], color_index, size_index)
+            self.__update_product_option(obj_product, data['models'], color_index, size_index)
         if obj_product.is_valid == False:
             obj_product.is_active = False
         return obj_product, created, need_to_update
@@ -500,11 +498,8 @@ def update_shopee():
 def update_shopee_multiprocessing():
     obj = ShopeeScraper()
     store_list = Store.objects.filter(
-        Q(store_type='IS') |
-        Q(store_type='IFSH') |
-        Q(store_type='IF(P)SH') |
-        Q(store_type='IS(P)')
-    ).filter(is_active=True)
+        Q(store_type='IS')
+    ).filter(is_active=False)
     pool = mp.Pool(processes=64)
     print('Set up Multiprocessing....')
     pool.map(obj.search_store, store_list)
@@ -512,17 +507,17 @@ def update_shopee_multiprocessing():
 
 
 def check_product_delete():
+    print('this')
     obj = ShopeeScraper()
     store_list = Store.objects.filter(
         Q(store_type='IS') |
-        Q(store_type='IFSH') |
-        Q(store_type='IF(P)SH') |
         Q(store_type='IS(P)')
     ).filter(is_active=True)
     print(len(store_list))
     for store_obj in store_list:
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
+            print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
             obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
 
 
