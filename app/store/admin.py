@@ -222,8 +222,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         product_num = obj.product_set.filter(validation='R', stock_available=True).count()
         if product_num > 0:
             return format_html('<a href="http://dabivn.com/'
-                               'admin/product/product/?q=%s&validation__exact=R\
-                                   &stock_available__exact=1"><p style="color:red">%s</p></a>'
+                               'admin/product/product/?q=%s&validation__exact=R'
+                               '&stock_available__exact=1"><p style="color:red">%s</p></a>'
                                % (obj.insta_id, product_num)
                                )
         else:
