@@ -163,6 +163,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
              'recent_post_3'),
         )}),
     ]
+    list_select_related = ('primary_style', 'secondary_style')
     list_display = ["is_active",
                     "store_type",
                     'current_ranking',
@@ -218,10 +219,14 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def need_to_update_num(self, obj):
         product_num = obj.product_set.filter(is_valid=False, stock_available=True).count()
-        return format_html('<a href="http://dabivn.com/'
-                           'admin/product/product/?q=%s&is_valid__exact=0&stock_available__exact=1">%s</a>'
-                           % (obj.insta_id, product_num)
-                           )
+        if product_num > 0:
+            return format_html('<a href="http://dabivn.com/'
+                               'admin/product/product/?q=%s&is_valid__exact=0&stock_available__exact=1"><p style="color:red">%s</p></a>'
+                               % (obj.insta_id, product_num)
+                               )
+        else:
+            return product_num
+
     need_to_update_num.short_description = '업데이트 필요'
     product_num.short_description = '유효 상품'
     instagram_link.short_description = "Link"

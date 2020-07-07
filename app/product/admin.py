@@ -428,6 +428,8 @@ class Product(admin.ModelAdmin):
                  ]
     list_display_links = ['product_summary', ]
     search_fields = ['store__insta_id', 'name']
+    list_select_related = ('category', 'sub_category')
+    list_prefetch_related = ('size', 'color')
     list_filter = [
         'is_active',
         'is_valid',
