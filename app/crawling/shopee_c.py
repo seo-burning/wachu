@@ -298,51 +298,52 @@ class ShopeeScraper:
                         product=obj_product,
                         post_image_type='P')
 
-            color_index = None
-            size_index = None
+                color_index = None
+                size_index = None
 
-            for i, variation in enumerate(data['tier_variations']):
-                # print(variation['name'])
-                variation_name = variation['name'].lower().strip()
-                if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
-                    self.__update_size(obj_product, variation['options'])
-                    size_index = i
-                elif 'màu' in variation_name or 'color' in variation_name:
-                    self.__update_color(obj_product, variation['options'])
-                    color_index = i
+                for i, variation in enumerate(data['tier_variations']):
+                    # print(variation['name'])
+                    variation_name = variation['name'].lower().strip()
+                    if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
+                        self.__update_size(obj_product, variation['options'])
+                        size_index = i
+                    elif 'màu' in variation_name or 'color' in variation_name:
+                        self.__update_color(obj_product, variation['options'])
+                        color_index = i
+                    else:
+                        self.__update_extra_options(obj_product, variation)
+                if obj_product.size.count() == 0:
+                    self.__update_size(obj_product, ['free'])
+
+            if obj_product.validation is not 'N':
+                # Data for Daily Update
+                obj_product.description = data['description']
+                self.__update_price(obj_product, data)
+                if view_count:
+                    self.__update_rating(obj_product, data, view_count)
+                if (data['show_free_shipping']):
+                    obj_product.is_free_ship = data['show_free_shipping']
+                    obj_product.shipping_price = 0
                 else:
-                    self.__update_extra_options(obj_product, variation)
-            if obj_product.size.count() == 0:
-                self.__update_size(obj_product, ['free'])
-
-            # Data for Daily Update
-            obj_product.description = data['description']
-            self.__update_price(obj_product, data)
-            if view_count:
-                self.__update_rating(obj_product, data, view_count)
-            if (data['show_free_shipping']):
-                obj_product.is_free_ship = data['show_free_shipping']
-                obj_product.shipping_price = 0
-            else:
-                obj_product.shipping_price = 25000
-            obj_product.stock = data['stock']
-            if (obj_product.stock == 0):
-                obj_product.is_active = False
-                obj_product.stock_available = False
-                print('make it deactive, no stock // Product no. ' + str(obj_product.pk))
-            else:
-                obj_product.stock_available = True
-            obj_product.save()
-
-            print('https://dabivn.com/admin/product/product/' + str(obj_product.pk))
-            self.__update_product_option(obj_product, data['models'], color_index, size_index)
-            if created:
-                if obj_product.validation == 'V':
-                    obj_product.is_active = True
-                    obj_product.save()
-            if obj_product.validation == 'R':
-                obj_product.is_active = False
+                    obj_product.shipping_price = 25000
+                obj_product.stock = data['stock']
+                if (obj_product.stock == 0):
+                    obj_product.is_active = False
+                    obj_product.stock_available = False
+                    print('make it deactive, no stock // Product no. ' + str(obj_product.pk))
+                else:
+                    obj_product.stock_available = True
                 obj_product.save()
+
+                print('https://dabivn.com/admin/product/product/' + str(obj_product.pk))
+                self.__update_product_option(obj_product, data['models'], color_index, size_index)
+                if created:
+                    if obj_product.validation == 'V':
+                        obj_product.is_active = True
+                        obj_product.save()
+                if obj_product.validation == 'R':
+                    obj_product.is_active = False
+                    obj_product.save()
         return obj_product, created, need_to_update
 
     def search_store(self, store_obj):
