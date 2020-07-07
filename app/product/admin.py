@@ -433,12 +433,13 @@ class Product(admin.ModelAdmin):
     list_filter = [
         'is_active',
         'is_valid',
+        'validation',
         'stock_available',
         'sub_category',
         'product_source',
     ]
     actions = ['make_activate', 'make_deactivate',
-               'make_valid',
+               'make_valid', 'make_not_valid',
                'categorize_bag', 'categorize_jewelry', 'categorize_shoes',
                'product_type_instagram',
                'product_pattern_print',
@@ -673,7 +674,8 @@ class Product(admin.ModelAdmin):
                         p.bold { font-weight:500; font-size:12px}\
                         p.None { color:red; font-weight:600; opacity:1; background-color:pink}\
                         span.False,p.False { color:grey; opacity:0.2 }\
-                        div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
+                        div.review { background-color : rgba(245, 223, 223,0.3) }\
+                        div.not-valid { background-color : rgba(245, 100, 100,0.8) }\
                         div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
                         div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
                         div.active { background-color : rgba(223, 245, 223,0.3) }\
@@ -703,7 +705,9 @@ class Product(admin.ModelAdmin):
         )
         if obj.stock_available is False:
             status = 'no-stock'
-        elif obj.is_valid is False:
+        elif obj.validation == 'R':
+            status = 'review'
+        elif obj.validation == 'N':
             status = 'not-valid'
         elif obj.is_active is False:
             status = 'not-active'
@@ -720,8 +724,9 @@ class Product(admin.ModelAdmin):
                 td.False {color: grey; opacity:0.2}\
                 td.no-stock {color: red; font-weight:600; }\
                 td.null {color: red; font-weight:600; opacity:1; background-color:pink}\
-                div.not-valid { background-color : rgba(245, 223, 223,0.3) }\
-                div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
+                        div.review { background-color : rgba(245, 223, 223,0.3) }\
+                        div.not-valid { background-color : rgba(245, 100, 100,0.8) }\
+                        div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
                 div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
                 div.active { background-color : rgba(223, 245, 223,0.3) }\
         </style> "
@@ -781,7 +786,9 @@ class Product(admin.ModelAdmin):
         option_info += '</table>'
         if obj.stock_available is False:
             status = 'no-stock'
-        elif obj.is_valid is False:
+        elif obj.validation == 'R':
+            status = 'review'
+        elif obj.validation == 'N':
             status = 'not-valid'
         elif obj.is_active is False:
             status = 'not-active'

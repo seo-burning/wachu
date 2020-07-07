@@ -175,7 +175,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_filter = ['is_active', 'store_type']
     list_display_links = ["insta_id"]
     search_fields = ["insta_id",
-                     "primary_style__name", "secondary_style__name", ]
+                     "primary_style__name",
+                     "secondary_style__name", ]
     actions = ['export_as_csv',
                'make_activate',
                'make_deactivate',
@@ -218,10 +219,11 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                            )
 
     def need_to_update_num(self, obj):
-        product_num = obj.product_set.filter(is_valid=False, stock_available=True).count()
+        product_num = obj.product_set.filter(validation='R', stock_available=True).count()
         if product_num > 0:
             return format_html('<a href="http://dabivn.com/'
-                               'admin/product/product/?q=%s&is_valid__exact=0&stock_available__exact=1"><p style="color:red">%s</p></a>'
+                               'admin/product/product/?q=%s&validation__exact=R\
+                                   &stock_available__exact=1"><p style="color:red">%s</p></a>'
                                % (obj.insta_id, product_num)
                                )
         else:
