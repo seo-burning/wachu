@@ -691,10 +691,10 @@ class Product(admin.ModelAdmin):
             discount_price=obj.discount_price,
             discount_rate=obj.discount_rate
         )
-        if obj.is_valid is False:
-            status = 'not-valid'
-        elif obj.is_active is False and obj.stock == 0:
+        if obj.stock_available is False:
             status = 'no-stock'
+        elif obj.is_valid is False:
+            status = 'not-valid'
         elif obj.is_active is False:
             status = 'not-active'
         elif obj.is_active is True:
@@ -769,10 +769,10 @@ class Product(admin.ModelAdmin):
                                           extra=option_obj.extra_option, extra_is_null=extra_is_null,
                                           stock=option_obj.stock, stock_is_null=stock_is_null)
         option_info += '</table>'
-        if obj.is_valid is False:
-            status = 'not-valid'
-        elif obj.is_active is False and obj.stock == 0:
+        if obj.stock_available is False:
             status = 'no-stock'
+        elif obj.is_valid is False:
+            status = 'not-valid'
         elif obj.is_active is False:
             status = 'not-active'
         elif obj.is_active is True:

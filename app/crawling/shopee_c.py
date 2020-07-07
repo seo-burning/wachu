@@ -335,7 +335,6 @@ class ShopeeScraper:
             obj_product.save()
 
             if created:
-                # make_product_options_from_product(obj_product)
                 self.__update_product_option(obj_product, data['models'], color_index, size_index)
                 if obj_product.is_valid = True:
                     obj_product.is_active = True
@@ -413,3 +412,32 @@ def check_product_delete():
         for product_obj in product_list:
             print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
             obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+
+
+# store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+# for store_obj in store_list:
+#     product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+#     for product_obj in product_list:
+#         is_del = False
+#         is_valid = True
+#         for option_obj in product_obj.product_options.all():
+#             if option_obj.name == product_obj.name and option_obj.stock == 999:
+#                 option_obj.delete()
+#         for option_obj in product_obj.product_options.all():
+#             if product_obj.size and option_obj.size == None:
+#                 is_valid = False
+#             if product_obj.color and option_obj.color == None:
+#                 is_valid = False
+#         if len(product_obj.product_options.all()) == 0:
+#             is_valid = False
+#         if product_obj.sub_category is None:
+#             is_valid = False
+#         if is_valid:
+#             print('valid : https://dabivn.com/admin/product/product/' + str(product_obj.pk))
+#             product_obj.is_valid = True
+#             product_obj.is_active = True
+#         else:
+#             print('not valid : https://dabivn.com/admin/product/product/' + str(product_obj.pk))
+#             product_obj.is_valid = False
+#             product_obj.is_active = False
+#         product_obj.save()

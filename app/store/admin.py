@@ -217,9 +217,9 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                            )
 
     def need_to_update_num(self, obj):
-        product_num = obj.product_set.filter(is_valid=False).count()
+        product_num = obj.product_set.filter(is_valid=False, stock_available=True).count()
         return format_html('<a href="http://dabivn.com/'
-                           'admin/product/product/?q=%s&is_valid__exact=0">%s</a>'
+                           'admin/product/product/?q=%s&is_valid__exact=0&stock_available__exact=1">%s</a>'
                            % (obj.insta_id, product_num)
                            )
     need_to_update_num.short_description = '업데이트 필요'
