@@ -117,20 +117,21 @@ class ShopeeScraper:
 
     def __update_category(self, obj_product, categories):
         for category in categories:
-            obj_cat, is_created = ShopeeCategory.objects.get_or_create(catid=int(category['catid']),
-                                                                       display_name=category['display_name'])
-            obj_product.shopee_category.add(obj_cat)
-            obj_cat.no_sub = category['no_sub']
-            obj_cat.is_valid = category['no_sub']
-            obj_cat.is_default_subcat = category['is_default_subcat']
-            obj_cat.save()
-            if obj_cat.is_valid:
-                if obj_cat.category:
-                    obj_product.category = obj_cat.category
-                    print('category added')
-                if obj_cat.sub_category:
-                    obj_product.sub_category = obj_cat.sub_category
-                    print('sub-category added')
+            if category:
+                obj_cat, is_created = ShopeeCategory.objects.get_or_create(catid=int(category['catid']),
+                                                                           display_name=category['display_name'])
+                obj_product.shopee_category.add(obj_cat)
+                obj_cat.no_sub = category['no_sub']
+                obj_cat.is_valid = category['no_sub']
+                obj_cat.is_default_subcat = category['is_default_subcat']
+                obj_cat.save()
+                if obj_cat.is_valid:
+                    if obj_cat.category:
+                        obj_product.category = obj_cat.category
+                        print('category added')
+                    if obj_cat.sub_category:
+                        obj_product.sub_category = obj_cat.sub_category
+                        print('sub-category added')
         if obj_product.sub_category:
             obj_product.is_valid = True
         else:
