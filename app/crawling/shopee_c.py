@@ -92,9 +92,9 @@ class ShopeeScraper:
                         obj_product.sub_category = obj_cat.sub_category
                         print('sub-category added')
         if obj_product.sub_category:
-            obj_product.is_valid = True
+            obj_product.validation = 'V'
         else:
-            obj_product.is_valid = False
+            obj_product.validation = 'R'
         obj_product.save()
         return obj_product.is_active
 
@@ -130,7 +130,7 @@ class ShopeeScraper:
                 # print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
                 obj_product.size.add(size_obj.size)
             else:
-                obj_product.is_valid = False
+                obj_product.validation = 'R'
                 # print("not exist : {}".format(size_obj.display_name))
                 pass
         obj_product.save()
@@ -150,7 +150,7 @@ class ShopeeScraper:
                 obj_product.color.add(color_obj.color)
             else:
                 # print("not exist : {}".format(color_obj.display_name))
-                obj_product.is_valid = False
+                obj_product.validation = 'R'
                 pass
         obj_product.save()
 
@@ -161,7 +161,7 @@ class ShopeeScraper:
 
     def __update_product_option(self, obj_product, option_list, color_index, size_index):
         if len(option_list) > 1 and (len(obj_product.size.all()) == 1 and len(obj_product.color.all()) == 0):
-            obj_product.is_valid = False
+            obj_product.validation = 'R'
             print('multiple options but no size and color')
         print('update option')
         if len(option_list) == 0:
@@ -193,7 +193,7 @@ class ShopeeScraper:
                 if obj_color.color:
                     obj_option.color = obj_color.color
                 else:
-                    obj_product.is_valid = False
+                    obj_product.validation = 'R'
 
             if size_index != None:
                 obj_size, is_created = ShopeeSize.objects.get_or_create(
@@ -201,7 +201,7 @@ class ShopeeScraper:
                 if obj_size.size:
                     obj_option.size = obj_size.size
                 else:
-                    obj_product.is_valid = False
+                    obj_product.validation = 'R'
             else:
                 obj_size, is_created = ShopeeSize.objects.get_or_create(
                     display_name='free')
@@ -278,7 +278,6 @@ class ShopeeScraper:
             if is_created:
                 print(store_obj.insta_id, itemid)
                 is_valid = self.__update_category(obj_product, data['categories'])
-
                 obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
                 obj_product.created_at = datetime.datetime.fromtimestamp(
                     int(data['ctime']), pytz.UTC)
@@ -336,10 +335,10 @@ class ShopeeScraper:
 
             if created:
                 self.__update_product_option(obj_product, data['models'], color_index, size_index)
-                if obj_product.is_valid = True:
+                if obj_product.is_valid = 'V':
                     obj_product.is_active = True
                     obj_product.save()
-            if obj_product.is_valid == False:
+            if obj_product.is_valid == 'False':
                 obj_product.is_active = False
                 obj_product.save()
         return obj_product, created, need_to_update

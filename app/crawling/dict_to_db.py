@@ -161,7 +161,7 @@ def update_product_object(product_source):
     )
 
     if is_created:
-        product_obj.is_valid = False
+        product_obj.validation = 'R'
         product_obj.name = product_source['name']
         if (product_source['product_thumbnail_image'] == None) or (product_source['product_thumbnail_image'] == ''):
             product_obj.product_thumbnail_image = "http://dabivn.com"

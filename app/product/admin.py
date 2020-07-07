@@ -436,6 +436,7 @@ class Product(admin.ModelAdmin):
         'product_source',
     ]
     actions = ['make_activate', 'make_deactivate',
+               'make_valid_and_active',
                'make_valid', 'make_not_valid',
                'categorize_bag', 'categorize_jewelry', 'categorize_shoes',
                'product_type_instagram',
@@ -464,6 +465,12 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품을 Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = '지정 상품을 Deactivate 상태로 변경'
+
+    def make_valid_and_active(self, request, queryset):
+        updated_count = queryset.update(validation='V', is_active=True)
+        self.message_user(
+            request, '{}건의 상품을 확인 완료 & Active로 변경'.format(updated_count))
+    make_valid_and_active.short_description = '지정 상품을 확인 완료 후 Active'
 
     def make_valid(self, request, queryset):
         updated_count = queryset.update(validation='V')
