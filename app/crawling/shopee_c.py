@@ -388,17 +388,17 @@ def update_shopee():
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
-            # try:
-            updated, created, need_to_update = obj.search_store(store_obj)
-            result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
-                '   need to update : '+str(need_to_update) + '\n'
-            f.writelines(result_text)
-            total_updated += updated
-            total_created += created
-            total_need_to_update += need_to_update
-            # except:
-            #     slack_notify('error' + str(store_obj.insta_id))
-            #     pass
+            try:
+                updated, created, need_to_update = obj.search_store(store_obj)
+                result_text = store_obj.insta_id + 'total : ' + str(updated) + '  created : ' + str(created) + \
+                    '   need to update : '+str(need_to_update) + '\n'
+                f.writelines(result_text)
+                total_updated += updated
+                total_created += created
+                total_need_to_update += need_to_update
+            except:
+                slack_notify('error' + str(store_obj.insta_id))
+                pass
     slack_notify('>total : ' + str(total_updated) + '  created : ' + str(total_created) +
                  '   need to update : '+str(total_need_to_update) + '\n')
     slack_upload_file(file_path)
@@ -422,7 +422,7 @@ def check_product_delete():
 #         is_del = False
 #         is_valid = True
 #         for option_obj in product_obj.product_options.all():
-#             if option_obj.name == product_obj.name and option_obj.stock == 999:
+#             if option_obj.name.lower() == product_obj.name.lower() and option_obj.stock == 999:
 #                 option_obj.delete()
 #         for option_obj in product_obj.product_options.all():
 #             if product_obj.size and option_obj.size == None:
@@ -435,7 +435,7 @@ def check_product_delete():
 #             is_valid = False
 #         if is_valid:
 #             print('valid : https://dabivn.com/admin/product/product/' + str(product_obj.pk))
-#             product_obj.is_valid = True
+#             product_obj.validation = 'V'
 #             product_obj.is_active = True
 #         else:
 #             print('not valid : https://dabivn.com/admin/product/product/' + str(product_obj.pk))
