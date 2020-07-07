@@ -404,12 +404,10 @@ class Product(admin.ModelAdmin):
         'option_summary',
         'is_active',
         'validation',
-        'is_valid',
         'store'
     ]
     fieldsets = [('Status', {'fields': ['is_active',
                                         'validation',
-                                        'is_valid',
                                         'stock_available',
                                         'view',
                                         'sold',
@@ -432,7 +430,6 @@ class Product(admin.ModelAdmin):
     list_prefetch_related = ('size', 'color')
     list_filter = [
         'is_active',
-        'is_valid',
         'validation',
         'stock_available',
         'sub_category',
