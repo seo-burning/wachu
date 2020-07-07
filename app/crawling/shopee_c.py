@@ -307,34 +307,38 @@ class ShopeeScraper:
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         data = self.__request_url_item(shopid, itemid).json()['item']
-        # print(data)
-        # Data for Creation
-        if is_created:
-            print(store_obj.insta_id, itemid)
-            is_valid = self.__update_category(obj_product, data['categories'])
-
-            obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
-            obj_product.created_at = datetime.datetime.fromtimestamp(
-                int(data['ctime']), pytz.UTC)
-            if (data['size_chart'] != None):
-                obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
-            created.append(obj_product.product_link)
-            obj_product.product_source = 'SHOPEE'
-            obj_product.name = data['name']
-            # image
-            obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
-                data['image'] + '_tn'
+        if data == None:
+            print('Cannot find page, Item might be deleted! Make it deactived.')
+            obj_product.is_active = False
+            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
-            for product_image in data['images']:
-                obj_image, image_is_created = ProductImage.objects.get_or_create(
-                    source='https://cf.shopee.vn/file/' + product_image,
-                    source_thumb='https://cf.shopee.vn/file/' + product_image+'_tn',
-                    product=obj_product,
-                    post_image_type='P')
+        else:
+            if is_created:
+                print(store_obj.insta_id, itemid)
+                is_valid = self.__update_category(obj_product, data['categories'])
 
-        color_index = None
-        size_index = None
-        if 'tier_variations' in data:
+                obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
+                obj_product.created_at = datetime.datetime.fromtimestamp(
+                    int(data['ctime']), pytz.UTC)
+                if (data['size_chart'] != None):
+                    obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
+                created.append(obj_product.product_link)
+                obj_product.product_source = 'SHOPEE'
+                obj_product.name = data['name']
+                # image
+                obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
+                    data['image'] + '_tn'
+                obj_product.save()
+                for product_image in data['images']:
+                    obj_image, image_is_created = ProductImage.objects.get_or_create(
+                        source='https://cf.shopee.vn/file/' + product_image,
+                        source_thumb='https://cf.shopee.vn/file/' + product_image+'_tn',
+                        product=obj_product,
+                        post_image_type='P')
+
+            color_index = None
+            size_index = None
+
             for i, variation in enumerate(data['tier_variations']):
                 # print(variation['name'])
                 variation_name = variation['name'].lower().strip()
@@ -346,11 +350,10 @@ class ShopeeScraper:
                     color_index = i
                 else:
                     self.__update_extra_options(obj_product, variation)
-        if obj_product.size.count() == 0:
-            self.__update_size(obj_product, ['free'])
+            if obj_product.size.count() == 0:
+                self.__update_size(obj_product, ['free'])
 
-        # Data for Daily Update
-        try:
+            # Data for Daily Update
             obj_product.description = data['description']
             self.__update_price(obj_product, data)
             if view_count:
@@ -364,21 +367,16 @@ class ShopeeScraper:
             if (obj_product.stock == 0):
                 obj_product.is_active = False
                 obj_product.stock_available = False
-                print('make it deactive, no stock // product no. ' + str(obj_product.pk))
+                print('make it deactive, no stock // Product no. ' + str(obj_product.pk))
             else:
                 obj_product.stock_available = True
             obj_product.save()
-        except:
-            print('Cannot find page, Item might be deleted. Make it deactived.')
-            obj_product.is_active = False
-            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
-            obj_product.save()
 
-        if created:
-            # make_product_options_from_product(obj_product)
-            self.__update_product_option(obj_product, data['models'], color_index, size_index)
-        if obj_product.is_valid == False:
-            obj_product.is_active = False
+            if created:
+                # make_product_options_from_product(obj_product)
+                self.__update_product_option(obj_product, data['models'], color_index, size_index)
+            if obj_product.is_valid == False:
+                obj_product.is_active = False
         return obj_product, created, need_to_update
 
     def search_store(self, store_obj):
