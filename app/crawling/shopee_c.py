@@ -184,30 +184,31 @@ class ShopeeScraper:
         for option in option_list:
             obj_option, is_created = ProductOption.objects.get_or_create(
                 product=obj_product, shopee_item_id=option['modelid'])
-            obj_option.is_active = option['status']
-            obj_option.name = option['name']
-            splited_list = option['name'].lower().split(',')
+            if is_created:
+                print('created new options')
+                obj_option.name = option['name']
+                splited_list = option['name'].lower().split(',')
+                if color_index != None:
+                    obj_color, is_created = ShopeeColor.objects.get_or_create(
+                        display_name=self.__get_cleaned_text(splited_list[color_index]))
+                    if obj_color.color:
+                        obj_option.color = obj_color.color
+                    else:
+                        obj_product.validation = 'R'
 
-            if color_index != None:
-                obj_color, is_created = ShopeeColor.objects.get_or_create(
-                    display_name=self.__get_cleaned_text(splited_list[color_index]))
-                if obj_color.color:
-                    obj_option.color = obj_color.color
+                if size_index != None:
+                    obj_size, is_created = ShopeeSize.objects.get_or_create(
+                        display_name=self.__get_cleaned_text(splited_list[size_index]))
+                    if obj_size.size:
+                        obj_option.size = obj_size.size
+                    else:
+                        obj_product.validation = 'R'
                 else:
-                    obj_product.validation = 'R'
-
-            if size_index != None:
-                obj_size, is_created = ShopeeSize.objects.get_or_create(
-                    display_name=self.__get_cleaned_text(splited_list[size_index]))
-                if obj_size.size:
+                    obj_size, is_created = ShopeeSize.objects.get_or_create(
+                        display_name='free')
                     obj_option.size = obj_size.size
-                else:
-                    obj_product.validation = 'R'
-            else:
-                obj_size, is_created = ShopeeSize.objects.get_or_create(
-                    display_name='free')
-                obj_option.size = obj_size.size
 
+            obj_option.is_active = option['status']
             if option['price_before_discount'] > 0:
                 obj_option.original_price = option['price_before_discount'] / 100000
                 obj_option.discount_price = option['price'] / 100000
