@@ -221,7 +221,6 @@ class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
     stock_available = models.BooleanField(default=False)
     validation = models.CharField(
         choices=PRODUCT_VALIDATION_TYPE, max_length=255, default='R')
-    is_valid = models.BooleanField(default=True)
     is_discount = models.BooleanField(default=False)
     is_preorder = models.BooleanField(default=False)
     preorder_campaign = models.ForeignKey(
