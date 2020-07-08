@@ -29,8 +29,9 @@ class ProductSubCategory(TimeStampedModel, DispalyNameModel, ActiveModel, Orderi
         return self.display_name
 
 
-class ProductSize(TimeStampedModel, DispalyNameModel):
+class ProductSize(TimeStampedModel, DispalyNameModel, OrderingModel):
     class Meta:
+        ordering = ['ordering', 'display_name']
         verbose_name = u'제품 사이즈 / Product Size'
         verbose_name_plural = verbose_name
 
@@ -38,8 +39,9 @@ class ProductSize(TimeStampedModel, DispalyNameModel):
         return self.display_name
 
 
-class ProductPattern(TimeStampedModel, DispalyNameModel):
+class ProductPattern(TimeStampedModel, DispalyNameModel, OrderingModel):
     class Meta:
+        ordering = ['ordering', 'display_name']
         verbose_name = u'제품 패턴 / Product Pattern'
         verbose_name_plural = verbose_name
 
@@ -47,8 +49,9 @@ class ProductPattern(TimeStampedModel, DispalyNameModel):
         return self.display_name
 
 
-class ProductColor(TimeStampedModel, DispalyNameModel):
+class ProductColor(TimeStampedModel, DispalyNameModel, OrderingModel):
     class Meta:
+        ordering = ['ordering', 'display_name']
         verbose_name = u'제품 색상 / Product Color'
         verbose_name_plural = verbose_name
 

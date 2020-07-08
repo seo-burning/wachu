@@ -256,7 +256,8 @@ class SourceExtraOptionThroughInline(admin.TabularInline):
 @admin.register(models.ProductSize)
 class ProductSizeAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
-    list_display = ['name', 'display_name', 'product_num', 'created_at']
+    list_display = ['name', 'display_name', 'product_num', 'created_at', 'ordering']
+    list_editable = ['ordering', ]
     list_filter = ['name']
     # inlines = [ProductSizeThroughInline, ]
 
@@ -268,7 +269,8 @@ class ProductSizeAdmin(admin.ModelAdmin):
 @admin.register(models.ProductColor)
 class ProductColorAdmin(admin.ModelAdmin):
     fields = ['display_name', 'name', ]
-    list_display = ['name', 'display_name', 'product_num', 'created_at']
+    list_display = ['name', 'display_name', 'product_num', 'created_at', 'ordering']
+    list_editable = ['ordering', ]
     search_fields = ['display_name']
     # list_filter = ['name']
 
