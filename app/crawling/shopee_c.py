@@ -446,8 +446,9 @@ def check_product_delete():
 
 if __name__ == '__main__':
     obj = ShopeeScraper()
-    store_obj = Store.objects.get(insta_id='1994closet')
-    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    for product_obj in product_list:
-        print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
-        obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+    store_obj = Store.objects.get(insta_id='caocaobycaochen')
+    obj.get_or_create_product(store_obj, 4037567650)
+    # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    # for product_obj in product_list:
+    #     print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
+    #     obj.get_or_create_product(store_obj, product_obj.shopee_item_id)

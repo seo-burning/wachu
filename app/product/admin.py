@@ -315,6 +315,7 @@ class ShopeeCategoryAdmin(admin.ModelAdmin):
 @admin.register(models.ShopeeSize)
 class ShopeeSizeAdmin(admin.ModelAdmin):
     list_display = ['is_valid', 'display_name', 'size', 'product_num']
+    list_editable = ['size', ]
     list_filter = ['is_valid', ]
     search_fields = ['display_name', ]
     inlines = [ProductShopeeSizeThroughInline, ]
@@ -327,6 +328,7 @@ class ShopeeSizeAdmin(admin.ModelAdmin):
 @admin.register(models.ShopeeColor)
 class ShopeeColorAdmin(admin.ModelAdmin):
     list_display = ['is_valid', 'display_name', 'color', 'product_num']
+    list_editable = ['color', ]
     list_filter = ['is_valid', ]
     search_fields = ['display_name', ]
     inlines = [ProductShopeeColorThroughInline, ]
