@@ -482,7 +482,7 @@ def multi(product_obj):
 
 if __name__ == '__main__':
     pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='19.degrees_')
+    store_obj = Store.objects.get(insta_id='bleubirdclothing')
     product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE', is_active=False, validation='R')
     print('setup multiprocessing')
     pool.map(multi, product_list)
