@@ -312,7 +312,7 @@ class ProductOption(PriceModel, TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name='product_options')
     size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, blank=True)
     color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True, blank=True)
-    extra_option = models.ForeignKey(ProductExtraOption, on_delete=models.SET_NULL, null=True, blank=True)
+    extra_option = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         option_string = 'product : ' + str(self.product.pk)
