@@ -11,7 +11,7 @@ from utils.slack import slack_notify
 if __name__ == '__main__':
     # date = datetime.datetime.now().strftime('%Y-%m-%d')
     # slack_notify('_daily update execute_ @'+date)
-    # check_product_delete()
+    check_product_delete()
     # update_homepage()
     # slack_notify('*product review rating update*')
     # calculate_product_review_rating()
@@ -23,6 +23,6 @@ if __name__ == '__main__':
     # slack_notify('*instagram update*')
     # update_instagram()
     # slack_notify('*shopee update*')
-    update_shopee()
+    # update_shopee()
 
     # check deactivated item.
