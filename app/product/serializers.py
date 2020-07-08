@@ -151,7 +151,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_options',
             'product_options__size',
             'product_options__color',
-            'product_options__extra_option',
 
         )
         return queryset
