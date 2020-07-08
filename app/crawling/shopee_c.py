@@ -129,7 +129,7 @@ class ShopeeScraper:
             if is_created:
                 print('new size created')
             obj_product.shopee_size.add(obj_size)
-            obj_product.save()
+        obj_product.save()
         for size_obj in obj_product.shopee_size.all():
             if size_obj.size:
                 print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
@@ -162,6 +162,9 @@ class ShopeeScraper:
         return text
 
     def __update_product_option(self, obj_product, option_list, color_index, size_index, has_extra_options):
+        option_list_temp = obj_product.product_options
+        for option_obj in option_list_temp.all():
+            option_obj.delete()
         if len(option_list) == 0:
             print('this')
             obj_option, is_created = ProductOption.objects.get_or_create(
@@ -482,7 +485,7 @@ def multi(product_obj):
 
 if __name__ == '__main__':
     pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='bleubirdclothing')
+    store_obj = Store.objects.get(insta_id='lyys.store')
     product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE', is_active=False, validation='R')
     print('setup multiprocessing')
     pool.map(multi, product_list)
