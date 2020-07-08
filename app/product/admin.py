@@ -402,7 +402,7 @@ class ShopeeRatingInline(admin.StackedInline):
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
-    list_per_page = 20
+    list_per_page = 10
     raw_id_fields = ['store', 'post']
     list_display = [
         'product_summary',
@@ -458,6 +458,7 @@ class Product(admin.ModelAdmin):
                'product_style_vintage',
                'product_style_street',
                'product_style_feminine',
+               'make_name_to_option'
                ]
 
     def make_activate(self, request, queryset):
@@ -810,3 +811,15 @@ class Product(admin.ModelAdmin):
                          color_info +
                          extra_option_info +
                          option_info + '</div>')
+
+    def make_name_to_option(self, request, queryset):
+        u_color = models.ProductColor.objects.get(name='undefined')
+        u_size = models.ProductSize.objects.get(name='undefined')
+        for obj in queryset.all():
+            option_list = obj.product_options
+            for option_obj in option_list.all():
+                option_obj.extra_option = option_obj.name
+                option_obj.color = u_color
+                option_obj.size = u_size
+                option_obj.save()
+    make_name_to_option.short_description = '옵션 변경'

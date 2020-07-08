@@ -14,6 +14,7 @@ import multiprocessing as mp
 from utils.slack import slack_notify, slack_upload_file
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize, SourceExtraOption
 from store.models import Store, StorePost
+from django.shortcuts import get_object_or_404
 
 from manual_update import make_product_options_from_product
 
@@ -44,7 +45,8 @@ class ShopeeScraper:
 
     def __request_url(self, store_id, limit='100', newest='0'):
         try:
-            response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'.format(limit=limit, store_id=store_id, newest=newest),
+            response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
+                                    .format(limit=limit, store_id=store_id, newest=newest),
                                     headers={'User-Agent': choice(_user_agents),
                                              'X-Requested-With': 'XMLHttpRequest',
                                              'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
@@ -60,10 +62,11 @@ class ShopeeScraper:
 
     def __request_url_item(self, store_id, item_id):
         try:
-            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}".format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
-                                                                                                                                                                'X-Requested-With': 'XMLHttpRequest',
-                                                                                                                                                                'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
-                                                                                                                                                                },)
+            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
+                                    .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
+                                                                                          'X-Requested-With': 'XMLHttpRequest',
+                                                                                          'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
+                                                                                          },)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -118,15 +121,15 @@ class ShopeeScraper:
 
     def __update_size(self, obj_product, options):
         print('update size')
-        # obj_product.size.clear()
-        # obj_product.shopee_size.clear()
         for option in options:
+            print(option)
             option_string = option.lower().replace('size', '').replace(' ', '').strip()
             obj_size, is_created = ShopeeSize.objects.get_or_create(
                 display_name=option_string)
             if is_created:
                 print('new size created')
             obj_product.shopee_size.add(obj_size)
+            obj_product.save()
         for size_obj in obj_product.shopee_size.all():
             if size_obj.size:
                 print("exist : {} => {}".format(size_obj.display_name, size_obj.size))
@@ -138,8 +141,6 @@ class ShopeeScraper:
 
     def __update_color(self, obj_product, options):
         print('update color')
-        # obj_product.color.clear()
-        # obj_product.shopee_color.clear()
         for option in options:
             option_string = option.lower().replace('màu', '').replace(
                 'mau', '').replace('color', '').strip()
@@ -150,10 +151,8 @@ class ShopeeScraper:
             obj_product.shopee_color.add(obj_color)
         for color_obj in obj_product.shopee_color.all():
             if color_obj.color:
-                # print("exist : {} => {}".format(color_obj.display_name, color_obj.color))
                 obj_product.color.add(color_obj.color)
             else:
-                # print("not exist : {}".format(color_obj.display_name))
                 obj_product.validation = 'R'
         obj_product.save()
 
@@ -162,13 +161,9 @@ class ShopeeScraper:
             'mau', '').replace('color', '').strip()
         return text
 
-    def __update_product_option(self, obj_product, option_list, color_index, size_index):
-        if len(option_list) > 1 and (len(obj_product.size.all()) == 1 and len(obj_product.color.all()) == 0):
-            obj_product.validation = 'R'
-            print('multiple options but no size and color')
-            obj_product.save()
-        # print('update option', option_list)
+    def __update_product_option(self, obj_product, option_list, color_index, size_index, has_extra_options):
         if len(option_list) == 0:
+            print('this')
             obj_option, is_created = ProductOption.objects.get_or_create(
                 product=obj_product, shopee_item_id=obj_product.shopee_item_id)
             if is_created:
@@ -176,6 +171,9 @@ class ShopeeScraper:
             obj_option.stock = obj_product.stock
             if obj_product.stock > 0:
                 obj_option.is_active = True
+                obj_product.is_active = True
+                obj_product.validation = 'V'
+                obj_product.save()
             else:
                 obj_option.is_active = False
             obj_option.original_price = obj_product.original_price
@@ -185,37 +183,49 @@ class ShopeeScraper:
                 display_name='free').size
             obj_option.save()
 
+        print(option_list)
         for option in option_list:
             obj_option, is_created = ProductOption.objects.get_or_create(
                 product=obj_product, shopee_item_id=option['modelid'])
             # if is_created:
             # print('created new options')
-            obj_option.name = option['name']
-            splited_list = option['name'].lower().split(',')
-
-            if color_index != None:
-                print('check color')
-                obj_color, is_created = ShopeeColor.objects.get_or_create(
-                    display_name=self.__get_cleaned_text(splited_list[color_index]))
-                if obj_color.color:
-                    obj_option.color = obj_color.color
-                else:
-                    obj_product.validation = 'R'
-
-            if size_index != None:
-                print('check size')
-                obj_size, is_created = ShopeeSize.objects.get_or_create(
-                    display_name=self.__get_cleaned_text(splited_list[size_index]))
-                print(obj_size)
-                if obj_size.size:
-                    print('this')
-                    obj_option.size = obj_size.size
-                else:
-                    obj_product.validation = 'R'
+            if has_extra_options:
+                obj_option.name = option['name']
+                obj_option.extra_option = option['name']
+                if len(option_list) == 1 and option['name'] == '':
+                    obj_option.name = obj_product.name
+                    obj_option.extra_option = obj_product.name
+                obj_option.size = ProductSize.objects.get(name='undefined')
+                obj_option.color = ProductColor.objects.get(name='undefined')
             else:
-                obj_size, is_created = ShopeeSize.objects.get_or_create(
-                    display_name='free')
-                obj_option.size = obj_size.size
+                obj_option.name = option['name']
+                splited_list = option['name'].lower().split(',')
+                if color_index != None:
+                    print('check color')
+                    obj_color, is_created = ShopeeColor.objects.get_or_create(
+                        display_name=self.__get_cleaned_text(splited_list[color_index]))
+                    if obj_color.color:
+                        obj_option.color = obj_color.color
+                    else:
+                        obj_product.validation = 'R'
+                if size_index != None:
+                    print('check size')
+                    obj_size, is_created = ShopeeSize.objects.get_or_create(
+                        display_name=self.__get_cleaned_text(splited_list[size_index]))
+                    print(obj_size)
+                    if obj_size.size:
+                        print('this')
+                        obj_option.size = obj_size.size
+                    else:
+                        obj_product.validation = 'R'
+                if color_index is None and size_index is None and len(option_list) == 1:
+                    if option['name'] == '':
+                        obj_option.name = 'default option(FREE)'
+                    else:
+                        obj_option.name = option['name']
+                    obj_option.extra_option = None
+                    obj_option.size = ProductSize.objects.get(name='free')
+                    obj_option.color = ProductColor.objects.get(name='undefined')
 
             obj_option.is_active = option['status']
             if option['price_before_discount'] > 0:
@@ -311,17 +321,25 @@ class ShopeeScraper:
             if obj_product.validation is not 'N':
                 color_index = None
                 size_index = None
+                has_extra_options = False
+                print(data['tier_variations'])
                 for i, variation in enumerate(data['tier_variations']):
-                    # print(variation['name'])
-                    variation_name = variation['name'].lower().strip()
+                    variation_name = variation['name'].replace(':', '').lower().strip()
+                    if variation['name'] == '':
+                        continue
+                    print(variation_name)
                     if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
+                        print('add this to size')
                         self.__update_size(obj_product, variation['options'])
                         size_index = i
                     elif 'màu' in variation_name or 'color' in variation_name:
+                        print('add this to color')
                         self.__update_color(obj_product, variation['options'])
                         color_index = i
                     else:
+                        print('add this to extra')
                         self.__update_extra_options(obj_product, variation)
+                        has_extra_options = True
                 if obj_product.size.count() == 0:
                     self.__update_size(obj_product, ['free'])
                 # Data for Daily Update
@@ -345,7 +363,7 @@ class ShopeeScraper:
 
                 print('https://dabivn.com/admin/product/product/' + str(obj_product.pk))
                 print(color_index, size_index)
-                self.__update_product_option(obj_product, data['models'], color_index, size_index)
+                self.__update_product_option(obj_product, data['models'], color_index, size_index, has_extra_options)
                 # if created:
                 if obj_product.validation == 'V':
                     obj_product.is_active = True
@@ -464,8 +482,12 @@ def multi(product_obj):
 
 if __name__ == '__main__':
     pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='caocaobycaochen')
-    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    store_obj = Store.objects.get(insta_id='19.degrees_')
+    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE', is_active=False, validation='R')
     print('setup multiprocessing')
     pool.map(multi, product_list)
     pool.close()
+    # # for po in product_list:
+    # #     multi(po)
+    # obj = ShopeeScraper()
+    # obj.get_or_create_product(store_obj, 5140990356)
