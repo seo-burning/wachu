@@ -198,7 +198,8 @@ PRODUCT_SOURCE_TYPE = (('SHOPEE', _('Shopee')),
 PRODUCT_IMAGE_TYPE = (('SP', _('Single Picture')),
                       ('MP', _('Multiple Picture')), ('V', _('Video')))
 PRODUCT_VALIDATION_TYPE = (('R', _('확인 필요')),
-                           ('V', _('확인 완료')), ('N', _('비정상 상품')), ('D', _('삭제 상품')))
+                           ('V', _('확인 완료')), ('N', _('비정상 상품')),
+                           ('D', _('삭제 상품')))
 
 
 class PriceModel(models.Model):

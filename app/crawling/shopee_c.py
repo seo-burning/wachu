@@ -408,9 +408,9 @@ def update_shopee():
 
 def check_product_delete():
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=False)
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
     for store_obj in store_list:
-        product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
+        product_list = Product.objects.filter(is_active=False, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
             print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
             obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
@@ -443,3 +443,11 @@ def check_product_delete():
 #             product_obj.is_valid = False
 #             product_obj.is_active = False
 #         product_obj.save()
+
+if __name__ == '__main__':
+    obj = ShopeeScraper()
+    store_obj = Store.objects.get(insta_id='1994closet')
+    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    for product_obj in product_list:
+        print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
+        obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
