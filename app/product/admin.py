@@ -26,7 +26,8 @@ class ProductPatternAdmin(admin.ModelAdmin):
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'display_name', 'is_active', 'ordering']
-    list_display = ['is_active', 'ordering', 'name', 'display_name', 'product_active_num', 'product_num']
+    list_display = ['is_active', 'ordering', 'name', 'display_name',
+                    'product_active_num', 'product_num']
     list_editable = ['ordering', ]
     actions = ['make_activate', 'make_deactivate', ]
 
@@ -401,14 +402,15 @@ class ShopeeRatingInline(admin.StackedInline):
 @admin.register(models.Product)
 class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
-    list_per_page = 10
+    list_per_page = 20
     raw_id_fields = ['store', 'post']
     list_display = [
         'product_summary',
         'option_summary',
         'is_active',
         'validation',
-        'store'
+        'store',
+        'get_product_link'
     ]
     fieldsets = [('Status', {'fields': ['is_active',
                                         'validation',

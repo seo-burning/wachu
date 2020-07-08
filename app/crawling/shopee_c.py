@@ -134,7 +134,6 @@ class ShopeeScraper:
             else:
                 obj_product.validation = 'R'
                 print("not exist : {}".format(size_obj.display_name))
-                pass
         obj_product.save()
 
     def __update_color(self, obj_product, options):
@@ -156,7 +155,6 @@ class ShopeeScraper:
             else:
                 # print("not exist : {}".format(color_obj.display_name))
                 obj_product.validation = 'R'
-                pass
         obj_product.save()
 
     def __get_cleaned_text(self, text):
@@ -348,10 +346,10 @@ class ShopeeScraper:
                 print('https://dabivn.com/admin/product/product/' + str(obj_product.pk))
                 print(color_index, size_index)
                 self.__update_product_option(obj_product, data['models'], color_index, size_index)
-                if created:
-                    if obj_product.validation == 'V':
-                        obj_product.is_active = True
-                        obj_product.save()
+                # if created:
+                if obj_product.validation == 'V':
+                    obj_product.is_active = True
+                    obj_product.save()
                 if obj_product.validation == 'R':
                     obj_product.is_active = False
                     obj_product.save()
@@ -455,11 +453,19 @@ def check_product_delete():
 #             product_obj.is_active = False
 #         product_obj.save()
 
-if __name__ == '__main__':
+
+def multi(product_obj):
     obj = ShopeeScraper()
-    store_obj = Store.objects.get(insta_id='caocaobycaochen')
-    # obj.get_or_create_product(store_obj, 4037567650)
-    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    for product_obj in product_list:
+    store = product_obj.store
+    if store:
         print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
-        obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+        obj.get_or_create_product(store, product_obj.shopee_item_id)
+
+
+if __name__ == '__main__':
+    pool = mp.Pool(processes=64)
+    store_obj = Store.objects.get(insta_id='caocaobycaochen')
+    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    print('setup multiprocessing')
+    pool.map(multi, product_list)
+    pool.close()
