@@ -272,6 +272,7 @@ class ShopeeScraper:
             # 삭제 확인
             print('Cannot find page, Item might be deleted! Make it deactived.')
             obj_product.is_active = False
+            obj_product.validation = 'D'
             obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
         else:
@@ -407,7 +408,7 @@ def update_shopee():
 
 def check_product_delete():
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=False)
     for store_obj in store_list:
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
