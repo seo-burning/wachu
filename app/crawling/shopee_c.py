@@ -175,7 +175,7 @@ class ShopeeScraper:
 
     def __get_cleaned_text(self, text):
         text = text.lower().replace(' ', '').replace('(', '').replace(')', '').replace(':', '').replace('eodưới', '').replace(
-            'dưới', '').replace('dưới', '').replace('kg', '').replace('size', '').replace('szie', '').replace('sz', '').replace('mau', '').replace('màu', '').replace('color', '').strip()
+            'dưới', '').replace('dưới', '').replace('<', '').replace('kg', '').replace('size', '').replace('szie', '').replace('sz', '').replace('mau', '').replace('màu', '').replace('color', '').strip()
         return text
 
     def __update_product_option(self, obj_product, option_list, color_index, size_index, has_extra_options):
@@ -283,7 +283,10 @@ class ShopeeScraper:
                         obj_option.is_active = False
                     obj_option.shopee_sold_count = option['sold']
                     obj_option.save()
-                    obj_product.save()
+                if obj_product.sub_category and obj_product.stock_available:
+                    obj_product.is_active = True
+                    obj_product.validation = 'V'
+                obj_product.save()
 
     def __update_price(self, obj_product, data):
         if (data['show_discount'] == 0) == obj_product.is_discount:
@@ -319,9 +322,9 @@ class ShopeeScraper:
             obj_product.save()
         else:
             # 재고 재 생성 확인을 해야함.
+            is_valid = self.__update_category(obj_product, data['categories'])
             if is_created:
                 print(store_obj.insta_id, itemid)
-                is_valid = self.__update_category(obj_product, data['categories'])
                 obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
                 obj_product.created_at = datetime.datetime.fromtimestamp(
                     int(data['ctime']), pytz.UTC)
@@ -477,17 +480,17 @@ def multi(product_obj):
 
 
 if __name__ == '__main__':
-    pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='hinstore99')
-    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',)
-    #   is_active=False, validation='R', stock_available=True)
-    print('setup multiprocessing')
-    pool.map(multi, product_list)
-    pool.close()
+    # pool = mp.Pool(processes=64)
+    # store_obj = Store.objects.get(insta_id='nobsilver')
+    # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',)
+    # #   is_active=False, validation='R', stock_available=True)
+    # print('setup multiprocessing')
+    # pool.map(multi, product_list)
+    # pool.close()
 
     # for po in product_list:
-    #     multi(po)
+    # #     multi(po)
 
-    # store_obj = Store.objects.get(insta_id='nutcloset')
-    # obj = ShopeeScraper()
-    # obj.get_or_create_product(store_obj, 4735501317)
+    store_obj = Store.objects.get(insta_id='jeanshunter_')
+    obj = ShopeeScraper()
+    obj.search_store(store_obj)
