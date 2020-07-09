@@ -748,19 +748,25 @@ class Product(admin.ModelAdmin):
         pattern_info += '</p>'
 
         size_list = obj.size.all()
-        size_info = '<h4>사이즈 종류 / size ({len}): </h4><p>'.format(len=len(size_list))
+        shopee_size_list = obj.shopee_size.all()
+        size_info = '<h4>사이즈 종류 / size ({len} / src {source_len}): </h4><p>'.format(
+            len=len(size_list), source_len=len(shopee_size_list))
         for size_obj in size_list:
             size_info += '{size}, '.format(size=size_obj)
         size_info += '</p>'
 
         color_list = obj.color.all()
-        color_info = '<h4>색상 종류 / color ({len}) : </h4><p>'.format(len=len(color_list))
+        shopee_color_list = obj.shopee_color.all()
+        color_info = '<h4>색상 종류 / color ({len} / src {source_len}) : </h4><p>'.format(
+            len=len(color_list), source_len=len(shopee_color_list))
         for color_obj in color_list:
             color_info += '{color}, '.format(color=color_obj)
         color_info += '</p>'
 
         extra_option_list = obj.extra_option.all()
-        extra_option_info = '<h4>기타 옵션 / extra_option ({len}) : </h4><p>'.format(len=len(extra_option_list))
+        source_extra_option_list = obj.source_extra_option.all()
+        extra_option_info = '<h4>기타 옵션 / extra_option ({len} / src {source_len}) : </h4><p>'.format(
+            len=len(extra_option_list), source_len=len(source_extra_option_list))
         for extra_option_obj in extra_option_list:
             extra_option_info += '{extra_option}, '.format(extra_option=extra_option_obj)
         extra_option_info += '</p>'
@@ -776,7 +782,6 @@ class Product(admin.ModelAdmin):
                     <td>extra</td>\
                     <td>stock</td>\
                 </tr>'.format(len=len(option_list))
-
         for i, option_obj in enumerate(option_list):
             size_is_null = 'null' if option_obj.size is None else ''
             color_is_null = 'null' if option_obj.color is None else ''
