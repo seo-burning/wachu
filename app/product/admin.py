@@ -443,7 +443,7 @@ class Product(admin.ModelAdmin):
     ]
     actions = ['make_activate', 'make_deactivate',
                'make_valid_and_active',
-               'make_valid', 'make_not_valid',
+               'make_valid', 'make_not_valid', 'make_need_to_review',
                'categorize_bag', 'categorize_jewelry', 'categorize_shoes',
                'product_type_instagram',
                'product_pattern_print',
@@ -490,6 +490,12 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품을 비정상상품 상태로 변경'.format(updated_count))
     make_not_valid.short_description = '지정 상품을 비정상상품 상태로 변경'
+
+    def make_need_to_review(self, request, queryset):
+        updated_count = queryset.update(validation='V')
+        self.message_user(
+            request, '{}건의 상품을 리뷰 필요 상태로 변경'.format(updated_count))
+    make_not_valid.short_description = '리뷰 필요'
 
     def categorize_bag(self, request, queryset):
         category_bag = models.ProductCategory.objects.get(name='bag')
