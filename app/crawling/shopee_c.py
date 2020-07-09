@@ -478,7 +478,7 @@ def multi(product_obj):
 
 if __name__ == '__main__':
     pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='su._.storee')
+    store_obj = Store.objects.get(insta_id='hinstore99')
     product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',)
     #   is_active=False, validation='R', stock_available=True)
     print('setup multiprocessing')

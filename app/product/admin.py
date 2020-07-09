@@ -495,7 +495,7 @@ class Product(admin.ModelAdmin):
         updated_count = queryset.update(validation='V')
         self.message_user(
             request, '{}건의 상품을 리뷰 필요 상태로 변경'.format(updated_count))
-    make_not_valid.short_description = '리뷰 필요'
+    make_need_to_review.short_description = '리뷰 필요'
 
     def categorize_bag(self, request, queryset):
         category_bag = models.ProductCategory.objects.get(name='bag')
