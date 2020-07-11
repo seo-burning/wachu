@@ -23,7 +23,6 @@ if __name__ == '__main__':
 
     # check deactivated item.
     # 새벽 생성
-    # slack_notify('*shopee update*')
-    # update_shopee()
+    update_shopee()
     # 오후 삭제
     validate_shopee()
