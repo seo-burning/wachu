@@ -413,9 +413,8 @@ class ShopeeScraper:
                         store_obj.recent_post_3 = product_obj.product_thumbnail_image
                     store_obj.save()
                     pk += 1
-
-            list_length = len(product_list)
-            i = i+1
+                list_length = len(product_list)
+                i = i+1
             except:
                 slack_notify('error occured ' + str(store_id))
         return pk
