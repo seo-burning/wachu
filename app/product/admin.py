@@ -777,6 +777,13 @@ class Product(admin.ModelAdmin):
             extra_option_info += '{extra_option}, '.format(extra_option=extra_option_obj)
         extra_option_info += '</p>'
 
+        pattern_option_list = obj.pattern.all()
+        pattern_option_info = '<h4>패턴/ extra_option ({len}) : </h4><p>'.format(
+            len=len(pattern_option_list))
+        for pattern_option_obj in pattern_option_list:
+            pattern_option_info += '{pattern_option}, '.format(pattern_option=pattern_option_obj)
+        pattern_option_info += '</p>'
+
         option_list = obj.product_options.all()
         option_info = '<h4>상품 옵션 / Options ({len}) : </h4>\
             <table>\

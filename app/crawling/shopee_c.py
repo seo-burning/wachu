@@ -1,4 +1,7 @@
 
+from manual_update import make_product_options_from_product
+from django.shortcuts import get_object_or_404
+from store.models import Store, StorePost
 import requests
 import json
 import sys
@@ -12,11 +15,9 @@ from django.db.models import Q
 import os_setup
 import multiprocessing as mp
 from utils.slack import slack_notify, slack_upload_file
-from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize, SourceExtraOption
-from store.models import Store, StorePost
-from django.shortcuts import get_object_or_404
-
-from manual_update import make_product_options_from_product
+from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
+    ProductSize, ProductColor, ProductExtraOption, ProductOption, ProductPattern,\
+    ShopeeColor, ShopeeSize, SourceExtraOption
 
 
 PROJECT_ROOT = os.getcwd()
@@ -293,6 +294,13 @@ class ShopeeScraper:
             obj_product.shipping_price = 25000
         obj_product.save()
 
+    def update_pattern(self, obj_product):
+        pattern_list = ProductPattern.objects.all()
+        for pattern_obj in pattern_list:
+            name_string = self.__get_cleaned_text(obj_product.name)
+            if self.__get_cleaned_text(pattern_obj.name) in name_string or self.__get_cleaned_text(pattern_obj.display_name) in name_string:
+                obj_product.pattern.add(pattern_obj)
+
     def get_or_create_product(self, store_obj, itemid, view_count=None):
         shopid = store_obj.shopee_numeric_id
         # 0. 상품 생성 및 호출
@@ -353,6 +361,9 @@ class ShopeeScraper:
                         has_extra_options = True
                 if obj_product.size.count() == 0:
                     self.__update_size(obj_product, ['free'])
+
+            # 3. 패턴 추가
+                self.__update_pattern(obj_product)
 
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
@@ -415,7 +426,7 @@ def update_shopee():
         Q(store_type='IFSH') |
         Q(store_type='IF(P)SH') |
         Q(store_type='IS(P)')
-    ).filter(is_active=True)
+    ).filter(is_active=True)[19:]
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
@@ -456,8 +467,4 @@ if __name__ == '__main__':
 
     # for po in product_list:
     # #     multi(po)
-
-    store_obj = Store.objects.get(insta_id='milinaa.clothing')
-    obj = ShopeeScraper()
-    obj.search_store(store_obj)
-    # validate_shopee()
+    update_shopee()
