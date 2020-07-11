@@ -303,21 +303,6 @@ _user_agents = [
 ]
 
 
-def check_delete():
-    product_list = Product.objects.filter(product_source='HOMEPAGE')
-    for product_obj in product_list:
-        response = requests.get(product_obj.product_link,
-                                headers={'User-Agent': choice(_user_agents),
-                                         'X-Requested-With': 'XMLHttpRequest',
-                                         },)
-        if response.status_code == 404:
-            print(response, 'deactivate')
-            # product_obj.is_active = False
-            # product_obj.name = '[DELETED FROM SOURCE PAGE]' + product_obj.name
-            # product_obj.save()
-            product_obj.delete()
-
-
 # def check():
 
 

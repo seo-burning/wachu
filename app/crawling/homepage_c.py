@@ -17,18 +17,28 @@ from homepage.cecicela import get_cecicela
 from homepage.edini import get_edini
 from homepage.heyyoustudio import get_heyyoustudio
 from homepage.blvck import get_blvck
-from dict_to_db import dict_to_product_model, dict_to_store_model, temp, check_delete
+from dict_to_db import dict_to_product_model, dict_to_store_model, temp
+
+
+def validate_homepage():
+    product_list = Product.objects.filter(product_source='HOMEPAGE')
+    for product_obj in product_list:
+        response = requests.get(product_obj.product_link,
+                                headers={'User-Agent': choice(_user_agents),
+                                         'X-Requested-With': 'XMLHttpRequest',
+                                         },)
+        if response.status_code == 404:
+            product_obj.is_active = False
+            product_obj.validation = 'D'
+            product_obj.name = '[DELETED FROM SOURCE PAGE]' + product_obj.name
+            product_obj.save()
 
 
 def update_homepage():
-    print('start scrapying')
     # # fivetheway_result = get_5theway()
-
     # dict_to_store_model(dosiin_brand)
     # dosiin_result = get_dosiin()
     # dict_to_product_model(dosiin_result)
-    # # dottie_result = get_dottie()
-    # # dict_to_product_model(dottie_result)
 
     # not organized
     degrey_result = get_degrey()
@@ -65,7 +75,6 @@ def update_homepage():
     dict_to_product_model(swe_result)
     blvck_result = get_blvck()
     dict_to_product_model(blvck_result)
-    # check_delete()
 
 
 if __name__ == '__main__':

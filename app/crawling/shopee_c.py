@@ -270,7 +270,7 @@ class ShopeeScraper:
 
     def __update_price(self, obj_product, data):
         if (data['show_discount'] == 0) == obj_product.is_discount:
-            print('price changed')
+            print('p', end='')
         if data['show_discount'] == 0:
             obj_product.is_discount = False
             obj_product.original_price = data['price'] / 100000
@@ -304,7 +304,7 @@ class ShopeeScraper:
         data = self.__request_url_item(shopid, itemid).json()['item']
         # 1. 상품 삭제 확인
         if data == None:
-            print('Cannot find page, Item might be deleted! Make it deactived.')
+            print('d', end='')
             obj_product.is_active = False
             obj_product.validation = 'D'
             obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
@@ -318,6 +318,7 @@ class ShopeeScraper:
             has_extra_options = False
             if is_created:
                 # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
+                print('new product created')
                 obj_product.validation = 'V'
                 self.__update_category(obj_product, data['categories'])
                 obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
@@ -386,7 +387,6 @@ class ShopeeScraper:
         pk = 0
         list_length = 100
         store_id = store_obj.insta_id
-        print('update ' + str(store_id))
         while list_length == 100:
             response = self.__request_url(
                 store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
@@ -419,6 +419,7 @@ def update_shopee():
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
+            print("\n  #" + str(i) + ' update ' + str(store_obj))
             updated = obj.search_store(store_obj)
             result_text = store_obj.insta_id + 'total : ' + str(updated) + '\n'
             f.writelines(result_text)
@@ -429,8 +430,8 @@ def update_shopee():
 def validate_shopee():
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
-    for store_obj in store_list:
-        print('update ' + str(store_obj))
+    for i, store_obj in enumerate(store_list):
+        print("\n  #" + str(i) + ' update ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
             obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
@@ -456,7 +457,7 @@ if __name__ == '__main__':
     # for po in product_list:
     # #     multi(po)
 
-    # store_obj = Store.objects.get(insta_id='moneyclub.official')
-    # obj = ShopeeScraper()
-    # obj.search_store(store_obj)
-    validate_shopee()
+    store_obj = Store.objects.get(insta_id='milinaa.clothing')
+    obj = ShopeeScraper()
+    obj.search_store(store_obj)
+    # validate_shopee()
