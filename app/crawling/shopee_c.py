@@ -478,6 +478,10 @@ def du_check(po):
             break
 
 
+def null_product(po):
+    po.delete()
+
+
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
     # store_obj = Store.objects.get(insta_id='chubbiestore')
@@ -491,7 +495,8 @@ if __name__ == '__main__':
     #     multi(po)
     # # update_shopee()
 
-    pl = Product.objects.all()
+    # pl = Product.objects.all()
+    pl = ProductOption.objects.filter(product=None)
     pool = mp.Pool(processes=64)
-    pool.map(du_check, pl)
+    pool.map(null_product, pl)
     pool.close()

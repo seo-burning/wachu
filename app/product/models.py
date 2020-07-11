@@ -4,6 +4,8 @@ from django.utils.safestring import mark_safe
 from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel, ViewModel
 from .abstract_model import SoldModel
 from preorder.models import PreorderCampaign
+from django.db.models import Q
+from django.db.models.constraints import UniqueConstraint
 
 
 class ProductCategory(TimeStampedModel, DispalyNameModel, ActiveModel, OrderingModel):
@@ -307,16 +309,28 @@ class ProductOption(PriceModel, TimeStampedModel):
         verbose_name = u'제품 옵션 / Product Option'
         verbose_name_plural = verbose_name
         ordering = ['-created_at', 'product']
-        unique_together = ['product', 'size', 'color', 'extra_option']
+        # https://stackoverflow.com/questions/33307892/django-unique-together-with-nullable-foreignkey/33308014
+        constraints = [
+            UniqueConstraint(fields=['product', 'size', 'color', 'extra_option'],
+                             name='unique_with_size_color'),
+            UniqueConstraint(fields=['product', 'size', 'extra_option'],
+                             condition=Q(color=None),
+                             name='unique_without_color'),
+            UniqueConstraint(fields=['product', 'color', 'extra_option'],
+                             condition=Q(size=None),
+                             name='unique_without_size'),
+        ]
 
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     name = models.CharField(max_length=255, blank=True)
     stock = models.IntegerField(default=0)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name='product_options')
-    size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, blank=True)
-    color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_options')
+    size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL,
+                             null=True, blank=True)
+    color = models.ForeignKey(ProductColor, on_delete=models.SET_NULL,
+                              null=True, blank=True)
     extra_option = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):

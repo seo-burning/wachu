@@ -369,7 +369,7 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductOption)
 class ProductOptionAdmin(admin.ModelAdmin):
-    list_display = ['is_active', 'name', 'original_price', 'discount_price', 'stock']
+    list_display = ['is_active', 'name', 'original_price', 'discount_price', 'stock', 'product']
 
 
 class ProductOptionInline(admin.StackedInline):
