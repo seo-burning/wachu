@@ -248,14 +248,13 @@ class ShopeeScraper:
                 for option in option_list:
                     obj_option, is_created = ProductOption.objects.get_or_create(
                         product=obj_product, shopee_item_id=option['modelid'])
-                    if is_created:
-                        obj_option.name = option['name']
-                        obj_option.extra_option = option['name']
-                        if len(option_list) == 1 and option['name'] == '':
-                            obj_option.name = obj_product.name
-                            obj_option.extra_option = obj_product.name
-                        obj_option.size = u_size_obj
-                        obj_option.color = u_color_obj
+                    obj_option.name = option['name']
+                    obj_option.extra_option = option['name']
+                    if len(option_list) == 1 and option['name'] == '':
+                        obj_option.name = obj_product.name
+                        obj_option.extra_option = obj_product.name
+                    obj_option.size = u_size_obj
+                    obj_option.color = u_color_obj
                     obj_option.is_active = option['status']
                     if option['price_before_discount'] > 0:
                         obj_option.original_price = option['price_before_discount'] / 100000
@@ -294,7 +293,7 @@ class ShopeeScraper:
             obj_product.shipping_price = 25000
         obj_product.save()
 
-    def update_pattern(self, obj_product):
+    def __update_pattern(self, obj_product):
         pattern_list = ProductPattern.objects.all()
         for pattern_obj in pattern_list:
             name_string = self.__get_cleaned_text(obj_product.name)
@@ -349,11 +348,11 @@ class ShopeeScraper:
                 if (data['size_chart'] != None):
                     obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
                 for i, variation in enumerate(data['tier_variations']):
-                    variation_name = variation['name'].replace(':', '').lower().strip()
-                    if variation_name == 'size' or variation_name == 'kích cỡ' or variation_name == 'kích thước':
+                    variation_name = variation['name'].replace(' ', '').replace(':', '').lower().strip()
+                    if 'size' in variation_name or 'kích' in variation_name or 'kich' in variation_name:
                         self.__update_size(obj_product, variation['options'])
                         size_index = i
-                    elif 'màu' in variation_name or 'color' in variation_name:
+                    elif 'màu' in variation_name or 'color' in variation_name or 'mau' in variation_name:
                         self.__update_color(obj_product, variation['options'])
                         color_index = i
                     else:
@@ -362,7 +361,7 @@ class ShopeeScraper:
                 if obj_product.size.count() == 0:
                     self.__update_size(obj_product, ['free'])
 
-            # 3. 패턴 추가
+            # 2. 패턴 추가
                 self.__update_pattern(obj_product)
 
             # 3. 기존 / 신규 상품 업데이트
@@ -421,12 +420,7 @@ class ShopeeScraper:
 
 def update_shopee():
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(
-        Q(store_type='IS') |
-        Q(store_type='IFSH') |
-        Q(store_type='IF(P)SH') |
-        Q(store_type='IS(P)')
-    ).filter(is_active=True)[19:]
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[19:]
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
@@ -458,13 +452,13 @@ def multi(product_obj):
 
 if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
-    # store_obj = Store.objects.get(insta_id='nobsilver')
-    # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',)
-    # #   is_active=False, validation='R', stock_available=True)
-    # print('setup multiprocessing')
+    store_obj = Store.objects.get(insta_id='su._.storee')
+    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',
+                                          is_active=False, validation='R', stock_available=True)
     # pool.map(multi, product_list)
     # pool.close()
+    obj = ShopeeScraper()
 
-    # for po in product_list:
-    # #     multi(po)
-    update_shopee()
+    for po in product_list:
+        multi(po)
+    # update_shopee()
