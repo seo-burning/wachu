@@ -303,18 +303,15 @@ _user_agents = [
 ]
 
 
-# def check():
-
-
-# product_list = Product.objects.all()
-# for product_obj in product_list:
-#     du = Product.objects.filter(product_link=product_obj.product_link)
-#     if len(du) > 1:
-#         print("http://dabivn.com/admin/product/product/"+str(product_obj.pk))
-
-# from product.models import ProductOption
-# product_option_list = ProductOption.objects.all()
-# for obj in product_option_list:
-#     if not obj.product:
-#         print(obj.pk)
-#         obj.delete()
+def validate_homepage():
+    product_list = Product.objects.filter(product_source='HOMEPAGE')
+    for product_obj in product_list:
+        response = requests.get(product_obj.product_link,
+                                headers={'User-Agent': choice(_user_agents),
+                                         'X-Requested-With': 'XMLHttpRequest',
+                                         },)
+        if response.status_code == 404:
+            product_obj.is_active = False
+            product_obj.validation = 'D'
+            product_obj.name = '[DELETED FROM SOURCE PAGE]' + product_obj.name
+            product_obj.save()
