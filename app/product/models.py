@@ -307,6 +307,7 @@ class ProductOption(PriceModel, TimeStampedModel):
         verbose_name = u'제품 옵션 / Product Option'
         verbose_name_plural = verbose_name
         ordering = ['-created_at', 'product']
+        unique_together = ['product', 'size', 'color', 'extra_option']
 
     shopee_item_id = models.CharField(
         max_length=255, blank=True, null=True)

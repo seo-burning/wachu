@@ -19,6 +19,8 @@ from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
     ProductSize, ProductColor, ProductExtraOption, ProductOption, ProductPattern,\
     ShopeeColor, ShopeeSize, SourceExtraOption
 
+from helper.clean_text import get_cleaned_text_from_color,\
+    get_cleaned_text, get_cleand_text_from_pattern, get_cleaned_text_from_category, get_cleaned_text_from_size
 
 PROJECT_ROOT = os.getcwd()
 sys.path.append(os.path.dirname(PROJECT_ROOT))
@@ -76,12 +78,6 @@ class ShopeeScraper:
             raise requests.RequestException
         else:
             return response
-
-    def __get_cleaned_text(self, text):
-        text = text.lower().replace(' ', '').replace('(', '').replace(')', '').replace(':', '').replace('eodưới', '').replace(
-            'dưới', '').replace('dưới', '').replace('<', '').replace('kg', '').replace('size', '').replace('szie', '').replace(
-                'sz', '').replace('mau', '').replace('màu', '').replace('color', '').strip()
-        return text
 
     def __update_category(self, obj_product, categories):
         for category in categories:
@@ -145,8 +141,11 @@ class ShopeeScraper:
 
     def __update_size(self, obj_product, options):
         for option in options:
+            cleaned_text = get_cleaned_text(option)
+            cleaned_text = get_cleaned_text_from_category(
+                get_cleaned_text_from_pattern(get_cleaned_text_from_color(cleaned_text)))
             obj_size, is_created = ShopeeSize.objects.get_or_create(
-                display_name=self.__get_cleaned_text(option))
+                display_name=cleaned_text)
             obj_product.shopee_size.add(obj_size)
         for size_obj in obj_product.shopee_size.all():
             if size_obj.size:
@@ -156,8 +155,11 @@ class ShopeeScraper:
 
     def __update_color(self, obj_product, options):
         for option in options:
+            cleaned_text = get_cleaned_text(option)
+            cleaned_text = get_cleaned_text_from_category(
+                get_cleaned_text_from_pattern(get_cleaned_text_from_size(cleaned_text)))
             obj_color, is_created = ShopeeColor.objects.get_or_create(
-                display_name=self.__get_cleaned_text(option))
+                display_name=cleaned_text)
             obj_product.shopee_color.add(obj_color)
         for color_obj in obj_product.shopee_color.all():
             if color_obj.color:
@@ -188,49 +190,57 @@ class ShopeeScraper:
         else:
             not_valid_information = False
             for option in option_list:
-                obj_option, is_created = ProductOption.objects.get_or_create(
-                    product=obj_product, shopee_item_id=option['modelid'])
                 if is_created:
                     # 옵션 생성 후에는 기본 옵션 정보 선택이 필요.
                     if color_index is None and size_index is None:
                         if len(option_list) == 1:
                             if option['name'] == '':
-                                obj_option.name = 'default option(ONE SIZE)'
+                                name = 'default option(ONE SIZE)'
                             else:
-                                obj_option.name = option['name']
-                            obj_option.extra_option = None
-                            obj_option.size = free_size_obj
-                            obj_option.color = u_color_obj
+                                name = option['name']
+                            size = free_size_obj
+                            color = u_color_obj
                         else:
                             not_valid_information = True
                             break
                     else:
-                        obj_option.name = option['name']
+                        name = option['name']
                         splited_list = option['name'].lower().split(',')
                         if color_index != None:
+                            cleaned_text = get_cleaned_text(splited_list[color_index])
+                            cleaned_text = get_cleaned_text_from_category(
+                                get_cleaned_text_from_pattern(get_cleaned_text_from_size(cleaned_text)))
                             obj_color, is_created = ShopeeColor.objects.get_or_create(
-                                display_name=self.__get_cleaned_text(splited_list[color_index]))
+                                display_name=get_cleaned_text(cleaned_text))
                             if obj_color.color:
-                                obj_option.color = obj_color.color
+                                color = obj_color.color
                             else:
                                 obj_product.validation = 'R'
                                 not_valid_information = True
                                 break
                         else:
-                            obj_option.color = u_color_obj
+                            color = u_color_obj
 
                         if size_index != None:
+                            cleaned_text = get_cleaned_text(splited_list[size_index])
+                            cleaned_text = get_cleaned_text_from_category(
+                                get_cleaned_text_from_pattern(get_cleaned_text_from_color(cleaned_text)))
                             obj_size, is_created = ShopeeSize.objects.get_or_create(
-                                display_name=self.__get_cleaned_text(splited_list[size_index]))
+                                display_name=cleaned_text)
                             if obj_size.size:
-                                obj_option.size = obj_size.size
+                                size = obj_size.size
                             else:
                                 obj_product.validation = 'R'
                                 not_valid_information = True
                                 break
                         else:
-                            obj_option.size = u_size_obj
-
+                            size = u_size_obj
+                try:
+                    obj_option, is_created = ProductOption.objects.get_or_create(
+                        product=obj_product, shopee_item_id=option['modelid'], size=size, color=color, name=name)
+                except:
+                    not_valid_information = True
+                    break
                 obj_option.is_active = option['status']
                 if option['price_before_discount'] > 0:
                     obj_option.original_price = option['price_before_discount'] / 100000
@@ -246,15 +256,18 @@ class ShopeeScraper:
 
             if has_extra_options or not_valid_information:
                 for option in option_list:
-                    obj_option, is_created = ProductOption.objects.get_or_create(
-                        product=obj_product, shopee_item_id=option['modelid'])
-                    obj_option.name = option['name']
-                    obj_option.extra_option = option['name']
+                    name = option['name']
+                    extra_option = option['name']
                     if len(option_list) == 1 and option['name'] == '':
-                        obj_option.name = obj_product.name
-                        obj_option.extra_option = obj_product.name
-                    obj_option.size = u_size_obj
-                    obj_option.color = u_color_obj
+                        name = obj_product.name
+                        extra_option = obj_product.name
+                    size = u_size_obj
+                    color = u_color_obj
+                    try:
+                        obj_option, is_created = ProductOption.objects.get_or_create(
+                            product=obj_product, shopee_item_id=option['modelid'])
+                    except:
+                        obj_product.validation = 'R'
                     obj_option.is_active = option['status']
                     if option['price_before_discount'] > 0:
                         obj_option.original_price = option['price_before_discount'] / 100000
@@ -296,8 +309,8 @@ class ShopeeScraper:
     def __update_pattern(self, obj_product):
         pattern_list = ProductPattern.objects.all()
         for pattern_obj in pattern_list:
-            name_string = self.__get_cleaned_text(obj_product.name)
-            if self.__get_cleaned_text(pattern_obj.name) in name_string or self.__get_cleaned_text(pattern_obj.display_name) in name_string:
+            name_string = get_cleaned_text(obj_product.name)
+            if get_cleaned_text(pattern_obj.name) in name_string or get_cleaned_text(pattern_obj.display_name) in name_string:
                 obj_product.pattern.add(pattern_obj)
 
     def get_or_create_product(self, store_obj, itemid, view_count=None):
@@ -452,15 +465,33 @@ def multi(product_obj):
         obj.get_or_create_product(store, product_obj.shopee_item_id)
 
 
-if __name__ == '__main__':
-    # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='su._.storee')
-    product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',
-                                          is_active=False, validation='R', stock_available=True)
-    # pool.map(multi, product_list)
-    # pool.close()
-    obj = ShopeeScraper()
+def du_check(po):
+    options = po.product_options
+    for option in options.all():
+        print('.', end='')
+        option_num = options.filter(product=po, size=option.size, color=option.color, extra_option=option.extra_option)
+        if len(option_num) > 1:
+            print('d', end='')
+            po.validation = 'R'
+            po.is_active = False
+            po.delete()
+            break
 
-    for po in product_list:
-        multi(po)
-    # update_shopee()
+
+if __name__ == '__main__':
+    # # pool = mp.Pool(processes=64)
+    # store_obj = Store.objects.get(insta_id='chubbiestore')
+    # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE',
+    #                                       is_active=False, validation='R', stock_available=True)
+    # # pool.map(multi, product_list)
+    # # pool.close()
+    # obj = ShopeeScraper()
+
+    # for po in product_list:
+    #     multi(po)
+    # # update_shopee()
+
+    pl = Product.objects.all()
+    pool = mp.Pool(processes=64)
+    pool.map(du_check, pl)
+    pool.close()
