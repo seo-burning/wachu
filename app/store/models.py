@@ -66,12 +66,13 @@ STORE_TYPE = (('IF', _('None')),
 
 class Store(ActiveModel, TimeStampedModel, ViewModel):
     class Meta:
+        verbose_name = u'스토어 / Store'
+        verbose_name_plural = verbose_name
         ordering = ('-is_active', 'current_ranking',)
+
     store_type = models.CharField(
         max_length=25, choices=STORE_TYPE, default='IF', null=True)
-    """Store object"""
     is_new_post = models.BooleanField(default=False)
-
     insta_id = models.CharField(_("Instagram ID"), max_length=255, unique=True)
     insta_url = models.URLField(
         _("Instagram URL"), null=True, blank=True, max_length=500)
