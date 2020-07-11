@@ -6,7 +6,7 @@ def get_cleaned_text(text):
     return text
 
 
-def get_cleand_text_from_pattern(text):
+def get_cleaned_text_from_pattern(text):
     text = text.lower().replace('hoa', '').replace('caro', '').replace('hoạ', '').replace(
         'họa', '').replace('tiet', '').replace('tiết', '').replace('ke', '').replace(
             'kẻ', '').replace('checked', '').replace('chấmbi', '').replace('sọc', '').replace('printed', '').replace('logo', '').replace('bông', '')
