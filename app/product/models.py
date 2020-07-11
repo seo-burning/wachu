@@ -319,6 +319,9 @@ class ProductOption(PriceModel, TimeStampedModel):
             UniqueConstraint(fields=['product', 'color', 'extra_option'],
                              condition=Q(size=None),
                              name='unique_without_size'),
+            UniqueConstraint(fields=['product', 'color', 'size'],
+                             condition=Q(extra_option=None),
+                             name='unique_without_extra'),
         ]
 
     shopee_item_id = models.CharField(
