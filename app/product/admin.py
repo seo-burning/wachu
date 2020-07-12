@@ -376,6 +376,7 @@ class ProductOptionInline(admin.StackedInline):
     model = models.ProductOption
     fields = ['is_active', 'name', 'original_price',
               'discount_price', 'stock', 'size', 'color', 'extra_option']
+    readonly_fields = ['name', ]
     extra = 0
 
 
@@ -458,7 +459,8 @@ class Product(admin.ModelAdmin):
                'product_style_vintage',
                'product_style_street',
                'product_style_feminine',
-               'make_name_to_option'
+               'make_name_to_option',
+               'product_category_dam_kieu'
                ]
 
     def make_activate(self, request, queryset):
@@ -523,6 +525,12 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품을 INSTAGRAM 분류'.format(updated_count))
     product_type_instagram.short_description = 'product source instagram'
+
+    def product_category_dam_kieu(self, request, queryset):
+        sub_categroy_dam = models.ProductSubCategory.objects.get(name='dam_kieu')
+        updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
+        self.message_user(
+            request, '{}건의 상품 분류'.format(updated_count))
 
     def product_pattern_print(self, request, queryset):
         print_pattern = models.ProductPattern.objects.get(name='print')

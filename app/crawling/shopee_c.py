@@ -282,8 +282,6 @@ class ShopeeScraper:
                         obj_product.validation = 'R'
 
     def __update_price(self, obj_product, data):
-        if (data['show_discount'] == 0) == obj_product.is_discount:
-            print('p', end='')
         if data['show_discount'] == 0:
             obj_product.is_discount = False
             obj_product.original_price = data['price'] / 100000
@@ -356,7 +354,7 @@ class ShopeeScraper:
                         product=obj_product,
                         post_image_type='P')
 
-            # 2. 상품 사이즈 / 컬러 정보 업데이트
+                # 2. 상품 사이즈 / 컬러 정보 업데이트
                 if (data['size_chart'] != None):
                     obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
                 for i, variation in enumerate(data['tier_variations']):
@@ -372,10 +370,12 @@ class ShopeeScraper:
                         has_extra_options = True
                 if obj_product.size.count() == 0:
                     self.__update_size(obj_product, ['free'])
-            # 2. 패턴 추가
+                # 2. 패턴 추가
                 self.__update_pattern(obj_product)
+
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
+            obj_product.updated_at = datetime.datetime.now()
             self.__update_price(obj_product, data)
             if view_count:
                 self.__update_rating(obj_product, data, view_count)
@@ -387,10 +387,10 @@ class ShopeeScraper:
                 obj_product.stock_available = False
             else:
                 obj_product.stock_available = True
-            obj_product.save()
 
             # 4. 옵션 생성 및 업데이트
             self.__update_product_option(obj_product, data['models'], color_index, size_index, has_extra_options)
+            obj_product.save()
 
             # 5. 생성 후 최종 검증
             if is_created:
@@ -478,9 +478,9 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='moneyclub.official')
+    store_obj = Store.objects.get(insta_id='linlincanvas')
     # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # pool.map(multi, product_list)
     # # pool.close()
     obj = ShopeeScraper()
-    obj.get_or_create_product(store_obj, 2036505592)
+    obj.search_store(store_obj)
