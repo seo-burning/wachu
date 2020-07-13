@@ -1,5 +1,4 @@
 from random import choice
-import requests
 import multiprocessing as mp
 from functools import partial
 
@@ -272,20 +271,6 @@ def update_obj_product(product_source):
             obj_product.save()
         if obj_product.validation == 'R':
             obj_product.is_active = False
-            obj_product.save()
-
-
-def validate_homepage():
-    product_list = Product.objects.filter(product_source='HOMEPAGE')
-    for obj_product in product_list:
-        response = requests.get(obj_product.product_link,
-                                headers={'User-Agent': choice(_user_agents),
-                                         'X-Requested-With': 'XMLHttpRequest',
-                                         },)
-        if response.status_code == 404:
-            obj_product.is_active = False
-            obj_product.validation = 'D'
-            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
 
 
