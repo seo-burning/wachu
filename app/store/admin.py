@@ -6,7 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
-
+import requests
 from store import models
 from product.models import Product, ProductImage
 from publish.models import PostGroup
@@ -122,6 +122,7 @@ class StoreAddressInline(admin.StackedInline):
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     inlines = [StoreAddressInline]  # StorePostInline,
+    list_per_page = 25
     readonly_fields = (
         'is_new_post',
         'current_ranking',
@@ -164,17 +165,14 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
              'recent_post_3'),
         )}),
     ]
-    list_select_related = ('primary_style', 'secondary_style')
     list_display = ["is_active",
-                    "store_type",
                     'current_ranking',
-                    "insta_id", 'profile_thumb',
-                    'primary_style',
-                    'secondary_style',
+                    'store_infomation',
+                    'store_validation',
                     'need_to_update_num',
                     'product_num', ]
-    list_filter = ['is_active', 'store_type']
-    list_display_links = ["insta_id"]
+    list_display_links = ['store_infomation', 'store_validation']
+    list_filter = ['is_active', 'store_type', 'primary_style', 'secondary_style']
     search_fields = ["insta_id",
                      "primary_style__name",
                      "secondary_style__name", ]
@@ -205,16 +203,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             url=url
         ))
 
-    def profile_thumb(self, obj):
-        if 'http' in str(obj.profile_image):
-            url = obj.profile_image
-        else:
-            url = create_presigned_url('wachu', 'media/'+str(obj.profile_image), expiration=3000)
-        return mark_safe('<img src="{url}" \
-            width="50" height="50" border="1" />'.format(
-            url=url
-        ))
-
     def instagram_link(self, obj):
         return format_html(
             '<a href="%s" target="_blank">%s</a>' % (obj.insta_url, 'Insta')
@@ -237,6 +225,100 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                                )
         else:
             return product_num
+
+    def profile_thumb(self, obj):
+        if 'http' in str(obj.profile_image):
+            url = obj.profile_image
+        else:
+            url = create_presigned_url('wachu', 'media/'+str(obj.profile_image), expiration=3000)
+        return mark_safe('<img src="{url}" \
+            width="50" height="50" border="1" />'.format(
+            url=url
+        ))
+
+    def store_infomation(self, obj):
+        if 'http' in str(obj.profile_image):
+            profile_url = obj.profile_image
+        else:
+            profile_url = create_presigned_url('wachu', 'media/'+str(obj.profile_image), expiration=3000)
+        style = "<style>\
+                        h4 {color:black; margin-bottom:0px}\
+                        p { color: black;font-size:10px;font-weight:400; margin-bottom:4px} \
+                        p.light { font-weight:400; font-size:9px; color:grey}\
+                        p.right { text-align:right}\
+                        p.bold { font-weight:500; font-size:12px}\
+                        p.None { color:red; font-weight:600; opacity:1; background-color:grey}\
+                        span.False,p.False { color:grey; opacity:0.2 }\
+                        div.not-valid { background-color : rgba(245, 100, 100,0.8) }\
+                        div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
+                        div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
+                        div.active { background-color : rgba(223, 245, 223,0.3) }\
+                </style> "
+        store_info = '<img src="{url}" width="50" height="50" border="1" style="padding:10px"/>\
+                        <h4>{name}</h4>\
+                        <p class="light">last update {updated_at}</p>\
+                        <p class="">product source : {store_type}</p>\
+                        <p class="{p_style} {s_style}">스타일 : {p_style} / {s_style}</p>'.format(
+            name=obj.insta_id,
+            url=profile_url,
+            updated_at=obj.updated_at,
+            store_type=obj.store_type,
+            p_style=obj.primary_style,
+            s_style=obj.secondary_style,
+        )
+        return mark_safe(style+'<div class="{status}">'.format(status=obj.is_active) +
+                         store_info+'</div>')
+
+    def store_validation(self, obj):
+        if obj.insta_url is None:
+            insta_is_valid = 'None'
+        elif requests.get(obj.insta_url).status_code == 200:
+            insta_is_valid = 'True'
+        else:
+            insta_is_valid = 'False'
+
+        if obj.facebook_url is None:
+            facebook_is_valid = 'None'
+        elif requests.get(obj.facebook_url).status_code == 200:
+            facebook_is_valid = 'True'
+        else:
+            facebook_is_valid = 'False'
+
+        if obj.homepage_url is None:
+            homepage_is_valid = 'None'
+        elif requests.get(obj.homepage_url).status_code == 200:
+            homepage_is_valid = 'True'
+        else:
+            homepage_is_valid = 'False'
+
+        if obj.shopee_url is None:
+            shopee_is_valid = 'None'
+        elif requests.get(obj.shopee_url).status_code == 200:
+            shopee_is_valid = 'True'
+        else:
+            shopee_is_valid = 'False'
+        style = "<style>\
+                        h4 {color:black; margin-bottom:0px}\
+                        p { color: black;font-size:10px;font-weight:400; margin-bottom:4px} \
+                        p.light { font-weight:400; font-size:9px; color:grey}\
+                        p.right { text-align:right}\
+                        p.None { color:grey; font-weight:400; opacity:0.4;}\
+                        p.True { color:green; font-weight:600; opacity:1;}\
+                        p.False { color:red; font-weight:600; opacity:1}\
+                </style> "
+        store_info = '<p class="">contact : {phone}</p>\
+                        <p class="{insta_is_valid}">instagram link</p>\
+                        <p class="{facebook_is_valid}">facebook link</p>\
+                        <p class="{homepage_is_valid}">homepage link</p>\
+                        <p class="{shopee_is_valid}">shopee link</p>'.format(
+            phone=obj.phone,
+            insta_is_valid=insta_is_valid,
+            facebook_is_valid=facebook_is_valid,
+            homepage_is_valid=homepage_is_valid,
+            shopee_is_valid=shopee_is_valid,
+        )
+        return mark_safe(style+'<div class="{status}">'.format(status=obj.is_active) +
+                         store_info+'</div>')
 
     need_to_update_num.short_description = '업데이트 필요'
     product_num.short_description = '유효 상품'
