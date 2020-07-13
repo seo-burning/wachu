@@ -93,6 +93,7 @@ class InstagramScraper:
             proxies = self.__random_proxies()
             response = requests.get(url, headers={'User-Agent': headers, 'Referer': 'https://www.instagram.com'},
                                     proxies={'http': None, 'https':  None})
+            print(proxies)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -112,18 +113,18 @@ class InstagramScraper:
 
     def profile_page_metrics(self, profile_url):
         results = {}
-    try:
+    # try:
         response = self.__request_url(profile_url)
         json_data = self.extract_json_data(response)
         metrics = json_data['entry_data']
         metrics = metrics['ProfilePage'][0]['graphql']['user']
-        print('success to get profile')
-    except Exception as e:
-        print(e)
-        print('error occured')
-        slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
-        pass
-    else:
+        print('execute profile')
+    # except Exception as e:
+    #     print(e)
+    #     print('error occured')
+    #     slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
+    #     pass
+    # else:
         for key, value in metrics.items():
             if value and isinstance(value, dict):
                 if 'count' in value:

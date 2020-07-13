@@ -13,6 +13,7 @@ from publish.models import PostGroup
 from core.models import ExportCsvMixin
 from .forms import ProductFormForInstagramPost, ProductInlineFormSet
 from utils.helper.image_processing import create_presigned_url
+from utils.helper.request_helper import get_user_agents
 
 
 class ProductCreateInline(admin.StackedInline):
@@ -288,16 +289,22 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def update_validation(self, request, queryset):
         for obj in queryset:
+            # 인스타 200 체크
             if obj.insta_url is None:
                 insta_is_valid = 'None'
-            elif requests.get(obj.insta_url).status_code == 200:
+            elif requests.get(obj.insta_url,
+                              headers={'User-Agent': get_user_agents(),
+                                       'X-Requested-With': 'XMLHttpRequest',
+                                       'Referer': 'https://www.instagram.com'}).status_code == 200:
                 insta_is_valid = 'True'
             else:
                 insta_is_valid = 'False'
 
             if obj.facebook_url is None:
                 facebook_is_valid = 'None'
-            elif requests.get(obj.facebook_url).status_code == 200:
+            elif requests.get(obj.facebook_url,
+                              headers={'User-Agent': get_user_agents(),
+                                       'X-Requested-With': 'XMLHttpRequest'}).status_code == 200:
                 facebook_is_valid = 'True'
             else:
                 facebook_is_valid = 'False'
@@ -306,23 +313,37 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                 homepage_is_valid = 'None'
             else:
                 try:
-                    if requests.get(obj.homepage_url).status_code == 200:
+                    if requests.get(obj.homepage_url,
+                                    headers={'User-Agent': get_user_agents(),
+                                             'X-Requested-With': 'XMLHttpRequest'}).status_code == 200:
                         homepage_is_valid = 'True'
                     else:
                         homepage_is_valid = 'False'
-                except Exception as exception:
-                    print(exception)
+                except Exception as e:
+                    print(e)
                     homepage_is_valid = 'False'
 
             if obj.shopee_url is None:
                 shopee_is_valid = 'None'
-            elif requests.get(obj.shopee_url).status_code == 200:
-                shopee_is_valid = 'True'
             else:
-                shopee_is_valid = 'False'
+                response_json = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit=1&match_id'
+                                             '={shopee_numeric_id}&newest=1&order=desc&page_type='
+                                             'shop&shop_categoryids=&version=2'.format(
+                                                 shopee_numeric_id=obj.shopee_numeric_id),
+                                             headers={'User-Agent': get_user_agents(),
+                                                      'X-Requested-With': 'XMLHttpRequest',
+                                                      'Referer': 'https://shopee.vn/shop/{store_id}/'
+                                                      'search?shopCollection='.format(store_id=obj.shopee_numeric_id),
+                                                      },).json()
+                if response_json['total_count'] == 0:
+                    print('this')
+                    shopee_is_valid = 'False'
+                else:
+                    shopee_is_valid = 'True'
             validation_string = insta_is_valid + '/'+facebook_is_valid+'/'+homepage_is_valid+'/'+shopee_is_valid
             obj.validation_string = validation_string
             obj.save()
+
     need_to_update_num.short_description = '업데이트 필요'
     product_num.short_description = '유효 상품'
     instagram_link.short_description = "Link"
