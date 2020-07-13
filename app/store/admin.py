@@ -12,6 +12,7 @@ from product.models import Product, ProductImage
 from publish.models import PostGroup
 from core.models import ExportCsvMixin
 from .forms import ProductFormForInstagramPost, ProductInlineFormSet
+from utils.helper.image_processing import create_presigned_url
 
 
 class ProductCreateInline(admin.StackedInline):
@@ -195,15 +196,23 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     make_deactivate.short_description = '지정 스토어를 Deactivate 상태로 변경'
 
     def profile_image_shot(self, obj):
+        if 'http' in str(obj.profile_image):
+            url = obj.profile_image
+        else:
+            url = create_presigned_url('wachu', 'media/'+str(obj.profile_image), expiration=3000)
         return mark_safe('<img src="{url}" \
-            width="300", height="300" />'.format(
-            url=obj.profile_image
+            width="200", height="200" />'.format(
+            url=url
         ))
 
     def profile_thumb(self, obj):
+        if 'http' in str(obj.profile_image):
+            url = obj.profile_image
+        else:
+            url = create_presigned_url('wachu', 'media/'+str(obj.profile_image), expiration=3000)
         return mark_safe('<img src="{url}" \
             width="50" height="50" border="1" />'.format(
-            url=obj.profile_image
+            url=url
         ))
 
     def instagram_link(self, obj):
