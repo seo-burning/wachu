@@ -1,3 +1,4 @@
+import requests
 import os_setup
 from store.models import Store, StorePost, StoreRanking, PostImage
 from product.models import Product, ProductOption, ProductSize
@@ -46,5 +47,45 @@ def preview_image_update():
             store_obj.save()
 
 
+def update_store_validation():
+    queryset = Store.objects.all()
+    for obj in queryset:
+        print(obj)
+        if obj.insta_url is None:
+            insta_is_valid = 'None'
+        elif requests.get(obj.insta_url).status_code == 200:
+            insta_is_valid = 'True'
+        else:
+            insta_is_valid = 'False'
+
+        if obj.facebook_url is None:
+            facebook_is_valid = 'None'
+        elif requests.get(obj.facebook_url).status_code == 200:
+            facebook_is_valid = 'True'
+        else:
+            facebook_is_valid = 'False'
+
+        if obj.homepage_url is None:
+            homepage_is_valid = 'None'
+        else:
+            try:
+                if requests.get(obj.homepage_url).status_code == 200:
+                    homepage_is_valid = 'True'
+                else:
+                    homepage_is_valid = 'False'
+            except:
+                homepage_is_valid = 'False'
+
+        if obj.shopee_url is None:
+            shopee_is_valid = 'None'
+        elif requests.get(obj.shopee_url).status_code == 200:
+            shopee_is_valid = 'True'
+        else:
+            shopee_is_valid = 'False'
+        validation_string = insta_is_valid + '/'+facebook_is_valid+'/'+homepage_is_valid+'/'+shopee_is_valid
+        obj.validation_string = validation_string
+        obj.save()
+
+
 if __name__ == '__main__':
-    update_product_category_to_store_category()
+    update_store_validation()

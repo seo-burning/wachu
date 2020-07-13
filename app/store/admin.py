@@ -122,7 +122,7 @@ class StoreAddressInline(admin.StackedInline):
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     inlines = [StoreAddressInline]  # StorePostInline,
-    list_per_page = 25
+    list_per_page = 50
     readonly_fields = (
         'is_new_post',
         'current_ranking',
@@ -304,10 +304,14 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
 
             if obj.homepage_url is None:
                 homepage_is_valid = 'None'
-            elif requests.get(obj.homepage_url).status_code == 200:
-                homepage_is_valid = 'True'
             else:
-                homepage_is_valid = 'False'
+                try:
+                    if requests.get(obj.homepage_url).status_code == 200:
+                        homepage_is_valid = 'True'
+                    else:
+                        homepage_is_valid = 'False'
+                except:
+                    homepage_is_valid = 'False'
 
             if obj.shopee_url is None:
                 shopee_is_valid = 'None'
