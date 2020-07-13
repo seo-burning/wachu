@@ -1,18 +1,12 @@
+import os_setup
 
-from manual_update import make_product_options_from_product
-from django.shortcuts import get_object_or_404
-from store.models import Store, StorePost
 import requests
 import json
-import sys
-import os
-import django
 import time
 import datetime
 import pytz
 from random import choice
 from django.db.models import Q
-import os_setup
 import multiprocessing as mp
 from utils.slack import slack_notify, slack_upload_file
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
@@ -21,12 +15,8 @@ from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
 
 from helper.clean_text import get_cleaned_text_from_color,\
     get_cleaned_text, get_cleaned_text_from_pattern, get_cleaned_text_from_category, get_cleaned_text_from_size
-
-PROJECT_ROOT = os.getcwd()
-sys.path.append(os.path.dirname(PROJECT_ROOT))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings.prod")
-django.setup()
-
+from django.shortcuts import get_object_or_404
+from store.models import Store, StorePost
 
 _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
@@ -478,7 +468,7 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='linlincanvas')
+    store_obj = Store.objects.get(insta_id='gum.tailor')
     # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # pool.map(multi, product_list)
     # # pool.close()

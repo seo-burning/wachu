@@ -1,3 +1,4 @@
+import shutil
 import sys
 import os
 import django
@@ -8,7 +9,7 @@ from random import choice
 import pymsteams  # https://pypi.org/project/pymsteams/
 import time
 import datetime
-from store_point_logic import calculate_post_point
+from calculating.store_point_logic import calculate_post_point
 import multiprocessing as mp
 from functools import partial
 from time import sleep
@@ -49,7 +50,7 @@ _user_agents = [
     'Mozilla/5.0 (Windows NT 6.1; Win64; x64; Trident/7.0; rv:11.0) like Gecko',
     'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)',
     'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)',
-    'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)'
+    'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)',
 ]
 
 
@@ -92,7 +93,6 @@ class InstagramScraper:
             proxies = self.__random_proxies()
             response = requests.get(url, headers={'User-Agent': headers, 'Referer': 'https://www.instagram.com'},
                                     proxies={'http': None, 'https':  None})
-            print(proxies)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -112,23 +112,20 @@ class InstagramScraper:
 
     def profile_page_metrics(self, profile_url):
         results = {}
-    # try:
+    try:
         response = self.__request_url(profile_url)
         json_data = self.extract_json_data(response)
         metrics = json_data['entry_data']
-        print(metrics)
         metrics = metrics['ProfilePage'][0]['graphql']['user']
-        print('execute profile')
-    # except Exception as e:
-    #     print(e)
-    #     print('error occured')
-    #     slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
-    #     pass
-    # else:
-        print(len(metrics.items()))
+        print('success to get profile')
+    except Exception as e:
+        print(e)
+        print('error occured')
+        slack_notify("Failed in Get Posts {} {}".format(profile_url, e))
+        pass
+    else:
         for key, value in metrics.items():
             if value and isinstance(value, dict):
-                print(key)
                 if 'count' in value:
                     value = value['count']
                 results[key] = value
@@ -182,23 +179,23 @@ class InstagramScraper:
         return metrics
 
     def update_profile(self, url):
-        print(url)
         results = self.profile_page_metrics(url)
         if results['username']:
             obj_store, is_created = Store.objects.get_or_create(
                 insta_id=results['username'])
             obj_store.is_updated = True
-            name = results['username']
-            if 'full_name' in results.keys():
-                name = results['full_name']
-            obj_store.name = name
+            # name = results['username']
+            # if 'full_name' in results.keys():
+            #     name = results['full_name']
+            # obj_store.name = name
             obj_store.follower = results['edge_followed_by']
             obj_store.following = results['edge_follow']
             obj_store.post_num = results['edge_owner_to_timeline_media']
-            description = ''
-            if 'biography' in results.keys():
-                description = results['biography']
-            obj_store.description = description
+            if obj_store.description == '':
+                description = ''
+                if 'biography' in results.keys():
+                    description = results['biography']
+                obj_store.description = description
             obj_store.profile_image = results['profile_pic_url_hd']
             obj_store.save()
 
@@ -374,7 +371,7 @@ class InstagramScraper:
 
 def update_user_profile_image():
     obj = InstagramScraper()
-    store_list = Store.objects.filter(is_active=True).exclude(store_type='DS')[44:]
+    store_list = Store.objects.filter(is_active=True)
     content = ['https://www.instagram.com/' +
                x.insta_id + '/' for x in store_list]
     print('updates', len(content))
@@ -393,7 +390,6 @@ def update_instagram():
                x.insta_id + '/' for x in store_list]
     obj = InstagramScraper()
     total_new_post = 0
-    print(len(content))
     with open(file_path, "w") as f:
         for url in list(content):
             pk = pk + 1
@@ -408,45 +404,78 @@ def update_instagram():
     os.remove(file_path)
 
 
-if __name__ == '__main__':
-    print('start scrapying')
+# if __name__ == '__main__':
+#     print('start scrapying')
 
-    start_time = time.time()
+#     start_time = time.time()
 
-    dateInfo = input('date info input : ')
-    if dateInfo:
-        print(dateInfo)
-    else:
-        dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
-        print(dateInfo)
-    store_list = Store.objects.all().filter(Q(
-        store_type='IF(P)')).order_by('current_ranking')
-    print("total active store: #{}".format(len(store_list)))
-    all_store_ranking_objs_for_today = StoreRanking.objects.filter(
-        date=dateInfo).filter(store__is_active=True)
-    print("already exist data: #{}".format(
-        len(all_store_ranking_objs_for_today)))
-    start_num = len(all_store_ranking_objs_for_today)
-    print("start crwaling from: #{}".format(start_num))
+#     dateInfo = input('date info input : ')
+#     if dateInfo:
+#         print(dateInfo)
+#     else:
+#         dateInfo = datetime.datetime.now().strftime('%Y-%m-%d')
+#         print(dateInfo)
+#     store_list = Store.objects.all().filter(Q(
+#         store_type='IF(P)')).order_by('current_ranking')
+#     print("total active store: #{}".format(len(store_list)))
+#     all_store_ranking_objs_for_today = StoreRanking.objects.filter(
+#         date=dateInfo).filter(store__is_active=True)
+#     print("already exist data: #{}".format(
+#         len(all_store_ranking_objs_for_today)))
+#     start_num = len(all_store_ranking_objs_for_today)
+#     print("start crwaling from: #{}".format(start_num))
 
-    store_list = store_list[start_num:]
-    content = ['https://www.instagram.com/' +
-               x.insta_id + '/' for x in store_list]
+#     store_list = store_list[start_num:]
+#     content = ['https://www.instagram.com/' +
+#                x.insta_id + '/' for x in store_list]
+#     obj = InstagramScraper()
+#     pk = start_num
+#     print("changed to not updated --- %s seconds ---" %
+#           (time.time() - start_time))
+
+#     total_new_post = 0
+#     for url in list(content):
+#         pk = pk + 1
+#         print("ranking #{}".format(pk))
+#         new_post = obj.insert_insta(url)
+#         if new_post == None:
+#             new_post = 0
+#         total_new_post = total_new_post + new_post
+#         print("save new post : #{} // total : #{}".format(new_post, total_new_post))
+#         break
+
+#     print(total_new_post)
+#     print("--- %s seconds ---" % (time.time() - start_time))
+
+
+def thumb_image_upload(store_obj):
+    thumb_image = store_obj.profile_image
+    response_thumb = requests.get(thumb_image, stream=True)
+    store_name = store_obj.insta_id
+    thumb_name = store_name+'-thumb.jpg'
+    thumb_file_root = './crawling/'+store_name + '_' + thumb_name
+    with open(thumb_file_root, 'wb') as out_file:
+        shutil.copyfileobj(response_thumb.raw, out_file)
+    with open(thumb_file_root, 'rb') as f:
+        store_obj.profile_image.save(thumb_name, f, save=True)
+    os.remove(thumb_file_root)
+    del response_thumb
+
+
+def update_profile_image(store_list):
     obj = InstagramScraper()
-    pk = start_num
-    print("changed to not updated --- %s seconds ---" %
-          (time.time() - start_time))
+    for store_obj in list(store_list):
+        try:
+            obj.update_profile(store_obj.insta_url)
+            thumb_image_upload(store_obj)
+        except:
+            print(store_obj)
 
-    total_new_post = 0
-    for url in list(content):
-        pk = pk + 1
-        print("ranking #{}".format(pk))
-        new_post = obj.insert_insta(url)
-        if new_post == None:
-            new_post = 0
-        total_new_post = total_new_post + new_post
-        print("save new post : #{} // total : #{}".format(new_post, total_new_post))
-        break
 
-    print(total_new_post)
-    print("--- %s seconds ---" % (time.time() - start_time))
+if __name__ == '__main__':
+    store_list = []
+    for store_obj in Store.objects.filter(store_type='IF(P)'):
+        store_list.append(store_obj)
+    update_profile_image(store_list)
+# 	libeworkshop
+# 	smokaholic80s

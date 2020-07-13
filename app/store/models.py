@@ -70,6 +70,8 @@ class Store(ActiveModel, TimeStampedModel, ViewModel):
         verbose_name_plural = verbose_name
         ordering = ('-is_active', 'current_ranking',)
 
+    validation_string = models.CharField(
+        max_length=100, default='None/None/None/None')
     store_type = models.CharField(
         max_length=25, choices=STORE_TYPE, default='IF', null=True)
     is_new_post = models.BooleanField(default=False)

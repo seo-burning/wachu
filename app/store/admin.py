@@ -179,6 +179,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ['export_as_csv',
                'make_activate',
                'make_deactivate',
+               'update_validation'
                ]
 
     def make_activate(self, request, queryset):
@@ -247,12 +248,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                         p.light { font-weight:400; font-size:9px; color:grey}\
                         p.right { text-align:right}\
                         p.bold { font-weight:500; font-size:12px}\
-                        p.None { color:red; font-weight:600; opacity:1; background-color:grey}\
                         span.False,p.False { color:grey; opacity:0.2 }\
-                        div.not-valid { background-color : rgba(245, 100, 100,0.8) }\
-                        div.no-stock { background-color : rgba(0, 0, 0,0.1)}\
-                        div.not-active { background-color : rgba(251, 255, 193, 0.3) }\
-                        div.active { background-color : rgba(223, 245, 223,0.3) }\
                 </style> "
         store_info = '<img src="{url}" width="50" height="50" border="1" style="padding:10px"/>\
                         <h4>{name}</h4>\
@@ -270,41 +266,11 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                          store_info+'</div>')
 
     def store_validation(self, obj):
-        if obj.insta_url is None:
-            insta_is_valid = 'None'
-        elif requests.get(obj.insta_url).status_code == 200:
-            insta_is_valid = 'True'
-        else:
-            insta_is_valid = 'False'
-
-        if obj.facebook_url is None:
-            facebook_is_valid = 'None'
-        elif requests.get(obj.facebook_url).status_code == 200:
-            facebook_is_valid = 'True'
-        else:
-            facebook_is_valid = 'False'
-
-        if obj.homepage_url is None:
-            homepage_is_valid = 'None'
-        elif requests.get(obj.homepage_url).status_code == 200:
-            homepage_is_valid = 'True'
-        else:
-            homepage_is_valid = 'False'
-
-        if obj.shopee_url is None:
-            shopee_is_valid = 'None'
-        elif requests.get(obj.shopee_url).status_code == 200:
-            shopee_is_valid = 'True'
-        else:
-            shopee_is_valid = 'False'
+        insta_is_valid, facebook_is_valid, homepage_is_valid, shopee_is_valid = obj.validation_string.split('/')
         style = "<style>\
-                        h4 {color:black; margin-bottom:0px}\
-                        p { color: black;font-size:10px;font-weight:400; margin-bottom:4px} \
-                        p.light { font-weight:400; font-size:9px; color:grey}\
-                        p.right { text-align:right}\
-                        p.None { color:grey; font-weight:400; opacity:0.4;}\
+                        p.None { color:grey; font-weight:300; opacity:1;}\
                         p.True { color:green; font-weight:600; opacity:1;}\
-                        p.False { color:red; font-weight:600; opacity:1}\
+                        p.False { color:red; font-weight:600; opacity:1;}\
                 </style> "
         store_info = '<p class="">contact : {phone}</p>\
                         <p class="{insta_is_valid}">instagram link</p>\
@@ -320,6 +286,41 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         return mark_safe(style+'<div class="{status}">'.format(status=obj.is_active) +
                          store_info+'</div>')
 
+    def make_activate(self, request, queryset):
+        updated_count = queryset.update(is_active=True)
+
+    def update_validation(self, request, queryset):
+        for obj in queryset:
+            if obj.insta_url is None:
+                insta_is_valid = 'None'
+            elif requests.get(obj.insta_url).status_code == 200:
+                insta_is_valid = 'True'
+            else:
+                insta_is_valid = 'False'
+
+            if obj.facebook_url is None:
+                facebook_is_valid = 'None'
+            elif requests.get(obj.facebook_url).status_code == 200:
+                facebook_is_valid = 'True'
+            else:
+                facebook_is_valid = 'False'
+
+            if obj.homepage_url is None:
+                homepage_is_valid = 'None'
+            elif requests.get(obj.homepage_url).status_code == 200:
+                homepage_is_valid = 'True'
+            else:
+                homepage_is_valid = 'False'
+
+            if obj.shopee_url is None:
+                shopee_is_valid = 'None'
+            elif requests.get(obj.shopee_url).status_code == 200:
+                shopee_is_valid = 'True'
+            else:
+                shopee_is_valid = 'False'
+            validation_string = insta_is_valid + '/'+facebook_is_valid+'/'+homepage_is_valid+'/'+shopee_is_valid
+            obj.validation_string = validation_string
+            obj.save()
     need_to_update_num.short_description = '업데이트 필요'
     product_num.short_description = '유효 상품'
     instagram_link.short_description = "Link"

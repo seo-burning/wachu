@@ -1,9 +1,11 @@
-import os_setup
-from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, ProductOption, ShopeeColor, ShopeeSize, ProductBackEndRate
-from store.models import Store, StorePost, StoreRanking
-from user.models import ProductReview
-
 from datetime import datetime, timezone, timedelta
+from user.models import ProductReview
+from store.models import Store, StorePost, StoreRanking
+import os_setup
+from product.models import Product, ShopeeRating, ProductImage,\
+    ShopeeCategory, ProductSize, ProductColor, ProductExtraOption, \
+    ProductOption, ShopeeColor, ShopeeSize, ProductBackEndRate
+
 
 dateInfo = (datetime.now()).strftime('%Y-%m-%d')
 

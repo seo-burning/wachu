@@ -5,7 +5,7 @@ def get_cleaned_text(text):
     text = text.lower().replace(' ', '').replace('(', '').replace(')', '').replace(':', '').replace('eodưới', '').replace(
         'dưới', '').replace('dưới', '').replace('<', '').replace('kg', '').replace('cm', '').replace('size', '').replace('szie', '').replace(
             'sz', '').replace('mau', '').replace('màu', '').replace('mẫu', '').replace('color', '').replace('-', '').replace(
-                '_', '').replace('kí', '').replace('#', '').strip()
+                '_', '').replace('kí', '').replace('#', '').replace('sỉze', '').strip()
     return text
 
 
@@ -21,7 +21,8 @@ def get_cleaned_text_from_category(text):
     text = text.lower().replace('áo', '').replace('quan', '').replace('quần', '').replace('set', '').replace(
         'jogger', '').replace('hoodie', '').replace('jeans', '').replace('jean', '').replace(
             'túi', '').replace('dây', '').replace('khoác', '').replace('balo', '').replace('sơmi', '').replace(
-                'blazer', '').replace('chânváy', '').replace('bag', '').replace('trouser', '').replace('balo', '')
+                'blazer', '').replace('chânváy', '').replace('bag', '').replace('trouser', '').replace(
+                    'balo', '').replace('vest', '').replace('cap', '').replace('váy', '').replace('skirt', '')
     return text
 
 

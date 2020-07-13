@@ -31,8 +31,6 @@ def get_default_description(obj_product):
 
 
 def update_color(obj_product, options):
-    # obj_product.color.clear()
-    # obj_product.shopee_color.clear()
     for option in options:
         option_string = get_cleaned_text_from_pattern(get_cleaned_text(option['display_name']))
         obj_color, is_created = ShopeeColor.objects.get_or_create(
@@ -48,8 +46,6 @@ def update_color(obj_product, options):
 
 
 def update_size(obj_product, options):
-    # obj_product.size.clear()
-    # obj_product.shopee_size.clear()
     for option in options:
         option_string = get_cleaned_text(option['display_name'])
         obj_size, is_created = ShopeeSize.objects.get_or_create(
@@ -73,12 +69,14 @@ def update_pattern(obj_product):
 
 
 def make_default_option(obj_product, free_size_obj, u_color_obj):
+    for option in obj_product.product_options.all():
+        option.delete()
     obj_product.size.add(free_size_obj)
     obj_product.save()
     obj_option, is_created = ProductOption.objects.get_or_create(
         product=obj_product, shopee_item_id=0)
     if is_created:
-        obj_product.name = 'default option(ONE SIZE)'
+        obj_option.name = 'default option(ONE SIZE)'
         obj_option.size = free_size_obj
         obj_option.color = u_color_obj
     obj_option.is_active = True
@@ -86,14 +84,19 @@ def make_default_option(obj_product, free_size_obj, u_color_obj):
     obj_option.discount_price = obj_product.discount_price
     obj_option.currency = obj_product.currency
     obj_option.stock = obj_product.stock
-    obj_option.save()
+    try:
+        obj_option.save()
+    except:
+        not_valid_information = True
+        obj_product.validation = 'R'
 
 
 def update_product_option(obj_product, option_list):
     free_size_obj = ProductSize.objects.get(name='free')
     u_color_obj = ProductColor.objects.get(name='undefined')
     u_size_obj = ProductSize.objects.get(name='undefined')
-
+    # for option in obj_product.product_options.all():
+    #     option.delete()
     if len(option_list) == 0:
         make_default_option(obj_product, free_size_obj, u_color_obj)
 
@@ -104,7 +107,6 @@ def update_product_option(obj_product, option_list):
             product=obj_product, shopee_item_id=option['shopee_item_id'])
         if is_created:
             obj_option.name = option['name']
-
             if option['size']:
                 obj_size = ShopeeSize.objects.get(
                     display_name=get_cleaned_text(option['size']['display_name']))
@@ -203,17 +205,17 @@ def update_obj_product(product_source):
         product_link=product_source['product_link'],
         store=store_obj
     )
-    print('u', end='')
-    if product_source['description'] == None or product_source['description'] == '':
-        obj_product.description = get_default_description(obj_product)
-    elif len(product_source['description']) < 40:
-        description = remove_html_tags(product_source['description']) + '\n'+get_default_description(obj_product)
-        obj_product.description = description
-    else:
-        obj_product.description = remove_html_tags(product_source['description'])
     if is_created:
-        obj_product.validation = 'V'
+        print('n', end='')
         obj_product.name = product_source['name']
+        if product_source['description'] == None or product_source['description'] == '':
+            obj_product.description = get_default_description(obj_product)
+        elif len(product_source['description']) < 40:
+            description = remove_html_tags(product_source['description']) + '\n'+get_default_description(obj_product)
+            obj_product.description = description
+        else:
+            obj_product.description = remove_html_tags(product_source['description'])
+        obj_product.validation = 'V'
         if (product_source['product_thumbnail_image'] == None) or (product_source['product_thumbnail_image'] == ''):
             obj_product.product_thumbnail_image = "http://dabivn.com"
         else:
@@ -241,7 +243,8 @@ def update_obj_product(product_source):
         update_color(obj_product, product_source['shopee_color'])
         update_size(obj_product, product_source['shopee_size'])
         update_pattern(obj_product)
-
+    else:
+        print('u', end='')
     # 3. 가격 및 레이팅 업데이트
     obj_product.updated_at = timezone.now()
     obj_product.is_discount = product_source['is_discount']
@@ -272,6 +275,26 @@ def update_obj_product(product_source):
             obj_product.save()
 
 
+def validate_homepage():
+    product_list = Product.objects.filter(product_source='HOMEPAGE')
+    for obj_product in product_list:
+        response = requests.get(obj_product.product_link,
+                                headers={'User-Agent': choice(_user_agents),
+                                         'X-Requested-With': 'XMLHttpRequest',
+                                         },)
+        if response.status_code == 404:
+            obj_product.is_active = False
+            obj_product.validation = 'D'
+            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
+            obj_product.save()
+
+
+def dict_to_product_model(product_list):
+    for obj_product in product_list:
+        update_obj_product(obj_product)
+
+
+# Store
 def update_store_object(store_dic):
     store_obj, is_created = Store.objects.get_or_create(
         insta_id=store_dic['insta_id'], store_type=store_dic['store_type'])
@@ -286,6 +309,19 @@ def update_store_object(store_dic):
     store_obj.age = age
     store_obj.category.add(category)
     store_obj.save()
+
+
+_user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
+]
 
 
 def dict_to_store_model(store_dic_list):
@@ -313,40 +349,3 @@ sub_cat = [{'dosiin': 'sleeveless',
             'subcategory': 'croptop'},
            {'dosiin': 'ao-thun-basic',
             'subcategory': 'tshirts'}]
-
-
-_user_agents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
-    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
-]
-
-
-def validate_homepage():
-    product_list = Product.objects.filter(product_source='HOMEPAGE')
-    for obj_product in product_list:
-        response = requests.get(obj_product.product_link,
-                                headers={'User-Agent': choice(_user_agents),
-                                         'X-Requested-With': 'XMLHttpRequest',
-                                         },)
-        if response.status_code == 404:
-            obj_product.is_active = False
-            obj_product.validation = 'D'
-            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
-            obj_product.save()
-
-
-def dict_to_product_model(product_list):
-    print('\n')
-    for obj_product in product_list:
-        update_obj_product(obj_product)
-
-    # pool = mp.Pool(processes=2)
-    # pool.map(update_obj_product, product_list)
-    # pool.close()
