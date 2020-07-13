@@ -310,7 +310,8 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                         homepage_is_valid = 'True'
                     else:
                         homepage_is_valid = 'False'
-                except:
+                except Exception as exception:
+                    print(exception)
                     homepage_is_valid = 'False'
 
             if obj.shopee_url is None:

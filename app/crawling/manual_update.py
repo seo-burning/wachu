@@ -48,7 +48,7 @@ def preview_image_update():
 
 
 def update_store_validation():
-    queryset = Store.objects.all()
+    queryset = Store.objects.all()[150:]
     for obj in queryset:
         print(obj)
         if obj.insta_url is None:
