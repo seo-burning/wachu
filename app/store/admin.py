@@ -286,9 +286,6 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         return mark_safe(style+'<div class="{status}">'.format(status=obj.is_active) +
                          store_info+'</div>')
 
-    def make_activate(self, request, queryset):
-        updated_count = queryset.update(is_active=True)
-
     def update_validation(self, request, queryset):
         for obj in queryset:
             if obj.insta_url is None:
