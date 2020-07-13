@@ -76,8 +76,9 @@ class Store(ActiveModel, TimeStampedModel, ViewModel):
     insta_id = models.CharField(_("Instagram ID"), max_length=255, unique=True)
     insta_url = models.URLField(
         _("Instagram URL"), null=True, blank=True, max_length=500)
-    profile_image = models.URLField(
-        _("Instagram Profile Image"), null=True, blank=True, max_length=500)
+    profile_image = models.ImageField(
+        _("Instagram Profile Image"), blank=True, null=True,
+        upload_to='store/thumbnail')
     name = models.CharField(_("Instagram Name"), max_length=255)
 
     # Cannot be changed in Admin site ( updated by crwaler )
