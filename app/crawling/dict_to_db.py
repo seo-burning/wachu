@@ -12,6 +12,7 @@ from store.models import Store, StorePost, Primary_Style, Age, Category
 from datetime import datetime
 from django.utils import timezone
 from helper.clean_text import get_cleaned_text, remove_html_tags, get_cleaned_text_from_pattern
+from utils.slack import slack_notify, slack_upload_file
 
 
 def get_default_description(obj_product):
@@ -276,7 +277,10 @@ def update_obj_product(product_source):
 
 def dict_to_product_model(product_list):
     for obj_product in product_list:
-        update_obj_product(obj_product)
+        try:
+            update_obj_product(obj_product)
+        except:
+            slack_notify('error' + 'https://dabivn.com/admin/product/product/'+str(obj_product.pk))
 
 
 # Store
@@ -294,19 +298,6 @@ def update_store_object(store_dic):
     store_obj.age = age
     store_obj.category.add(category)
     store_obj.save()
-
-
-_user_agents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
-    'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
-    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1'
-]
 
 
 def dict_to_store_model(store_dic_list):

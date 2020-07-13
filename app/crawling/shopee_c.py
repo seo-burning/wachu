@@ -301,96 +301,99 @@ class ShopeeScraper:
                 obj_product.pattern.add(pattern_obj)
 
     def get_or_create_product(self, store_obj, itemid, view_count=None):
-        shopid = store_obj.shopee_numeric_id
-        # 0. 상품 생성 및 호출
-        obj_product, is_created = Product.objects.get_or_create(
-            shopee_item_id=itemid, store=store_obj)
-        # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
-        print('.', end='')
-        # 0. 상품 json load
-        data = self.__request_url_item(shopid, itemid).json()['item']
-        # 1. 상품 삭제 확인
-        if data == None:
-            print('d', end='')
-            obj_product.is_active = False
-            obj_product.validation = 'D'
-            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
-            obj_product.save()
-        else:
-            # TODO 재고 재 생성 확인을 해야함.
-            # 2. 신규 생성 상품 처리
-            color_index = None
-            size_index = None
-            has_extra_options = False
-            if is_created:
-                # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
-                print('n', end='')
-                obj_product.validation = 'V'
-                self.__update_category(obj_product, data['categories'])
-                obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
-                obj_product.created_at = datetime.datetime.fromtimestamp(
-                    int(data['ctime']), pytz.UTC)
-                obj_product.product_source = 'SHOPEE'
-                obj_product.name = data['name']
-                obj_product.description = data['description']
-                # image
-                obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
-                    data['image'] + '_tn'
-                obj_product.save()
-                for product_image in data['images']:
-                    obj_image, image_is_created = ProductImage.objects.get_or_create(
-                        source='https://cf.shopee.vn/file/' + product_image,
-                        source_thumb='https://cf.shopee.vn/file/' + product_image+'_tn',
-                        product=obj_product,
-                        post_image_type='P')
-
-                # 2. 상품 사이즈 / 컬러 정보 업데이트
-                if (data['size_chart'] != None):
-                    obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
-                for i, variation in enumerate(data['tier_variations']):
-                    variation_name = variation['name'].replace(' ', '').replace(':', '').lower().strip()
-                    if 'size' in variation_name or 'kích' in variation_name or 'kich' in variation_name:
-                        self.__update_size(obj_product, variation['options'])
-                        size_index = i
-                    elif 'màu' in variation_name or 'color' in variation_name or 'mau' in variation_name:
-                        self.__update_color(obj_product, variation['options'])
-                        color_index = i
-                    else:
-                        self.__update_extra_options(obj_product, variation)
-                        has_extra_options = True
-                if obj_product.size.count() == 0:
-                    self.__update_size(obj_product, ['free'])
-                # 2. 패턴 추가
-                self.__update_pattern(obj_product)
-
-            # 3. 기존 / 신규 상품 업데이트
-            # 3. 가격 및 레이팅 업데이트
-            obj_product.updated_at = datetime.datetime.now()
-            self.__update_price(obj_product, data)
-            if view_count:
-                self.__update_rating(obj_product, data, view_count)
-
-            # 3. 재고 및 품절 처리
-            obj_product.stock = data['stock']
-            if (obj_product.stock == 0):
+        try:
+            shopid = store_obj.shopee_numeric_id
+            # 0. 상품 생성 및 호출
+            obj_product, is_created = Product.objects.get_or_create(
+                shopee_item_id=itemid, store=store_obj)
+            # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
+            print('.', end='')
+            # 0. 상품 json load
+            data = self.__request_url_item(shopid, itemid).json()['item']
+            # 1. 상품 삭제 확인
+            if data == None:
+                print('d', end='')
                 obj_product.is_active = False
-                obj_product.stock_available = False
+                obj_product.validation = 'D'
+                obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
+                obj_product.save()
             else:
-                obj_product.stock_available = True
-
-            # 4. 옵션 생성 및 업데이트
-            self.__update_product_option(obj_product, data['models'], color_index, size_index, has_extra_options)
-            obj_product.save()
-
-            # 5. 생성 후 최종 검증
-            if is_created:
-                if obj_product.validation == 'V' and obj_product.stock_available:
-                    obj_product.is_active = True
+                # TODO 재고 재 생성 확인을 해야함.
+                # 2. 신규 생성 상품 처리
+                color_index = None
+                size_index = None
+                has_extra_options = False
+                if is_created:
+                    # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
+                    print('n', end='')
+                    obj_product.validation = 'V'
+                    self.__update_category(obj_product, data['categories'])
+                    obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
+                    obj_product.created_at = datetime.datetime.fromtimestamp(
+                        int(data['ctime']), pytz.UTC)
+                    obj_product.product_source = 'SHOPEE'
+                    obj_product.name = data['name']
+                    obj_product.description = data['description']
+                    # image
+                    obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
+                        data['image'] + '_tn'
                     obj_product.save()
-                if obj_product.validation == 'R':
+                    for product_image in data['images']:
+                        obj_image, image_is_created = ProductImage.objects.get_or_create(
+                            source='https://cf.shopee.vn/file/' + product_image,
+                            source_thumb='https://cf.shopee.vn/file/' + product_image+'_tn',
+                            product=obj_product,
+                            post_image_type='P')
+
+                    # 2. 상품 사이즈 / 컬러 정보 업데이트
+                    if (data['size_chart'] != None):
+                        obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
+                    for i, variation in enumerate(data['tier_variations']):
+                        variation_name = variation['name'].replace(' ', '').replace(':', '').lower().strip()
+                        if 'size' in variation_name or 'kích' in variation_name or 'kich' in variation_name:
+                            self.__update_size(obj_product, variation['options'])
+                            size_index = i
+                        elif 'màu' in variation_name or 'color' in variation_name or 'mau' in variation_name:
+                            self.__update_color(obj_product, variation['options'])
+                            color_index = i
+                        else:
+                            self.__update_extra_options(obj_product, variation)
+                            has_extra_options = True
+                    if obj_product.size.count() == 0:
+                        self.__update_size(obj_product, ['free'])
+                    # 2. 패턴 추가
+                    self.__update_pattern(obj_product)
+
+                # 3. 기존 / 신규 상품 업데이트
+                # 3. 가격 및 레이팅 업데이트
+                obj_product.updated_at = datetime.datetime.now()
+                self.__update_price(obj_product, data)
+                if view_count:
+                    self.__update_rating(obj_product, data, view_count)
+
+                # 3. 재고 및 품절 처리
+                obj_product.stock = data['stock']
+                if (obj_product.stock == 0):
                     obj_product.is_active = False
-                    obj_product.save()
-        return obj_product
+                    obj_product.stock_available = False
+                else:
+                    obj_product.stock_available = True
+
+                # 4. 옵션 생성 및 업데이트
+                self.__update_product_option(obj_product, data['models'], color_index, size_index, has_extra_options)
+                obj_product.save()
+
+                # 5. 생성 후 최종 검증
+                if is_created:
+                    if obj_product.validation == 'V' and obj_product.stock_available:
+                        obj_product.is_active = True
+                        obj_product.save()
+                    if obj_product.validation == 'R':
+                        obj_product.is_active = False
+                        obj_product.save()
+            return obj_product
+        except:
+            slack_notify('error store '+str(store_obj))
 
     def search_store(self, store_obj):
         i = 0
