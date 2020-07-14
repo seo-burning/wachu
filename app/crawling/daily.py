@@ -24,9 +24,11 @@ if __name__ == '__main__':
         update_shopee()
         update_homepage()
         calculating()
+        slack_notify('*update data @' + date+'*' + 'done')
     else:
         slack_notify('*update(validate) data @' + date+'*')
         # 오후 삭제
         validate_shopee()
         validate_homepage()
         calculating()
+        slack_notify('*update(validate) data @' + date+'*' + 'done')

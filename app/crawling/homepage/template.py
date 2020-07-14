@@ -155,7 +155,6 @@ def get_product_obj_from_json(store, style, url_obj,
 
     if 'title' in option_json:
         name = option_json['title']
-        print(name)
     elif 'name' in option_json:
         name = option_json['name']
 

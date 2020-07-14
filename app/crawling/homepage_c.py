@@ -9,6 +9,7 @@ from homepage.inventory_version import get_olv, get_clothesbar, get_nowsaigon, g
     get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela, get_lepoulet, get_colin, get_devons
 from dict_to_db import dict_to_product_model, dict_to_store_model
 from helper.request_helper import get_user_agents
+from utils.slack import slack_notify
 
 
 def update_homepage():
@@ -27,25 +28,31 @@ def update_homepage():
         get_dirtycoins,
     ]
 
-    for home_page_obj in home_page_list:
-        product_list = home_page_obj()
-        dict_to_product_model(product_list)
+    for i, home_page_obj in enumerate(home_page_list):
+        try:
+            product_list = home_page_obj()
+            dict_to_product_model(product_list)
+        except:
+            slack_notify('error occured homepage crawling ', str(i))
 
 
 def validate_homepage():
-    product_list = Product.objects.filter(product_source='HOMEPAGE')
-    for obj_product in product_list:
-        print('.', end='')
-        response = requests.get(obj_product.product_link,
-                                headers={'User-Agent': get_user_agents(),
-                                         'X-Requested-With': 'XMLHttpRequest',
-                                         },)
-        if response.status_code == 404:
-            print('d', end='')
-            obj_product.is_active = False
-            obj_product.validation = 'D'
-            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
-            obj_product.save()
+    product_list = Product.objects.filter(product_source='HOMEPAGE', is_active=True)
+    try:
+        for obj_product in product_list:
+            print('.', end='')
+            response = requests.get(obj_product.product_link,
+                                    headers={'User-Agent': get_user_agents(),
+                                             'X-Requested-With': 'XMLHttpRequest',
+                                             },)
+            if response.status_code == 404:
+                print('d', end='')
+                obj_product.is_active = False
+                obj_product.validation = 'D'
+                obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
+                obj_product.save()
+    except:
+        slack_notify('error occured homepage validating ')
 
 
 if __name__ == '__main__':
