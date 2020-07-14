@@ -42,10 +42,12 @@ class ProductCategoryListView(generics.ListAPIView):
             queryset = queryset.filter(store__pk=store)
         min_price = self.request.query_params.get('min-price')
         if (min_price):
-            queryset = queryset.filter(Q(original_price__gte=min_price) | Q(discount_price__gte=min_price))
+            queryset = queryset.filter(Q(original_price__gte=min_price, is_discount=False)
+                                       | Q(discount_price__gte=min_price, is_discount=True))
         max_price = self.request.query_params.get('max-price')
         if (max_price):
-            queryset = queryset.filter(Q(original_price__lte=max_price) | Q(discount_price__lte=max_price))
+            queryset = queryset.filter(Q(original_price__lte=max_price, is_discount=False)
+                                       | Q(discount_price__lte=max_price, is_discount=True))
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
