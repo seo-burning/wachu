@@ -14,7 +14,8 @@ from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
     ShopeeColor, ShopeeSize, SourceExtraOption
 
 from helper.clean_text import get_cleaned_text_from_color,\
-    get_cleaned_text, get_cleaned_text_from_pattern, get_cleaned_text_from_category, get_cleaned_text_from_size
+    get_cleaned_text, get_cleaned_text_from_pattern, \
+    get_cleaned_text_from_category, get_cleaned_text_from_size
 from django.shortcuts import get_object_or_404
 from store.models import Store, StorePost
 
@@ -471,7 +472,7 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='gum.tailor')
+    store_obj = Store.objects.get(insta_id='doublew.vn')
     # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # pool.map(multi, product_list)
     # # pool.close()

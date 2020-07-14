@@ -36,17 +36,14 @@ def get_cleaned_text_from_size(text):
     if text[-1:] == 'l' or text[-1:] == 'm' or text[-1:] == 's':
         text = text[:-1]
     try:
-        print(int(text[-3:]))
         text = text[:-3]
     except:
         pass
     try:
-        print(int(text[-2:]))
         text = text[:-2]
     except:
         pass
     try:
-        print(int(text[-1:]))
         text = text[:-1]
     except:
         pass

@@ -16,13 +16,16 @@ def update_homepage():
     # dict_to_store_model(dosiin_brand)
     # dosiin_result = get_dosiin()
     # dict_to_product_model(dosiin_result)
-    home_page_list = [get_edini,
-                      get_devons,
-                      get_olv, get_tsun,
-                      get_lepoulet, get_clothesbar, get_nowsaigon, get_hades, get_dirtycoins,
-                      get_degrey, get_libeworkshop, get_swe, get_blvck, get_tatichubeyoung,
-                      get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela, get_colin,
-                      ]
+    home_page_list = [
+        get_nowsaigon,
+        get_devons,
+        get_olv, get_tsun,
+        get_lepoulet, get_clothesbar, get_nowsaigon, get_hades,
+        get_degrey, get_libeworkshop, get_swe, get_blvck, get_tatichubeyoung,
+        get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela,
+        get_colin,
+        get_dirtycoins,
+    ]
 
     for home_page_obj in home_page_list:
         product_list = home_page_obj()
@@ -46,6 +49,6 @@ def validate_homepage():
 
 
 if __name__ == '__main__':
-    validate_homepage()
-    # check_delete()
+    # validate_homepage()
+    update_homepage()
     pass

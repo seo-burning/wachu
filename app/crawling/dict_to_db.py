@@ -256,6 +256,7 @@ def update_obj_product(product_source):
     # 3. 재고 및 품절 처리
     obj_product.stock = product_source['stock']
     if product_source['stock'] == 0:
+        print('s', end='')
         obj_product.is_active = False
         obj_product.stock_available = False
     else:

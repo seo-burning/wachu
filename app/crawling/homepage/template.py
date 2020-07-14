@@ -77,8 +77,8 @@ def extract_json_data(html):
 # In[2]:
 
 
-def get_cleaned_price(price):
-    return int(price/100)
+def get_cleaned_price(price, price_divider=100):
+    return int(price/price_divider)
 
 
 def calculate_discount_rate(original_price, discount_price):
@@ -145,7 +145,8 @@ def define_type_single(option):
     return size_obj, color_obj
 
 
-def get_product_obj_from_json(store, style, url_obj, product_link, option_json, option_type):
+def get_product_obj_from_json(store, style, url_obj,
+                              product_link, option_json, option_type, price_divider, image_type):
         #     title / description
     if 'published_on' in option_json:
         created_at = option_json['published_on'].replace('Z', '')
@@ -154,6 +155,7 @@ def get_product_obj_from_json(store, style, url_obj, product_link, option_json, 
 
     if 'title' in option_json:
         name = option_json['title']
+        print(name)
     elif 'name' in option_json:
         name = option_json['name']
 
@@ -162,14 +164,14 @@ def get_product_obj_from_json(store, style, url_obj, product_link, option_json, 
     elif 'meta_description' in option_json:
         description = option_json['meta_description']
 
-    original_price = get_cleaned_price(option_json['price'])
+    original_price = get_cleaned_price(option_json['price'], price_divider)
     discount_price = None
     discount_rate = None
     is_discount = False
     if (option_json['compare_at_price_max'] != 0.0) & (option_json['price'] != option_json['compare_at_price_max']):
         is_discount = True
-        discount_price = get_cleaned_price(option_json['price'])
-        original_price = get_cleaned_price(option_json['compare_at_price_max'])
+        discount_price = get_cleaned_price(option_json['price'], price_divider)
+        original_price = get_cleaned_price(option_json['compare_at_price_max'], price_divider)
         discount_rate = calculate_discount_rate(original_price, discount_price)
     else:
         discount_price = None
@@ -188,9 +190,12 @@ def get_product_obj_from_json(store, style, url_obj, product_link, option_json, 
     product_thumbnail_image = option_json['featured_image']
     if type(product_thumbnail_image) is dict and 'src' in product_thumbnail_image:
         product_thumbnail_image = product_thumbnail_image['src']
-    product_thumbnail_image = product_thumbnail_image.replace(
-        '.jpg', '_large.jpg').replace('.jpeg', '_large.jpeg')
-
+    if image_type == 1:
+        product_thumbnail_image = product_thumbnail_image.replace(
+            '.jpg', '_large.jpg').replace('.jpeg', '_large.jpeg').replace('.png', '_large.png')
+    elif image_type == 2:
+        product_thumbnail_image = product_thumbnail_image.replace(
+            '.net/', '.net/thumb/medium/')
 #     product options
     product_option_list = []
     shopee_size_list = []
@@ -269,8 +274,9 @@ def get_product_obj_from_soup(store, style, url_obj, product_link, product_soup)
     is_discount = False
     created_at = None
 #     thumbnail
-    product_thumbnail_image = "http:" + product_soup.find("img", class_="product-image-feature").get('src').replace('grande',
-                                                                                                                    'large').replace('1024x1024', 'large')
+    product_thumbnail_image = "http:" + product_soup.find("img",
+                                                          class_="product-image-feature").get('src').replace('grande',
+                                                                                                             'large').replace('1024x1024', 'large').replace('master', 'large')
 
 #     title
     name = product_soup.find('h1').text
@@ -342,7 +348,7 @@ def get_product_obj_from_soup(store, style, url_obj, product_link, product_soup)
 
 def sub_crawler(obj, url, store_pk, style, product_source, url_obj,
                 option_type,
-                script_string,
+                script_string, price_divider, image_type,
                 duplicate_check_list,):
     obj = HomepageCrawler()
     product_list = []
@@ -363,7 +369,9 @@ def sub_crawler(obj, url, store_pk, style, product_source, url_obj,
                 script_list = product_soup.find_all('script')
                 option_json = get_option_from_script(script_list, script_string)
                 option_json = json.loads(option_json)
-                product_obj = get_product_obj_from_json(store, style, url_obj, product_link, option_json, option_type)
+                product_obj = get_product_obj_from_json(
+                    store, style, url_obj, product_link,
+                    option_json, option_type, price_divider, image_type)
             except:
                 product_obj = get_product_obj_from_soup(store, style, url_obj, product_link, product_soup)
             product_list.append(product_obj)
@@ -376,7 +384,8 @@ def homepage_crawler(url, store_pk, style,
                      url_list=['all'],
                      block_name='product-block',
                      option_type=12,
-                     script_string=r'(?<=product:).*'):
+                     script_string=r'(?<=product:).*',
+                     price_divider=100, image_type=1):
     obj = HomepageCrawler()
     product_list = []
     duplicate_check_list = []
@@ -398,6 +407,7 @@ def homepage_crawler(url, store_pk, style,
                                                                  url_obj,
                                                                  option_type,
                                                                  script_string,
+                                                                 price_divider, image_type,
                                                                  duplicate_check_list,
                                                                  )
             product_list = product_list + product_sub_list

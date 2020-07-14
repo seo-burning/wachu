@@ -120,17 +120,6 @@ def get_hades():
                                      url_list,)
 
 
-def get_nowsaigon():
-    print('\nupdate nowsaigon')
-    url_list = ['all', ]
-    return template.homepage_crawler("https://nowsaigon.com",
-                                     297,
-                                     "street",
-                                     url_list,
-                                     block_name='product-box',
-                                     script_string=r'(?<=productJson =).*')
-
-
 def get_clothesbar():
     print('\nupdate clothesbar')
     url_list = ['all', ]
@@ -165,18 +154,18 @@ def get_devons():
     return template.homepage_crawler("https://devons-studio.myharavan.com", 695, 'feminine',
                                      url_list)
 
-# unqualified
 
-
-def get_classysaigon():
+def get_nowsaigon():
     print('\nupdate nowsaigon')
-    return template.homepage_crawler("https://classysg.com",
-                                     52,
+    url_list = ['all', ]
+    return template.homepage_crawler("https://nowsaigon.com",
+                                     297,
                                      "street",
-                                     url_list=['all'],
+                                     url_list,
                                      block_name='product-box',
-                                     script_string=r'(?<=productJson =).*')
-
+                                     script_string=r'(?<=productJson =).*',
+                                     price_divider=1,
+                                     image_type=2)
 #   error cloud flare ddos
 
 
@@ -189,7 +178,9 @@ def get_dirtycoins():
                                      294,
                                      "street",
                                      url_list,
-                                     block_name='single-product')
+                                     block_name='single-product',
+                                     price_divider=1,
+                                     image_type=2)
 
 
 # shopee
@@ -201,3 +192,15 @@ def get_xxme():
                                      "street",
                                      url_list,
                                      block_name='product-item')
+
+# unqualified
+
+
+def get_classysaigon():
+    print('\nupdate nowsaigon')
+    return template.homepage_crawler("https://classysg.com",
+                                     52,
+                                     "street",
+                                     url_list=['all'],
+                                     block_name='product-box',
+                                     script_string=r'(?<=productJson =).*')
