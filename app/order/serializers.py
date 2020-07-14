@@ -54,7 +54,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'orderedproduct_set__product_option',
             'orderedproduct_set__product_option__color',
             'orderedproduct_set__product_option__size',
-            'orderedproduct_set__product_option__extra_option',
             'orderedproduct_set__product__post__post_image_set',
             'orderedproduct_set__product__color',
             'orderedproduct_set__product__style',
@@ -74,8 +73,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'orderedproduct_set__product__product_options',
             'orderedproduct_set__product__product_options__color',
             'orderedproduct_set__product__product_options__size',
-            'orderedproduct_set__product__product_options__extra_option',
-
         )
         return queryset
 

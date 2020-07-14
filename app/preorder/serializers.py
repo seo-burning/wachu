@@ -44,7 +44,5 @@ class PreorderCampaignProductSerialzier(serializers.ModelSerializer):
             'product_set__product_options',
             'product_set__product_options__size',
             'product_set__product_options__color',
-            'product_set__product_options__extra_option',
-
         )
         return queryset
