@@ -305,14 +305,25 @@ class ShopeeRatingAdmin(admin.ModelAdmin):
 @admin.register(models.ShopeeCategory)
 class ShopeeCategoryAdmin(admin.ModelAdmin):
     list_display = ['catid', 'is_valid', 'no_sub', 'display_name', 'category', 'sub_category', 'product_num']
-    # list_editable = ['category', 'sub_category']
     list_filter = ['category', 'sub_category', 'no_sub', 'is_valid']
     search_fields = ['display_name', ]
     inlines = [ProductShopeeCategoryThroughInline, ]
+    actions = ['make_related_product_review_state', ]
 
     def product_num(self, obj):
         product_num = obj.product_set.all().filter(shopee_category=obj).count()
         return product_num
+
+    def make_related_product_review_state(self, request, queryset):
+        for obj in queryset.all():
+            for po in obj.product_set.all():
+                po.validation = 'R'
+                po.is_active = False
+                po.save()
+            obj.is_valid = False
+            obj.category = None
+            obj.sub_cateogry = None
+            obj.save()
 
 
 @admin.register(models.ShopeeSize)
