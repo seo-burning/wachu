@@ -471,7 +471,8 @@ class Product(admin.ModelAdmin):
                'product_style_street',
                'product_style_feminine',
                'make_name_to_option',
-               'product_category_dam_kieu'
+               'product_category_dam_kieu',
+               'product_category_ao_somi',
                ]
 
     def make_activate(self, request, queryset):
@@ -542,6 +543,13 @@ class Product(admin.ModelAdmin):
         updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
+
+    def product_category_ao_somi(self, request, queryset):
+        sub_categroy_dam = models.ProductSubCategory.objects.get(name='shirts')
+        updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
+        self.message_user(
+            request, '{}건의 상품 분류'.format(updated_count))
+    product_category_ao_somi.short_description = 'Ao somi'
 
     def product_pattern_print(self, request, queryset):
         print_pattern = models.ProductPattern.objects.get(name='print')
@@ -631,16 +639,16 @@ class Product(admin.ModelAdmin):
             request, '{}건의 상품에 lovely 스타일 분류'.format(updated_count))
     product_style_lovely.short_description = '스타일 분류 - lovely'
 
-    def product_style_lovely(self, request, queryset):
-        lovely_style = models.ProductStyle.objects.get(name='lovely')
+    def product_style_street(self, request, queryset):
+        street_style = models.ProductStyle.objects.get(name='street')
         updated_count = 0
         for obj in queryset.all():
-            obj.style = lovely_style
+            obj.style = street_style
             obj.save()
             updated_count = updated_count + 1
         self.message_user(
-            request, '{}건의 상품에 lovely 스타일 분류'.format(updated_count))
-    product_style_lovely.short_description = '스타일 분류 - lovely'
+            request, '{}건의 상품에 street 스타일 분류'.format(updated_count))
+    product_style_street.short_description = '스타일 분류 - street'
 
     def product_style_feminine(self, request, queryset):
         feminine_style = models.ProductStyle.objects.get(name='feminine')
