@@ -6,7 +6,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pick', '0002_remove_chupoint_tpo'),
         ('store', '0002_auto_20190705_0845'),
     ]
 

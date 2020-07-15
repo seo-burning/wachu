@@ -3,5 +3,5 @@ from django.urls import path
 from pick import views
 
 urlpatterns = [
-    path('chu-pick-set/', views.ChuPickSetView.as_view()),
+    path('pick-set/', views.PickSetView.as_view()),
 ]

@@ -5,9 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from pick import serializers, models
 
 
-class ChuPickSetView(generics.ListAPIView):
-    serializer_class = serializers.ChuPickSetSerializer
-    queryset = models.ChuPickSet.objects.all()
+class PickSetView(generics.ListAPIView):
+    serializer_class = serializers.PickABSerializer
+    queryset = models.PickAB.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
