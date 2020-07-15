@@ -1,4 +1,11 @@
 from django.db import models
+import sys
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
+from django.utils.safestring import mark_safe
+
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel, User
@@ -63,3 +70,34 @@ class Pick(TimeStampedModel, PickPointModel):
     ab_pick_set = models.ForeignKey(
         PickAB, related_name='picks', on_delete=models.SET_NULL,
         default=None, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.image = self.compressImage(self.image)
+        super(Pick, self).save(*args, **kwargs)
+
+    def compressImage(self, image):
+        imageTemproary = Image.open(image)
+        if imageTemproary.mode != 'RGB':
+            imageTemproary = imageTemproary.convert('RGB')
+        if image.width > 500:
+            compress_ratio = image.width / 500
+            imageTemproary = imageTemproary.resize((500, int(image.height/compress_ratio)))
+        outputIoStream = BytesIO()
+        imageTemproary.save(outputIoStream, format='JPEG', quality=70)
+        outputIoStream.seek(0)
+        uploadedImage = InMemoryUploadedFile(outputIoStream, 'ImageField',
+                                             "%s.jpg" % image.name.split('.')[0],
+                                             'image/jpeg', sys.getsizeof(outputIoStream), None)
+        return uploadedImage
+
+    def __str__(self):
+        if self.image:
+            thumb_image = self.image
+        else:
+            thumb_image = "http://dabivn.comm"
+
+        return mark_safe('<img src="{url}" \
+        width="250" height="250" border="1" />'.format(
+            url=thumb_image
+        ))
