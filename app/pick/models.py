@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel, User
 from product.models import ProductCategory, ProductColor
-from store.models import Store, Primary_Style, Secondary_Style, Age
+from store.models import Primary_Style, Secondary_Style, Age
 
 
 class PickPointModel(models.Model):
