@@ -3,7 +3,7 @@ import datetime
 from shopee_c import update_shopee, validate_shopee
 from point_calculating import calculate_store_review_rating, \
     calculate_product_review_rating, calculate_store_point
-
+from manual_update import preview_image_update
 from homepage_c import update_homepage, validate_homepage
 from utils.slack import slack_notify
 
@@ -24,6 +24,7 @@ if __name__ == '__main__':
         update_shopee()
         update_homepage()
         calculating()
+        preview_image_update()
         slack_notify('*update data @' + date+'*' + 'done')
     else:
         slack_notify('*update(validate) data @' + date+'*')
@@ -31,4 +32,5 @@ if __name__ == '__main__':
         validate_shopee()
         validate_homepage()
         calculating()
+        preview_image_update()
         slack_notify('*update(validate) data @' + date+'*' + 'done')

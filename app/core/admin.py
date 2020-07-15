@@ -15,7 +15,14 @@ class UserAdmin(BaseUserAdmin, ExportCsvMixin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal Info'), {
-         'fields': ('name', 'gender', 'height', 'weight', 'age', 'profile_image')}),
+         'fields': ('name',
+                    'gender',
+                    'age',
+                    'profile_image',
+                    'height',
+                    'weight',
+                    'region'
+                    )}),
         (
             _('Permission'),
             {

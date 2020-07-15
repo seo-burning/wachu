@@ -97,7 +97,7 @@ class FavoriteProductSerializer(serializers.ModelSerializer):
 class UserBasicInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('gender', 'age',)
+        fields = ('gender', 'age', 'region')
 
 
 class UserAdditionalInfoSerializer(serializers.ModelSerializer):

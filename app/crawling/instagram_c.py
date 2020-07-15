@@ -467,7 +467,7 @@ def update_profile_image(store_list):
     obj = InstagramScraper()
     for store_obj in list(store_list):
         try:
-            obj.update_profile(store_obj.insta_url)
+            # obj.update_profile(store_obj.insta_url)
             thumb_image_upload(store_obj)
         except:
             print(store_obj)
@@ -475,8 +475,9 @@ def update_profile_image(store_list):
 
 if __name__ == '__main__':
     store_list = []
-    for store_obj in Store.objects.filter(store_type='IF(P)'):
-        store_list.append(store_obj)
+    for store_obj in Store.objects.filter(is_active=True):
+        if 'http' in str(store_obj.profile_image):
+            store_list.append(store_obj)
     update_profile_image(store_list)
 # 	libeworkshop
 # 	smokaholic80s

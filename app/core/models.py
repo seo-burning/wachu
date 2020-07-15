@@ -7,7 +7,7 @@ import csv
 from django.http import HttpResponse
 from user.models import UserFavoriteProduct
 from product.models import Product
-from .abstract_models import TimeStampedModel
+from .abstract_models import TimeStampedModel, DispalyNameModel
 
 
 class ExportCsvMixin:
@@ -53,7 +53,12 @@ class UserManager(BaseUserManager):
         return user
 
 
-GENDER_CHOICES_FIELD = [('female', 'female'), ('male', 'male')]
+class Region(TimeStampedModel, DispalyNameModel):
+    def __str__(self):
+        return self.display_name
+
+
+GENDER_CHOICES_FIELD = [('female', 'female'), ('male', 'male'), ]
 
 
 class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
@@ -61,10 +66,14 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     age = models.IntegerField(null=True)
-    height = models.IntegerField(blank=True, null=True)
-    weight = models.IntegerField(blank=True, null=True)
     gender = models.CharField(
         max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
+    region = models.ForeignKey(Region,
+                               on_delete=models.SET_NULL, blank=True, null=True)
+
+    height = models.IntegerField(blank=True, null=True)
+    weight = models.IntegerField(blank=True, null=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     profile_image = models.ImageField(

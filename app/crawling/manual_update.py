@@ -107,4 +107,4 @@ def update_store_validation():
 
 
 if __name__ == '__main__':
-    update_store_validation()
+    preview_image_update()
