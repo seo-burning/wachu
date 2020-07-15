@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from core.models import TimeStampedModel, User
 from product.models import ProductCategory, ProductColor
 from store.models import Primary_Style, Secondary_Style, Age
+from utils.helper.image_processing import create_presigned_url
 
 
 class PickPointModel(models.Model):
@@ -93,7 +94,7 @@ class Pick(TimeStampedModel, PickPointModel):
 
     def __str__(self):
         if self.image:
-            thumb_image = self.image
+            thumb_image = create_presigned_url('wachu', 'media/'+str(self.image), expiration=3000)
         else:
             thumb_image = "http://dabivn.comm"
 
