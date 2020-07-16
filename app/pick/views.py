@@ -13,3 +13,12 @@ class PickSetView(generics.ListAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(is_published=True)
+
+
+class PickABResultCreateView(generics.CreateAPIView):
+    serializer_class = serializers.PickABResultSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

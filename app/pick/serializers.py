@@ -13,5 +13,12 @@ class PickABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PickAB
-        fields = ('title',
+        fields = ('title', 'pk',
                   'picks', 'is_published')
+
+
+class PickABResultSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.PickABResult
+        fields = ('pick_AB', 'selection')

@@ -59,7 +59,7 @@ urlpatterns = [
     path('api/preorder/', include('preorder.urls')),
     path('api/store/', include('store.urls')),
     path('api/publish/', include('publish.urls')),
-    path('api/chu/', include('pick.urls')),
+    path('api/pick/', include('pick.urls')),
     path('api/auth/', include('rest_auth.urls')),
     path('api/core/', include('core.urls')),
     path('api/order/', include('order.urls')),

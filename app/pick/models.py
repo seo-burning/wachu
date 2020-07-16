@@ -58,7 +58,7 @@ class PickABResult(TimeStampedModel):
         ('A', 'A'), ('B', 'B')), null=True)
 
     def __str__(self):
-        return "{} - rating : {}".format(self.user, self.pick_rating)
+        return "{} - {} => {}".format(self.user, self.pick_AB, self.selection)
 
 
 class Pick(TimeStampedModel, PickPointModel):
