@@ -175,7 +175,8 @@ class PostTagGroup(TimeStampedModel):
         image_string = ''
         queryset = self.get_related_queryset()
         for obj in queryset.all()[:10]:
-            image_string += str(obj)
+            image_string += '<a href="https://dabivn.com/admin/product/product/{pk}">{image}</a>'.format(
+                pk=obj.pk, image=str(obj))
         return mark_safe('</td><tr/><tr class="row2"><td colspan=13>'+image_string+'</td><tr/>')
 
 
