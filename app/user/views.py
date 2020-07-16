@@ -175,12 +175,21 @@ class UserStyleUpdateView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, format=None):
-        """Retrieve and return authenticated user"""
         user = self.request.user
-        pickAB_results = user.pickAB_results.all()
-        print(pickAB_results)
-        for pick_obj in pickAB_results:
-            pass
+        pickAB_results = user.pickAB_results.select_related('pick_AB').prefetch_related('pick_AB__picks').all()
+        points = {'simple': 0,
+                  'sexy': 0,
+                  'feminine': 0,
+                  'lovely': 0,
+                  'street': 0, }
+        for pick_result_obj in pickAB_results:
+            selection = pick_result_obj.selection
+            selected_pick = pick_result_obj.pick_AB.picks.all()[int(selection)]
+            primary_style = selected_pick.primary_style
+            secondary_style = selected_pick.secondary_style
+            points[str(primary_style)] += 5
+            points[str(secondary_style)] += 3
+        print(points)
         return Response()
 
 

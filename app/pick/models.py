@@ -9,8 +9,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel, User
-from product.models import ProductCategory, ProductColor
-from store.models import Primary_Style, Secondary_Style, Age
+from product.models import ProductCategory, ProductColor, ProductStyle
+from store.models import Age
 from utils.helper.image_processing import create_presigned_url
 
 
@@ -46,17 +46,19 @@ class PickPointModel(models.Model):
     product_category = models.ManyToManyField(
         ProductCategory,
         blank=True,
-        symmetrical=False,
-        related_name="product_category_set")
+        symmetrical=False)
     product_color = models.ManyToManyField(
         ProductColor,
         blank=True,
-        symmetrical=False,
-        related_name="product_color_set")
+        symmetrical=False)
     primary_style = models.ForeignKey(
-        Primary_Style, on_delete=models.CASCADE, null=True, blank=True)
+        ProductStyle, on_delete=models.CASCADE,
+        related_name='picks_on_primary_style',
+        null=True, blank=True)
     secondary_style = models.ForeignKey(
-        Secondary_Style, on_delete=models.CASCADE, null=True, blank=True)
+        ProductStyle, on_delete=models.CASCADE,
+        related_name='picks_on_secondary_style',
+        null=True, blank=True)
     age = models.ForeignKey(
         Age, on_delete=models.CASCADE, null=True, blank=True)
 

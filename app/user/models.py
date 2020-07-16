@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
-from product.models import Product
+from product.models import Product, ProductStyle
 from store.models import Store
 
 
@@ -76,3 +76,21 @@ class Recipient(RecipientModel):
 
     class Meta:
         ordering = ['-primary', ]
+
+
+class UserStyleTaste(TimeStampedModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, null=True)
+    lovely = models.IntegerField(default=0)
+    sexy = models.IntegerField(default=0)
+    simple = models.IntegerField(default=0)
+    street = models.IntegerField(default=0)
+    feminine = models.IntegerField(default=0)
+    primary_style = models.ForeignKey(
+        ProductStyle, on_delete=models.CASCADE,
+        related_name='user_style_tastes_on_primary_style',
+        null=True, blank=True)
+    secondary_style = models.ForeignKey(
+        ProductStyle, on_delete=models.CASCADE,
+        related_name='user_style_tastes_on_secondary_style',
+        null=True, blank=True)
