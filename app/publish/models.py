@@ -81,6 +81,9 @@ class PostTagGroup(TimeStampedModel):
     style = models.ForeignKey(
         p_models.ProductStyle, on_delete=models.SET_NULL,
         null=True, blank=True)
+    pattern = models.ForeignKey(
+        p_models.ProductPattern, on_delete=models.SET_NULL,
+        null=True, blank=True)
     store = models.ForeignKey(
         Store, on_delete=models.SET_NULL, null=True, blank=True)
     product_number = models.IntegerField(default=10)
@@ -103,10 +106,12 @@ class PostTagGroup(TimeStampedModel):
             color = 'color='+self.color.name + '&'
         if (self.style):
             style = 'style='+self.style.name + '&'
+        if (self.pattern):
+            pattern = 'pattern='+self.pattern.name + '&'
         if (self.store):
             store = 'store='+str(self.store.pk) + '&'
         return ('http://dabivn.com/api/product/category/' +
-                category+sub_category+color+style+store+product_number)
+                category+sub_category+color+style+pattern+store+product_number)
 
 
 class MainPagePublish(TimeStampedModel):

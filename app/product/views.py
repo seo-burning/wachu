@@ -14,7 +14,7 @@ class ProductCategoryListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.Product.objects.filter(is_active=True).order_by('-pk')
+        queryset = models.Product.objects.filter(is_active=True)
         category = self.kwargs['product_category']
         if (category != 'all'):
             queryset = queryset.filter(category__name=category)
@@ -58,7 +58,7 @@ class ProductSearchListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.Product.objects.filter(is_active=True).order_by('-pk')
+        queryset = models.Product.objects.filter(is_active=True)
         q_filter = []
         q = self.request.query_params.get('q')
         if(q):

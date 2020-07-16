@@ -1,6 +1,8 @@
+from django.db.models import Q
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from publish import models
+from product.models import Product
 # Register your models here.
 
 
@@ -16,20 +18,6 @@ class StorePostInline(admin.TabularInline):
         width="200" height="200" border="1" />'.format(
             url=instance.storepost.post_thumb_image
         ))
-
-
-@admin.register(models.PostTagGroup)
-class PostTagGroupAdmin(admin.ModelAdmin):
-    fields = ['ordering', 'published_banner', 'category',
-              'sub_category', 'color',
-              'style', 'store', 'product_number']
-    list_display = ['__str__', 'ordering', 'published_banner',
-                    'category', 'sub_category', 'color',
-                    'style', 'store', 'product_number']
-    list_display_links = ['__str__', 'ordering', 'published_banner',
-                          'category', 'sub_category', 'color',
-                          'style', 'store', 'product_number']
-    raw_id_fields = ['store', ]
 
 
 class PostTagGroupInline(admin.StackedInline):
@@ -142,3 +130,40 @@ class MagazinePublishAdmin(admin.ModelAdmin):
 
     def post_group_number(self, instance):
         return len(instance.postgroup_set.all())
+
+
+@admin.register(models.PostTagGroup)
+class PostTagGroupAdmin(admin.ModelAdmin):
+    fields = ['ordering', 'published_banner', 'category',
+              'sub_category', 'color',
+              'style', 'pattern', 'store', 'product_number']
+    list_display = ['__str__', 'ordering', 'related_product_num',
+                    'published_banner',
+                    'category', 'sub_category', 'color',
+                    'style', 'pattern', 'store', 'product_number']
+    list_display_links = ['__str__', 'ordering', 'published_banner',
+                          'category', 'sub_category', 'color', 'pattern',
+                          'style', 'store', 'product_number']
+    raw_id_fields = ['store', ]
+
+    def related_product_num(self, obj):
+        queryset = Product.objects.filter(is_active=True)
+        if (category != 'all'):
+            queryset = queryset.filter(category=category)
+        sub_category = obj.sub_category
+        if (sub_category):
+            queryset = queryset.filter(sub_category=sub_category)
+        color = obj.color
+        if (color):
+            queryset = queryset.filter(color=color)
+        style = obj.style
+        if (style):
+            queryset = queryset.filter(style=style)
+        pattern = obj.pattern
+        if (pattern):
+            queryset = queryset.filter(pattern=pattern)
+        store = obj.store
+        if (store):
+            queryset = queryset.filter(store=store)
+        min_price = obj.min-price
+        return queryset.count()
