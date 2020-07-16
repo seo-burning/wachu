@@ -1,7 +1,8 @@
-from django.db.models import Q
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from publish import models
+from django.utils.safestring import mark_safe
+
 from product.models import Product
 # Register your models here.
 
@@ -136,20 +137,27 @@ class MagazinePublishAdmin(admin.ModelAdmin):
 class PostTagGroupAdmin(admin.ModelAdmin):
     fields = ['ordering', 'published_banner', 'category',
               'sub_category', 'color',
-              'style', 'pattern', 'store', 'product_number']
-    list_display = ['__str__', 'ordering', 'related_product_num',
+              'style', 'pattern', 'store', 'product_number', 'preview']
+    list_display = ['__str__',
+                    'ordering',
+                    'related_product_num',
                     'published_banner',
-                    'category', 'sub_category', 'color',
-                    'style', 'pattern', 'store', 'product_number']
+                    'category',
+                    'sub_category',
+                    'color',
+                    'style',
+                    'pattern',
+                    'store',
+                    'product_number']
     list_display_links = ['__str__', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color', 'pattern',
                           'style', 'store', 'product_number']
     raw_id_fields = ['store', ]
 
-    def related_product_num(self, obj):
+    def get_queryset(self, obj):
         queryset = Product.objects.filter(is_active=True)
-        if (category != 'all'):
-            queryset = queryset.filter(category=category)
+        if (obj.category):
+            queryset = queryset.filter(category=obj.category)
         sub_category = obj.sub_category
         if (sub_category):
             queryset = queryset.filter(sub_category=sub_category)
@@ -165,5 +173,14 @@ class PostTagGroupAdmin(admin.ModelAdmin):
         store = obj.store
         if (store):
             queryset = queryset.filter(store=store)
-        min_price = obj.min-price
+        return queryset
+
+    def related_product_num(self, obj):
+        queryset = self.get_queryset()
         return queryset.count()
+
+    def preview(self, obj):
+        image_string = ''
+        for obj in queryset.all():
+            image_string += str(obj)
+        return mark_safe(image_string)
