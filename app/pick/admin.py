@@ -4,16 +4,6 @@ from django.utils.translation import gettext as _
 from pick import models
 
 
-@admin.register(models.Pick)
-class PickAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(models.PickABResult)
-class PickABResultAdmin(admin.ModelAdmin):
-    pass
-
-
 class PickInline(admin.StackedInline):
     model = models.Pick
     max_num = 50
@@ -23,8 +13,22 @@ class PickInline(admin.StackedInline):
     verbose_name_plural = _('PickAB')
 
 
+@admin.register(models.Pick)
+class PickAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'ab_pick_set',
+                    'primary_style', 'secondary_style', 'age')
+
+
 @admin.register(models.PickAB)
 class PickABAdmin(admin.ModelAdmin):
-    list_display = ('is_published', 'title', )
-    verbose_name = _('PickAB')
-    verbose_name_plural = _('PickAB')
+    inlines = [PickInline, ]
+    list_display = ('is_published', 'title', 'pick_num')
+
+    def pick_num(self, obj):
+        pick_num = obj.picks.all().count()
+        return pick_num
+
+
+@admin.register(models.PickABResult)
+class PickABResultAdmin(admin.ModelAdmin):
+    pass
