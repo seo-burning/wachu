@@ -132,11 +132,14 @@ class MagazinePublishAdmin(admin.ModelAdmin):
 
 @admin.register(models.PostTagGroup)
 class PostTagGroupAdmin(admin.ModelAdmin):
-    fields = ['ordering', 'published_banner', 'category',
+    fields = ['ordering', 'is_active', 'published_banner', 'category',
               'sub_category', 'color',
-              'style', 'pattern', 'store', 'product_number']
+              'style', 'pattern', 'store',
+              'product_number']
     read_only_fields = ['preview', ]
+    list_per_page = 50
     list_display = ['__str__',
+                    'is_active',
                     'ordering',
                     'related_product_num',
                     'published_banner',
@@ -149,7 +152,20 @@ class PostTagGroupAdmin(admin.ModelAdmin):
                     'product_number',
                     'preview']
     ordering = ['-updated_at']
-    list_display_links = ['__str__', 'ordering', 'published_banner',
+    list_display_links = ['__str__', 'is_active', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color', 'pattern',
                           'style', 'store', 'product_number']
     raw_id_fields = ['store', ]
+    actions = ['make_activate', 'make_deactivate', ]
+
+    def make_activate(self, request, queryset):
+        updated_count = queryset.update(is_active=True)
+        self.message_user(
+            request, '{}Activated 상태로 변경'.format(updated_count))
+    make_activate.short_description = 'Activate 상태로 변경'
+
+    def make_deactivate(self, request, queryset):
+        updated_count = queryset.update(is_active=False)
+        self.message_user(
+            request, '{}Deavtivate 상태로 변경'.format(updated_count))
+    make_deactivate.short_description = 'Deactivate 상태로 변경'

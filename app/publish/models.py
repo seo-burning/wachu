@@ -65,7 +65,7 @@ class PostGroup(TimeStampedModel):
         return self.title
 
 
-class PostTagGroup(TimeStampedModel):
+class PostTagGroup(TimeStampedModel, ActiveModel):
 
     class Meta:
         ordering = ('ordering',)

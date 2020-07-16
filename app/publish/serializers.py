@@ -105,6 +105,20 @@ class PostTagGroupSerializer(serializers.ModelSerializer):
         fields = ('__str__', 'category', 'sub_category',
                   'color', 'style', 'store')
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(
+            'store',
+            'category',
+            'sub_category',
+            'color',
+            'style',
+        )
+
+        return queryset
+
 
 class MainPagePublishSerializer(serializers.ModelSerializer):
     posttaggroup_set = PostTagGroupSerializer(many=True)
