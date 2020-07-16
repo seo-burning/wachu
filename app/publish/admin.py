@@ -135,7 +135,7 @@ class MagazinePublishAdmin(admin.ModelAdmin):
 class PostTagGroupAdmin(admin.ModelAdmin):
     fields = ['ordering', 'published_banner', 'category',
               'sub_category', 'color',
-              'style', 'pattern', 'store', 'product_number', 'preview']
+              'style', 'pattern', 'store', 'product_number']
     read_only_fields = ['preview', ]
     list_display = ['__str__',
                     'ordering',
