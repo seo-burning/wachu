@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.db.models.constraints import UniqueConstraint
+from django.db.models import Q
 
 from core.abstract_models import TimeStampedModel, ActiveModel, OrderingModel
 from store.models import StorePost
@@ -69,7 +71,35 @@ class PostTagGroup(TimeStampedModel):
         ordering = ('ordering',)
         verbose_name = u'상품 그룹 태그 / Product Group by Tag'
         verbose_name_plural = verbose_name
-
+        constraints = [
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             name='pick_unique_with_everything'),
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             condition=Q(category=None),
+                             name='pick_unique_with_everything_with_category_none'),
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             condition=Q(sub_category=None),
+                             name='pick_unique_with_everything_with_sub_category_none'),
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             condition=Q(color=None),
+                             name='pick_unique_with_everything_with_primary_style_none'),
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             condition=Q(style=None),
+                             name='pick_unique_with_everything_with_style_none'),
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             condition=Q(pattern=None),
+                             name='pick_unique_with_everything_with_pattern_none'),
+            UniqueConstraint(fields=['category', 'sub_category',
+                                     'color', 'style', 'pattern', 'store'],
+                             condition=Q(store=None),
+                             name='pick_unique_with_everything_with_store_none'),
+        ]
     ordering = models.IntegerField(default=999, null=True)
     category = models.ForeignKey(
         p_models.ProductCategory, on_delete=models.SET_NULL,

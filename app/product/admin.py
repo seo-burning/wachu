@@ -443,7 +443,7 @@ class Product(admin.ModelAdmin):
                  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
                  ]
     list_display_links = ['product_summary', ]
-    search_fields = ['store__insta_id', 'name']
+    search_fields = ['store__insta_id', 'name', 'pk']
     list_select_related = ('category', 'sub_category')
     list_prefetch_related = ('size', 'color')
     list_filter = [
@@ -452,6 +452,7 @@ class Product(admin.ModelAdmin):
         'stock_available',
         'sub_category',
         'product_source',
+        'style'
     ]
     actions = ['make_activate', 'make_deactivate',
                'make_valid_and_active',

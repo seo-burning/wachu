@@ -14,28 +14,6 @@ from store.models import Primary_Style, Secondary_Style, Age
 from utils.helper.image_processing import create_presigned_url
 
 
-class PickPointModel(models.Model):
-    class Meta:
-        abstract = True
-    # Categorizing Fields ( updated by admin user )
-    product_category = models.ManyToManyField(
-        ProductCategory,
-        blank=True,
-        symmetrical=False,
-        related_name="product_category_set")
-    product_color = models.ManyToManyField(
-        ProductColor,
-        blank=True,
-        symmetrical=False,
-        related_name="product_color_set")
-    primary_style = models.ForeignKey(
-        Primary_Style, on_delete=models.CASCADE, null=True, blank=True)
-    secondary_style = models.ForeignKey(
-        Secondary_Style, on_delete=models.CASCADE, null=True, blank=True)
-    age = models.ForeignKey(
-        Age, on_delete=models.CASCADE, null=True, blank=True)
-
-
 class PickAB(TimeStampedModel):
     class Meta:
         verbose_name = _('Pick AB / AB 픽')
@@ -59,6 +37,28 @@ class PickABResult(TimeStampedModel):
 
     def __str__(self):
         return "{} - {} => {}".format(self.user, self.pick_AB, self.selection)
+
+
+class PickPointModel(models.Model):
+    class Meta:
+        abstract = True
+    # Categorizing Fields ( updated by admin user )
+    product_category = models.ManyToManyField(
+        ProductCategory,
+        blank=True,
+        symmetrical=False,
+        related_name="product_category_set")
+    product_color = models.ManyToManyField(
+        ProductColor,
+        blank=True,
+        symmetrical=False,
+        related_name="product_color_set")
+    primary_style = models.ForeignKey(
+        Primary_Style, on_delete=models.CASCADE, null=True, blank=True)
+    secondary_style = models.ForeignKey(
+        Secondary_Style, on_delete=models.CASCADE, null=True, blank=True)
+    age = models.ForeignKey(
+        Age, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Pick(TimeStampedModel, PickPointModel):
