@@ -166,10 +166,9 @@ class StoreSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related('primary_style')
         queryset = queryset.select_related('secondary_style')
         queryset = queryset.select_related('age')
-        queryset = queryset.prefetch_related('store_address_set__region')
         queryset = queryset.prefetch_related('category')
         queryset = queryset.prefetch_related('favorite_users')
-        queryset = queryset.prefetch_related('store_address_set', 'product_category')
+        queryset = queryset.prefetch_related('product_category')
 
         return queryset
 
