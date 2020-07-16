@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,\
 import csv
 from django.http import HttpResponse
 from user.models import UserFavoriteProduct
-from product.models import Product
+from product.models import Product, ProductStyle
 from .abstract_models import TimeStampedModel, DispalyNameModel
 
 
@@ -73,6 +73,15 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
     region = models.ForeignKey(Region,
                                on_delete=models.SET_NULL, blank=True, null=True)
+
+    primary_style = models.ForeignKey(
+        ProductStyle, on_delete=models.SET_NULL,
+        related_name='user_on_primary_style',
+        null=True, blank=True)
+    secondary_style = models.ForeignKey(
+        ProductStyle, on_delete=models.SET_NULL,
+        related_name='user_on_secondary_style',
+        null=True, blank=True)
 
     height = models.IntegerField(blank=True, null=True)
     weight = models.IntegerField(blank=True, null=True)

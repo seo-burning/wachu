@@ -13,8 +13,8 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, Store
 from core.models import UserPushToken
-from .models import UserFavoriteProduct, ProductReview, Recipient
-from product.models import Product
+from .models import UserFavoriteProduct, ProductReview, Recipient, UserStyleTaste
+from product.models import Product, ProductStyle
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -187,10 +187,36 @@ class UserStyleUpdateView(APIView):
             selected_pick = pick_result_obj.pick_AB.picks.all()[int(selection)]
             primary_style = selected_pick.primary_style
             secondary_style = selected_pick.secondary_style
-            points[str(primary_style)] += 5
-            points[str(secondary_style)] += 3
-        print(points)
-        return Response()
+            points[str(primary_style)] += 4
+            points[str(secondary_style)] += 1
+        p_style = None
+        p_v = 0
+        s_style = None
+        s_v = 0
+        for key, value in points.items():
+            if value > s_v:
+                s_v = value
+                s_style = key
+            if value > p_v:
+                s_style = p_style
+                s_v = p_v
+                p_style = key
+                p_v = value
+        primary_style = ProductStyle.objects.get(name=p_style)
+        secondary_style = ProductStyle.objects.get(name=s_style)
+        UserStyleTaste.objects.create(user=user,
+                                      lovely=points['lovely'],
+                                      sexy=points['sexy'],
+                                      simple=points['simple'],
+                                      street=points['street'],
+                                      feminine=points['feminine'],
+                                      primary_style=primary_style,
+                                      secondary_style=secondary_style)
+        user.primary_style = primary_style
+        user.secondary_style = secondary_style
+        user.save()
+        print(points, primary_style, secondary_style)
+        return Response({'primary_style': p_style, 'secondary_style': s_style})
 
 
 class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
