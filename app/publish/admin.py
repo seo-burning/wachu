@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from publish import models
-from product.models import Product
 # Register your models here.
 
 
@@ -149,6 +148,7 @@ class PostTagGroupAdmin(admin.ModelAdmin):
                     'store',
                     'product_number',
                     'preview']
+    ordering = ['-updated_at']
     list_display_links = ['__str__', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color', 'pattern',
                           'style', 'store', 'product_number']
