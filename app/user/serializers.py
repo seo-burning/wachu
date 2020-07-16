@@ -100,10 +100,10 @@ class UserBasicInfoSerializer(serializers.ModelSerializer):
         fields = ('gender', 'age', 'region')
 
 
-class UserAdditionalInfoSerializer(serializers.ModelSerializer):
+class UserStyleSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('height', 'weight')
+        fields = []
 
 
 class UserNameSerializer(serializers.ModelSerializer):

@@ -27,13 +27,13 @@ class PickAB(TimeStampedModel):
 
 class PickABResult(TimeStampedModel):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, default=None)
+        User, on_delete=models.CASCADE, related_name='pickAB_results', default=None)
     pick_AB = models.ForeignKey(
         PickAB,
         on_delete=models.CASCADE,
         default=None)
     selection = models.CharField(max_length=2, choices=(
-        ('A', 'A'), ('B', 'B')), null=True)
+        (0, 0), (1, 1), (2, 2)), null=True)
 
     def __str__(self):
         return "{} - {} => {}".format(self.user, self.pick_AB, self.selection)

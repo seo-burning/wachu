@@ -1,7 +1,8 @@
 from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework import status
 from allauth.account.adapter import get_adapter
 
@@ -146,17 +147,6 @@ class UserBasicInfoUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class UserAdditionalInfoUpdateView(generics.RetrieveUpdateAPIView):
-    """Update user basic infomation"""
-    serializer_class = serializers.UserAdditionalInfoSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_object(self):
-        """Retrieve and return authenticated user"""
-        return self.request.user
-
-
 class UserNameUpdateView(generics.RetrieveUpdateAPIView):
     """Update user basic infomation"""
     serializer_class = serializers.UserNameSerializer
@@ -177,6 +167,21 @@ class UserInformationStatusUpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+
+
+class UserStyleUpdateView(APIView):
+    serializer_class = serializers.UserStyleSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, format=None):
+        """Retrieve and return authenticated user"""
+        user = self.request.user
+        pickAB_results = user.pickAB_results.all()
+        print(pickAB_results)
+        for pick_obj in pickAB_results:
+            pass
+        return Response()
 
 
 class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
