@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from publish import models
-from django.utils.safestring import mark_safe
-
 from product.models import Product
 # Register your models here.
 
@@ -181,6 +179,7 @@ class PostTagGroupAdmin(admin.ModelAdmin):
 
     def preview(self, obj):
         image_string = ''
+        queryset = self.get_queryset()
         for obj in queryset.all():
             image_string += str(obj)
         return mark_safe(image_string)
