@@ -112,6 +112,12 @@ class UserNameSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class UserInformationStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ('information_status',)
+
+
 class UserProfileImageCreateSerializer(serializers.ModelSerializer):
     profile_image = Base64ImageField(max_length=None, use_url=True)
 
@@ -128,7 +134,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'password', 'name',
+        fields = ('information_status',
+                  'id', 'email', 'password', 'name',
                   'age', 'height', 'weight', 'gender',
                   'get_user_favorite_stores_count',
                   'get_user_favorite_posts_count', 'profile_image')

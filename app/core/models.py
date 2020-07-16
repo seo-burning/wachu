@@ -59,12 +59,15 @@ class Region(TimeStampedModel, DispalyNameModel):
 
 
 GENDER_CHOICES_FIELD = [('female', 'female'), ('male', 'male'), ]
+INFORMATION_CHOICES_FIELD = [('basic', 'basic'), ('pick', 'pick'), ('done', 'done'), ('pass', 'pass')]
 
 
 class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+    information_status = models.CharField(max_length=100, choices=INFORMATION_CHOICES_FIELD, default='basic')
+
     age = models.IntegerField(null=True)
     gender = models.CharField(
         max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
