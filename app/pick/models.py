@@ -52,15 +52,15 @@ class PickPointModel(models.Model):
         blank=True,
         symmetrical=False)
     primary_style = models.ForeignKey(
-        ProductStyle, on_delete=models.CASCADE,
+        ProductStyle, on_delete=models.SET_NULL,
         related_name='picks_on_primary_style',
         null=True, blank=True)
     secondary_style = models.ForeignKey(
-        ProductStyle, on_delete=models.CASCADE,
+        ProductStyle, on_delete=models.SET_NULL,
         related_name='picks_on_secondary_style',
         null=True, blank=True)
     age = models.ForeignKey(
-        Age, on_delete=models.CASCADE, null=True, blank=True)
+        Age, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Pick(TimeStampedModel, PickPointModel):

@@ -282,7 +282,7 @@ class ProductColorAdmin(admin.ModelAdmin):
 
 @admin.register(models.ProductStyle)
 class ProductStyleAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['name', 'pk']
     list_display = ['name', 'product_active_num', 'product_num']
 
     def product_active_num(self, obj):

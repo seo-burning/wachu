@@ -87,10 +87,10 @@ class UserStyleTaste(TimeStampedModel):
     street = models.IntegerField(default=0)
     feminine = models.IntegerField(default=0)
     primary_style = models.ForeignKey(
-        ProductStyle, on_delete=models.CASCADE,
+        ProductStyle, on_delete=models.SET_NULL,
         related_name='user_style_tastes_on_primary_style',
         null=True, blank=True)
     secondary_style = models.ForeignKey(
-        ProductStyle, on_delete=models.CASCADE,
+        ProductStyle, on_delete=models.SET_NULL,
         related_name='user_style_tastes_on_secondary_style',
         null=True, blank=True)
