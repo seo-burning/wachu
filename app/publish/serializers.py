@@ -93,7 +93,7 @@ class PostGroupSerializer(serializers.ModelSerializer):
                   'cover_picture', 'list_thumb_picture')
 
 
-class PostTagGroupSerializer(serializers.ModelSerializer):
+class ProductTagGroupSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField(many=False)
     sub_category = serializers.StringRelatedField(many=False)
     color = serializers.StringRelatedField(many=False)
@@ -101,7 +101,7 @@ class PostTagGroupSerializer(serializers.ModelSerializer):
     store = serializers.StringRelatedField(many=False)
 
     class Meta:
-        model = models.PostTagGroup
+        model = models.ProductTagGroup
         fields = ('__str__', 'category', 'sub_category',
                   'color', 'style', 'store')
 
@@ -121,23 +121,23 @@ class PostTagGroupSerializer(serializers.ModelSerializer):
 
 
 class MainPagePublishSerializer(serializers.ModelSerializer):
-    posttaggroup_set = PostTagGroupSerializer(many=True)
+    producttaggruop_set = ProductTagGroupSerializer(many=True)
 
     class Meta:
         model = models.MainPagePublish
-        fields = ('posttaggroup_set',)
+        fields = ('producttaggruop_set',)
 
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(
-            'posttaggroup_set',
-            'posttaggroup_set__store',
-            'posttaggroup_set__category',
-            'posttaggroup_set__sub_category',
-            'posttaggroup_set__color',
-            'posttaggroup_set__style',
+            'producttaggruop_set',
+            'producttaggruop_set__store',
+            'producttaggruop_set__category',
+            'producttaggruop_set__sub_category',
+            'producttaggruop_set__color',
+            'producttaggruop_set__style',
         )
 
         return queryset

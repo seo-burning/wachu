@@ -18,8 +18,8 @@ class StorePostInline(admin.TabularInline):
         ))
 
 
-class PostTagGroupInline(admin.StackedInline):
-    model = models.PostTagGroup
+class ProductTagGroupInline(admin.StackedInline):
+    model = models.ProductTagGroup
     show_change_link = True
     list_display = ['__str__', 'ordering', 'published_banner',
                     'category', 'sub_category', 'color',
@@ -99,7 +99,7 @@ class PostGroupInline(admin.StackedInline):
 
 @admin.register(models.MainPagePublish)
 class MainPagePublishAdmin(admin.ModelAdmin):
-    inlines = [PostTagGroupInline]
+    inlines = [ProductTagGroupInline]
     fields = ['is_published', 'date', ]
     list_display = ['is_published', 'date']
     list_display_links = ['date']
@@ -130,8 +130,8 @@ class MagazinePublishAdmin(admin.ModelAdmin):
         return len(instance.postgroup_set.all())
 
 
-@admin.register(models.PostTagGroup)
-class PostTagGroupAdmin(admin.ModelAdmin):
+@admin.register(models.ProductTagGroup)
+class ProductTagGroupAdmin(admin.ModelAdmin):
     fields = ['ordering', 'is_active', 'published_banner', 'category',
               'sub_category', 'color',
               'style', 'pattern', 'store',

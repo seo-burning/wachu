@@ -18,13 +18,13 @@ class MainPagePublishView(generics.ListAPIView):
         return queryset
 
 
-class PostTagGroupListView(generics.ListAPIView):
-    serializer_class = serializers.PostTagGroupSerializer
+class ProductTagGroupListView(generics.ListAPIView):
+    serializer_class = serializers.ProductTagGroupSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = models.PostTagGroup.objects.all().filter(
+        queryset = models.ProductTagGroup.objects.all().filter(
             is_active=True)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
