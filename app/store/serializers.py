@@ -113,7 +113,7 @@ class StoreSerializer(serializers.ModelSerializer):
     secondary_style = serializers.StringRelatedField(many=False)
     age = serializers.StringRelatedField(many=False)
     favorite_users_count = serializers.SerializerMethodField()
-    store_address_set = StoreAddressInlineSerializer(many=True)
+    # store_address_set = StoreAddressInlineSerializer(many=True)
     product_category = ProductCategoryMinSerializer(many=True)
 
     class Meta:
@@ -138,7 +138,7 @@ class StoreSerializer(serializers.ModelSerializer):
                   'recent_post_2',
                   'recent_post_3',
                   'favorite_users_count',
-                  'store_address_set',
+                  #   'store_address_set',
                   'product_category'
                   )
         read_only_fields = ('insta_id', 'pk', 'is_new_post',
@@ -154,7 +154,7 @@ class StoreSerializer(serializers.ModelSerializer):
                             'recent_post_2',
                             'recent_post_3',
                             'favorite_users_count',
-                            'store_address_set',
+                            # 'store_address_set',
                             'product_category'
                             )
 
