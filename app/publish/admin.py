@@ -135,7 +135,7 @@ class MagazinePublishAdmin(admin.ModelAdmin):
 class PostTagGroupAdmin(admin.ModelAdmin):
     fields = ['ordering', 'published_banner', 'category',
               'sub_category', 'color',
-              'style', 'pattern', 'store', 'product_number', 'preview']
+              'style', 'pattern', 'store', 'product_number']
     list_display = ['__str__',
                     'ordering',
                     'related_product_num',
@@ -146,13 +146,13 @@ class PostTagGroupAdmin(admin.ModelAdmin):
                     'style',
                     'pattern',
                     'store',
-                    'product_number']
+                    'product_number', 'preview']
     list_display_links = ['__str__', 'ordering', 'published_banner',
                           'category', 'sub_category', 'color', 'pattern',
                           'style', 'store', 'product_number']
     raw_id_fields = ['store', ]
 
-    def get_queryset(self, obj):
+    def get_related_queryset(self, obj):
         queryset = Product.objects.filter(is_active=True)
         if (obj.category):
             queryset = queryset.filter(category=obj.category)
@@ -174,12 +174,12 @@ class PostTagGroupAdmin(admin.ModelAdmin):
         return queryset
 
     def related_product_num(self, obj):
-        queryset = self.get_queryset()
+        queryset = self.get_related_queryset(obj)
         return queryset.count()
 
     def preview(self, obj):
         image_string = ''
-        queryset = self.get_queryset()
+        queryset = self.get_related_queryset(obj)
         for obj in queryset.all():
             image_string += str(obj)
         return mark_safe(image_string)

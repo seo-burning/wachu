@@ -97,6 +97,7 @@ class PostTagGroup(TimeStampedModel):
         color = ''
         style = ''
         store = ''
+        pattern = ''
         product_number = 'limit=' + str(self.product_number)
         if (self.category):
             category = self.category.name + '/?'
