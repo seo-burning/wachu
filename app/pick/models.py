@@ -85,7 +85,7 @@ class Pick(TimeStampedModel, PickPointModel):
             compress_ratio = image.width / 500
             imageTemproary = imageTemproary.resize((500, int(image.height/compress_ratio)))
         outputIoStream = BytesIO()
-        imageTemproary.save(outputIoStream, format='JPEG', quality=70)
+        imageTemproary.save(outputIoStream, format='JPEG', quality=95)
         outputIoStream.seek(0)
         uploadedImage = InMemoryUploadedFile(outputIoStream, 'ImageField',
                                              "%s.jpg" % image.name.split('.')[0],
