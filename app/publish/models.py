@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+
 from core.abstract_models import TimeStampedModel, ActiveModel, OrderingModel
 from store.models import StorePost
 from product import models as p_models
@@ -113,6 +115,38 @@ class PostTagGroup(TimeStampedModel):
             store = 'store='+str(self.store.pk) + '&'
         return ('http://dabivn.com/api/product/category/' +
                 category+sub_category+color+style+pattern+store+product_number)
+
+    def get_related_queryset(self):
+        queryset = p_models.Product.objects.filter(is_active=True)
+        if (self.category):
+            queryset = queryset.filter(category=self.category)
+        sub_category = self.sub_category
+        if (sub_category):
+            queryset = queryset.filter(sub_category=sub_category)
+        color = self.color
+        if (color):
+            queryset = queryset.filter(color=color)
+        style = self.style
+        if (style):
+            queryset = queryset.filter(style=style)
+        pattern = self.pattern
+        if (pattern):
+            queryset = queryset.filter(pattern=pattern)
+        store = self.store
+        if (store):
+            queryset = queryset.filter(store=store)
+        return queryset
+
+    def related_product_num(self):
+        queryset = self.get_related_queryset()
+        return queryset.count()
+
+    def preview(self):
+        image_string = ''
+        queryset = self.get_related_queryset()
+        for obj in queryset.all()[:10]:
+            image_string += str(obj)
+        return mark_safe('</td><tr/><tr class="row2"><td colspan=13>'+image_string+'</td><tr/>')
 
 
 class MainPagePublish(TimeStampedModel):
