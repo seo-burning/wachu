@@ -121,7 +121,8 @@ class ProductTagGroup(TimeStampedModel, ActiveModel):
     product_number = models.IntegerField(default=10)
 
     published_banner = models.ForeignKey(
-        'MainPagePublish', on_delete=models.SET_NULL, null=True, blank=True)
+        'MainPagePublish',
+        on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         category = 'all/?'

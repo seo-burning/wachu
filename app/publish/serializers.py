@@ -123,23 +123,23 @@ class ProductTagGroupSerializer(serializers.ModelSerializer):
 
 
 class MainPagePublishSerializer(serializers.ModelSerializer):
-    producttaggruop_set = ProductTagGroupSerializer(many=True)
+    producttaggroup_set = ProductTagGroupSerializer(many=True)
 
     class Meta:
         model = models.MainPagePublish
-        fields = ('producttaggruop_set',)
+        fields = ('producttaggroup_set',)
 
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(
-            'producttaggruop_set',
-            'producttaggruop_set__store',
-            'producttaggruop_set__category',
-            'producttaggruop_set__sub_category',
-            'producttaggruop_set__color',
-            'producttaggruop_set__style',
+            'producttaggroup_set',
+            'producttaggroup_set__store',
+            'producttaggroup_set__category',
+            'producttaggroup_set__sub_category',
+            'producttaggroup_set__color',
+            'producttaggroup_set__style',
         )
 
         return queryset
