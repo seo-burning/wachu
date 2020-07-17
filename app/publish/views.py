@@ -2,8 +2,9 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from random import randint
 from publish import serializers, models
+from django.db.models import Case, When, IntegerField
 
 
 class MainPagePublishView(generics.ListAPIView):
@@ -23,9 +24,26 @@ class ProductTagGroupListView(generics.ListAPIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+# https://medium.com/@chrisjune_13837/django-5-orm-queries-you-should-know-a0f4533b31e8
     def get_queryset(self):
-        queryset = models.ProductTagGroup.objects.all().filter(
-            is_active=True)
+        user = self.request.user
+        primary_style = user.primary_style
+        secondary_style = user.secondary_style
+        print(primary_style, secondary_style)
+        # need to suffle
+        if primary_style is not None and secondary_style is not None:
+            queryset = models.ProductTagGroup.objects.filter(is_active=True
+                                                             ).annotate(weighted_ordering=Case(
+                                                                 When(
+                                                                     style=primary_style,
+                                                                     then=randint(0, 20)
+                                                                 ), When(
+                                                                     style=secondary_style,
+                                                                     then=10+randint(0, 20)
+                                                                 ), default=30, output_field=IntegerField()
+                                                             )).order_by('weighted_ordering', 'ordering')
+        else:
+            queryset = models.ProductTagGroup.objects.filter(is_active=True)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 

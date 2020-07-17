@@ -99,11 +99,12 @@ class ProductTagGroupSerializer(serializers.ModelSerializer):
     color = serializers.StringRelatedField(many=False)
     style = serializers.StringRelatedField(many=False)
     store = serializers.StringRelatedField(many=False)
+    pattern = serializers.StringRelatedField(many=False)
 
     class Meta:
         model = models.ProductTagGroup
         fields = ('__str__', 'category', 'sub_category',
-                  'color', 'style', 'store')
+                  'color', 'style', 'store', 'pattern')
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -115,6 +116,7 @@ class ProductTagGroupSerializer(serializers.ModelSerializer):
             'sub_category',
             'color',
             'style',
+            'pattern',
         )
 
         return queryset
