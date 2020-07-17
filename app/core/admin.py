@@ -22,7 +22,9 @@ class UserAdmin(BaseUserAdmin, ExportCsvMixin):
                     'profile_image',
                     'height',
                     'weight',
-                    'region'
+                    'region',
+                    'primary_style',
+                    'secondary_style'
                     )}),
         (
             _('Permission'),

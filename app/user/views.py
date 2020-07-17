@@ -202,6 +202,7 @@ class UserStyleUpdateView(APIView):
                 s_v = p_v
                 p_style = key
                 p_v = value
+        print(p_style, s_style)
         primary_style = ProductStyle.objects.get(name=p_style)
         secondary_style = ProductStyle.objects.get(name=s_style)
         UserStyleTaste.objects.create(user=user,
