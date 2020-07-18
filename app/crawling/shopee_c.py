@@ -420,6 +420,7 @@ class ShopeeScraper:
                 i = i+1
             except:
                 slack_notify('error store '+str(store_obj) + '#' + str(i))
+                i = i+1
         return pk
 
 
