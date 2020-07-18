@@ -29,6 +29,8 @@ class UserProductView(TimeStampedModel):
             UniqueConstraint(fields=['product', 'user', ],
                              name='unique_with_product_user_for_userproductview'),
         ]
+        ordering = ['-updated_at', ]
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -43,6 +45,8 @@ class UserStoreView(TimeStampedModel):
             UniqueConstraint(fields=['store', 'user', ],
                              name='unique_with_store_user_for_userstoreview'),
         ]
+        ordering = ['-updated_at', ]
+
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
