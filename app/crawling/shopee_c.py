@@ -402,12 +402,14 @@ class ShopeeScraper:
             return obj_product
         except:
             print('e', end='')
-            self.change_session()
+            new_session = self.change_session()
+            time.sleep(20)
             slack_notify('error store '+str(store_obj))
 
     def search_store(self, store_obj):
         i = 0
         pk = 0
+        error_try_count = 0
         list_length = 100
         store_id = store_obj.insta_id
         while list_length == 100:
@@ -417,6 +419,7 @@ class ShopeeScraper:
                 except:
                     print('get new session')
                     self.change_session()
+                    time.sleep(20)
                     response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 product_list = response.json()['items']
                 for j, product in enumerate(product_list):
@@ -432,10 +435,13 @@ class ShopeeScraper:
                     pk += 1
                 list_length = len(product_list)
                 i = i+1
+                error_try_count = 0
             except:
                 print('E', end='')
                 slack_notify('error store for whole list - '+str(store_obj) + '#' + str(i))
-                i = i+1
+                error_try_count = +1
+                if error_try_count > 5:
+                    i = i+1
         return pk
 
 

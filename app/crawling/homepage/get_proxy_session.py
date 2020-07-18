@@ -22,14 +22,18 @@ def _get_free_proxies():
 
 def get_session():
     proxies = _get_free_proxies()
-    for i in range(20):
+    for i in range(len(proxies)):
         # construct an HTTP session
         session = requests.Session()
         # choose one random proxy
         proxy = random.choice(proxies)
         session.proxies = {"http": proxy, "https": proxy}
         try:
-            print("Request page with IP:", session.get("http://icanhazip.com", timeout=1.5).text.strip())
-            return session
+            check_valid = session.get("http://icanhazip.com", timeout=1.5)
+            if check_valid.status_code == 200:
+                if len(check_valid.text.strip()) > 100:
+                    continue
+                print("Request page with IP:", check_valid.text.strip())
+                return session
         except Exception as e:
             continue
