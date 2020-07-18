@@ -403,22 +403,21 @@ class ShopeeScraper:
         store_id = store_obj.insta_id
         while list_length == 100:
             try:
-                response = self.__request_url(
-                    store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
+                response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 product_list = response.json()['items']
-                   for j, product in enumerate(product_list):
-                        product_obj = self.get_or_create_product(
-                            store_obj, product['itemid'], product['view_count'])
-                        if (i == 0 and j == 0):
-                            store_obj.recent_post_1 = product_obj.product_thumbnail_image
-                        elif (i == 0 and j == 1):
-                            store_obj.recent_post_2 = product_obj.product_thumbnail_image
-                        elif (i == 0 and j == 2):
-                            store_obj.recent_post_3 = product_obj.product_thumbnail_image
-                        store_obj.save()
-                        pk += 1
-                    list_length = len(product_list)
-                    i = i+1
+                for j, product in enumerate(product_list):
+                    product_obj = self.get_or_create_product(
+                        store_obj, product['itemid'], product['view_count'])
+                    if (i == 0 and j == 0):
+                        store_obj.recent_post_1 = product_obj.product_thumbnail_image
+                    elif (i == 0 and j == 1):
+                        store_obj.recent_post_2 = product_obj.product_thumbnail_image
+                    elif (i == 0 and j == 2):
+                        store_obj.recent_post_3 = product_obj.product_thumbnail_image
+                    store_obj.save()
+                    pk += 1
+                list_length = len(product_list)
+                i = i+1
             except:
                 slack_notify('error store '+str(store_obj) + '#' + str(i))
         return pk
