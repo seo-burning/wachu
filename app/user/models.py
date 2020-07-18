@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 
 from product.models import Product, ProductStyle
 from store.models import Store
+from django.db.models.constraints import UniqueConstraint
 
 
 class TimeStampedModel(models.Model):
@@ -21,9 +22,17 @@ class UserFavoriteProduct(TimeStampedModel):
 
 
 class UserProductView(TimeStampedModel):
+    class Meta:
+        verbose_name = u'상품 뷰'
+        verbose_name_plural = verbose_name
+        constraints = [
+            UniqueConstraint(fields=['product', 'user', ],
+                             name='unique_with_product_user_for_userproductview'),
+        ]
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    count = models.IntegerField(default=0)
 
 
 class ReviewImage(TimeStampedModel):

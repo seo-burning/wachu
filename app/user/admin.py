@@ -30,3 +30,8 @@ class ReviewImageAdmin(admin.ModelAdmin):
 @admin.register(models.Recipient)
 class RecipientAdmin(admin.ModelAdmin):
     list_display = ['user', 'recipient_name', 'contact_number', '__str__']
+
+
+@admin.register(models.UserProductView)
+class UserProductViewAdmin(admin.ModelAdmin):
+    pass

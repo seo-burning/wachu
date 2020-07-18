@@ -13,7 +13,7 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, Store
 from core.models import UserPushToken
-from .models import UserFavoriteProduct, ProductReview, Recipient, UserStyleTaste
+from .models import UserFavoriteProduct, ProductReview, Recipient, UserStyleTaste, UserProductView
 from product.models import Product, ProductStyle
 
 
@@ -420,21 +420,18 @@ class RecipientUpdateView(generics.UpdateAPIView):
         return super(RecipientUpdateView, self).update(request, *args, **kwargs)
 
 
-class UserProductViewCreateView(generics.CreateAPIView):
+class UserProductViewCreateView(APIView):
     serializer_class = serializers.UserProductViewSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def create(self, request, *args, **kwargs):
+    def post(self, request, format=None):
+        user = request.user
         product_pk = request.data.__getitem__('product')
         product_obj = Product.objects.get(pk=product_pk)
-        product_obj.view = product_obj.view + 1
+        product_obj.view += 1
         product_obj.save()
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        user_product_view_object, is_created = UserProductView.objects.get_or_create(user=user, product=product_obj)
+        user_product_view_object.count += 1
+        user_product_view_object.save()
+        return Response({'product-view-count': product_obj.view})

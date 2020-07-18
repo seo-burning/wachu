@@ -283,4 +283,4 @@ class RecipientSerializer(serializers.ModelSerializer):
 class UserProductViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProductView
-        exclude = ('user',)
+        exclude = ('user', 'count')
