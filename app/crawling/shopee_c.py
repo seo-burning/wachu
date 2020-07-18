@@ -66,7 +66,9 @@ class ShopeeScraper:
             response = self.session.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
                                         .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
                                                                                               'X-Requested-With': 'XMLHttpRequest',
-                                                                                              'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
+                                                                                              'Referer': 'https://shopee.vn/shop/' +
+                                                                                              str(store_id) +
+                                                                                              '/search?shopCollection=',
                                                                                               },)
             response.raise_for_status()
         except requests.HTTPError as e:
@@ -403,24 +405,26 @@ class ShopeeScraper:
         except:
             print('e', end='')
             new_session = self.change_session()
-            time.sleep(20)
-            slack_notify('error store '+str(store_obj))
+            if new_session:
+                slack_notify('error store '+str(store_obj))
 
     def search_store(self, store_obj):
         i = 0
         pk = 0
-        error_try_count = 0
         list_length = 100
         store_id = store_obj.insta_id
         while list_length == 100:
             try:
-                try:
-                    response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
-                except:
-                    print('get new session')
-                    self.change_session()
-                    time.sleep(20)
-                    response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
+                error_try_count = 0
+                while True or error_try_count > 10:
+                    try:
+                        response = self.__request_url(store_id=store_obj.shopee_numeric_id,
+                                                      limit=list_length, newest=i*100)
+                        break
+                    except:
+                        print('get new session')
+                        new_session = self.change_session()
+                        error_try_count += 1
                 product_list = response.json()['items']
                 for j, product in enumerate(product_list):
                     product_obj = self.get_or_create_product(
@@ -435,19 +439,16 @@ class ShopeeScraper:
                     pk += 1
                 list_length = len(product_list)
                 i = i+1
-                error_try_count = 0
             except:
                 print('E', end='')
                 slack_notify('error store for whole list - '+str(store_obj) + '#' + str(i))
-                error_try_count = +1
-                if error_try_count > 5:
-                    i = i+1
+                i = i+1
         return pk
 
 
 def update_shopee():
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[20:]
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
