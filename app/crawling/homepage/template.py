@@ -36,12 +36,9 @@ class HomepageCrawler:
         self.session = get_session()
 
     def __change_session(self):
-        i = 1
-        while new_session != self.session:
-            print('try to get new session #' + str(i))
-            new_session = get_session()
-            i = i + 1
+        new_session = get_session()
         self.session = new_session
+        return new_session
 
     def __random_agent(self):
         if self.user_agents and isinstance(self.user_agents, list):

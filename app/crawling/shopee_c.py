@@ -1,4 +1,5 @@
 import os_setup
+import threading
 
 import requests
 import json
@@ -38,13 +39,10 @@ class ShopeeScraper:
         self.proxy = proxy
         self.session = get_session()
 
-    def __change_session(self):
-        i = 1
-        while new_session != self.session:
-            print('try to get new session #' + str(i))
-            new_session = get_session()
-            i = i + 1
+    def change_session(self):
+        new_session = get_session()
         self.session = new_session
+        return new_session
 
     def __request_url(self, store_id, limit='100', newest='0'):
         try:
@@ -403,6 +401,7 @@ class ShopeeScraper:
                         obj_product.save()
             return obj_product
         except:
+            print('e', end='')
             slack_notify('error store '+str(store_obj))
 
     def search_store(self, store_obj):
@@ -416,8 +415,7 @@ class ShopeeScraper:
                     response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 except:
                     print('get new session')
-                    self.__change_session()
-                    time.sleep(3000)
+                    self.change_session()
                     response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 product_list = response.json()['items']
                 for j, product in enumerate(product_list):
@@ -434,17 +432,20 @@ class ShopeeScraper:
                 list_length = len(product_list)
                 i = i+1
             except:
-                slack_notify('error store '+str(store_obj) + '#' + str(i))
+                print('E', end='')
+                slack_notify('error store for whole list - '+str(store_obj) + '#' + str(i))
                 i = i+1
         return pk
 
 
 def update_shopee():
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True).reverse()
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
+            if i % 5 == 4:
+                obj.change_session()
             print("\n#" + str(i) + ' update ' + str(store_obj))
             updated = obj.search_store(store_obj)
             result_text = store_obj.insta_id + 'total : ' + str(updated) + '\n'
@@ -457,6 +458,8 @@ def validate_shopee():
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
     for i, store_obj in enumerate(store_list):
+        if i % 5 == 4:
+            obj.change_session()
         print("\n#" + str(i) + ' update ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
@@ -490,10 +493,10 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    # store_obj = Store.objects.get(insta_id='nanastore21')
-    # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    # # # pool.map(multi, product_list)
-    # # # pool.close()
+    # store_obj = Store.objects.get(insta_id='momoco.vn')
+    # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    # # # # pool.map(multi, product_list)
+    # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
     update_shopee()
