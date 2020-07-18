@@ -417,7 +417,7 @@ class ShopeeScraper:
                 except:
                     print('get new session')
                     self.__change_session()
-                    time.sleep(30)
+                    time.sleep(3000)
                     response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 product_list = response.json()['items']
                 for j, product in enumerate(product_list):
@@ -490,7 +490,7 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='doublew.vn')
+    store_obj = Store.objects.get(insta_id='nanastore21')
     # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # pool.map(multi, product_list)
     # # pool.close()
