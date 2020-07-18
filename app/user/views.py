@@ -13,7 +13,8 @@ from allauth.socialaccount.providers.facebook.views \
 from rest_auth.registration.views import SocialLoginView, SocialConnectView
 from store.models import UserFavoriteStore, Store
 from core.models import UserPushToken
-from .models import UserFavoriteProduct, ProductReview, Recipient, UserStyleTaste, UserProductView
+from .models import UserFavoriteProduct, ProductReview, \
+    Recipient, UserStyleTaste, UserProductView, UserStoreView
 from product.models import Product, ProductStyle
 
 
@@ -435,3 +436,20 @@ class UserProductViewCreateView(APIView):
         user_product_view_object.count += 1
         user_product_view_object.save()
         return Response({'product-view-count': product_obj.view})
+
+
+class UserStoreViewCreateView(APIView):
+    serializer_class = serializers.UserStoreViewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, format=None):
+        user = request.user
+        store_pk = request.data.__getitem__('store')
+        store_obj = Store.objects.get(pk=store_pk)
+        store_obj.view += 1
+        store_obj.save()
+        user_store_view_object, is_created = UserStoreView.objects.get_or_create(user=user, store=store_obj)
+        user_store_view_object.count += 1
+        user_store_view_object.save()
+        return Response({'store-view-count': store_obj.view})

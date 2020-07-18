@@ -125,6 +125,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     inlines = [StoreAddressInline]  # StorePostInline,
     list_per_page = 50
     readonly_fields = (
+        'view',
         'is_new_post',
         'current_ranking',
         'current_ranking_changed',
@@ -138,6 +139,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
     fieldsets = [
         (_("User Profile"), {'fields': ['is_new_post',
                                         'is_active',
+                                        'view',
                                         'store_type',
                                         'current_ranking',
                                         'current_ranking_changed',

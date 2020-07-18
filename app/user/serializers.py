@@ -6,7 +6,7 @@ from product.serializers import ProductSerializer
 
 from core.models import UserPushToken
 from user.models import UserFavoriteProduct, \
-    ProductReview, ReviewImage, Recipient, UserProductView
+    ProductReview, ReviewImage, Recipient, UserProductView, UserStoreView
 
 
 # TODO SELECT_RELATED
@@ -283,4 +283,10 @@ class RecipientSerializer(serializers.ModelSerializer):
 class UserProductViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProductView
+        exclude = ('user', 'count')
+
+
+class UserStoreViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserStoreView
         exclude = ('user', 'count')

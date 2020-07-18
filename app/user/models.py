@@ -35,6 +35,20 @@ class UserProductView(TimeStampedModel):
     count = models.IntegerField(default=0)
 
 
+class UserStoreView(TimeStampedModel):
+    class Meta:
+        verbose_name = u'스토어 뷰'
+        verbose_name_plural = verbose_name
+        constraints = [
+            UniqueConstraint(fields=['store', 'user', ],
+                             name='unique_with_store_user_for_userstoreview'),
+        ]
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    count = models.IntegerField(default=0)
+
+
 class ReviewImage(TimeStampedModel):
     source = models.ImageField(
         blank=True, upload_to='review/%Y/%m')

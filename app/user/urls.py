@@ -13,6 +13,8 @@ urlpatterns = [
          name='push_token'),
     path('view/product/', views.UserProductViewCreateView.as_view(),
          name='user_product_view'),
+    path('view/store/', views.UserStoreViewCreateView.as_view(),
+         name='user_store_view'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('me/basic/', views.UserBasicInfoUpdateView.as_view(),
          name='basic_info_update'),

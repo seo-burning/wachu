@@ -35,3 +35,8 @@ class RecipientAdmin(admin.ModelAdmin):
 @admin.register(models.UserProductView)
 class UserProductViewAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.UserStoreView)
+class UserStoreViewAdmin(admin.ModelAdmin):
+    pass
