@@ -12,7 +12,7 @@ from utils.slack import slack_notify, slack_upload_file
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
     ProductSize, ProductColor, ProductExtraOption, ProductOption, ProductPattern,\
     ShopeeColor, ShopeeSize, SourceExtraOption
-
+from helper.get_proxy_session import get_session
 from helper.clean_text import get_cleaned_text_from_color,\
     get_cleaned_text, get_cleaned_text_from_pattern, \
     get_cleaned_text_from_category, get_cleaned_text_from_size
@@ -36,15 +36,21 @@ class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.proxy = proxy
+        self.session = get_session()
+
+    def __change_session(self):
+        while new_session != self.session:
+            new_session = get_session()
+        self.session = new_session
 
     def __request_url(self, store_id, limit='100', newest='0'):
         try:
-            response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
-                                    .format(limit=limit, store_id=store_id, newest=newest),
-                                    headers={'User-Agent': choice(_user_agents),
-                                             'X-Requested-With': 'XMLHttpRequest',
-                                             'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                             },)
+            response = self.session.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
+                                        .format(limit=limit, store_id=store_id, newest=newest),
+                                        headers={'User-Agent': choice(_user_agents),
+                                                 'X-Requested-With': 'XMLHttpRequest',
+                                                 'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
+                                                 },)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -56,11 +62,11 @@ class ShopeeScraper:
 
     def __request_url_item(self, store_id, item_id):
         try:
-            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
-                                    .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
-                                                                                          'X-Requested-With': 'XMLHttpRequest',
-                                                                                          'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
-                                                                                          },)
+            response = self.session.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
+                                        .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
+                                                                                              'X-Requested-With': 'XMLHttpRequest',
+                                                                                              'Referer': 'https://shopee.vn/shop/'+str(store_id)+'/search?shopCollection=',
+                                                                                              },)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -403,7 +409,12 @@ class ShopeeScraper:
         store_id = store_obj.insta_id
         while list_length == 100:
             try:
-                response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
+                try:
+                    response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
+                except:
+                    print('get new session')
+                    self.__change_session()
+                    response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 product_list = response.json()['items']
                 for j, product in enumerate(product_list):
                     product_obj = self.get_or_create_product(
