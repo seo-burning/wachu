@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import csv
 import re
 from decimal import Decimal
-
+from .get_proxy_session import get_session
 _user_agents = [
     'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
 ]
@@ -33,26 +33,27 @@ class HomepageCrawler:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.proxy = proxy
+        self.session = get_session()
+
+    def __change_session(self):
+        i = 1
+        while new_session != self.session:
+            print('try to get new session #' + str(i))
+            new_session = get_session()
+            i = i + 1
+        self.session = new_session
 
     def __random_agent(self):
         if self.user_agents and isinstance(self.user_agents, list):
             return choice(self.user_agents)
         return choice(_user_agents)
 
-    def __random_proxies(self):
-        if self.proxy and isinstance(self.proxy, list):
-            # print('execute')
-            return choice(self.proxy)
-        proxies = get_proxies()
-        return random.sample(get_proxies(), 1)[0]
-
     def request_url(self, url):
         try:
-            response = requests.get(url,
-                                    headers={'User-Agent': self.__random_agent(),
-                                             'X-Requested-With': 'XMLHttpRequest',
-                                             },
-                                    proxies={'http': self.proxy, 'https': self.proxy})
+            response = self.session.get(url,
+                                        headers={'User-Agent': self.__random_agent(),
+                                                 'X-Requested-With': 'XMLHttpRequest',
+                                                 },)
             response.raise_for_status()
         except requests.HTTPError as e:
             # print(e)
@@ -349,7 +350,6 @@ def sub_crawler(obj, url, store_pk, style, product_source, url_obj,
                 option_type,
                 script_string, price_divider, image_type,
                 duplicate_check_list,):
-    obj = HomepageCrawler()
     product_list = []
     store = store_pk
     for product_obj in product_source:
