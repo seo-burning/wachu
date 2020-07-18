@@ -39,8 +39,11 @@ class ShopeeScraper:
         self.session = get_session()
 
     def __change_session(self):
+        i = 1
         while new_session != self.session:
+            print('try to get new session #' + str(i))
             new_session = get_session()
+            i = i + 1
         self.session = new_session
 
     def __request_url(self, store_id, limit='100', newest='0'):
@@ -414,6 +417,7 @@ class ShopeeScraper:
                 except:
                     print('get new session')
                     self.__change_session()
+                    time.sleep(30)
                     response = self.__request_url(store_id=store_obj.shopee_numeric_id, limit=list_length, newest=i*100)
                 product_list = response.json()['items']
                 for j, product in enumerate(product_list):
