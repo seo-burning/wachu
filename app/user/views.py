@@ -418,3 +418,23 @@ class RecipientUpdateView(generics.UpdateAPIView):
                 recipient_obj.primary = False
                 recipient_obj.save()
         return super(RecipientUpdateView, self).update(request, *args, **kwargs)
+
+
+class UserProductViewCreateView(generics.CreateAPIView):
+    serializer_class = serializers.UserProductViewSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        product_pk = request.data.__getitem__('product')
+        product_obj = Product.objects.get(pk=product_pk)
+        product_obj.view = product_obj.view + 1
+        product_obj.save()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

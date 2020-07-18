@@ -11,6 +11,8 @@ urlpatterns = [
     path('token/', views.CreateTokenView.as_view(), name='token'),
     path('push_token/', views.UserPushTokenListView.as_view(),
          name='push_token'),
+    path('view/product/', views.UserProductViewCreateView.as_view(),
+         name='user_product_view'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('me/basic/', views.UserBasicInfoUpdateView.as_view(),
          name='basic_info_update'),

@@ -441,7 +441,7 @@ class ShopeeScraper:
 
 def update_shopee():
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True).reverse()
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
@@ -490,9 +490,10 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='nanastore21')
-    # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    # # pool.map(multi, product_list)
-    # # pool.close()
-    obj = ShopeeScraper()
-    obj.search_store(store_obj)
+    # store_obj = Store.objects.get(insta_id='nanastore21')
+    # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    # # # pool.map(multi, product_list)
+    # # # pool.close()
+    # obj = ShopeeScraper()
+    # obj.search_store(store_obj)
+    update_shopee()

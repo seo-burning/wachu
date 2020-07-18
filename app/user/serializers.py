@@ -5,9 +5,11 @@ from rest_framework import serializers
 from product.serializers import ProductSerializer
 
 from core.models import UserPushToken
-from user.models import UserFavoriteProduct, ProductReview, ReviewImage, Recipient
-# TODO SELECT_RELATED
+from user.models import UserFavoriteProduct, \
+    ProductReview, ReviewImage, Recipient, UserProductView
 
+
+# TODO SELECT_RELATED
 from django.core.files.base import ContentFile
 import base64
 import six
@@ -275,4 +277,10 @@ class ReviewImageCreateSerializer(serializers.ModelSerializer):
 class RecipientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipient
+        exclude = ('user',)
+
+
+class UserProductViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProductView
         exclude = ('user',)
