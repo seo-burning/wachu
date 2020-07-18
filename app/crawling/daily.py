@@ -21,16 +21,22 @@ if __name__ == '__main__':
     if time < 6:
         slack_notify('*update data @' + date+'*')
         # 새벽 생성
+        slack_notify('*update shopee @' + date+'*')
         update_shopee()
+        slack_notify('*update homepage @' + date+'*')
         update_homepage()
+        slack_notify('*calculating @' + date+'*')
         calculating()
         preview_image_update()
         slack_notify('*update data @' + date+'*' + 'done')
     else:
         slack_notify('*update(validate) data @' + date+'*')
         # 오후 삭제
+        slack_notify('*update(validate)  shopee @' + date+'*')
         validate_shopee()
+        slack_notify('*update(validate)  homepage @' + date+'*')
         validate_homepage()
+        slack_notify('*calculating @' + date+'*')
         calculating()
         preview_image_update()
         slack_notify('*update(validate) data @' + date+'*' + 'done')
