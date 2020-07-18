@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,\
 
 import csv
 from django.http import HttpResponse
-from user.models import UserFavoriteProduct
+from user.models import UserFavoriteProduct, UserProductView
 from product.models import Product, ProductStyle
 from .abstract_models import TimeStampedModel, DispalyNameModel
 
@@ -94,6 +94,12 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         Product,
         through=UserFavoriteProduct,
         related_name='favorite_users'
+    )
+
+    view_products = models.ManyToManyField(
+        Product,
+        through=UserProductView,
+        related_name='view_users'
     )
 
     objects = UserManager()

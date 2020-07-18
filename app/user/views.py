@@ -453,3 +453,14 @@ class UserStoreViewCreateView(APIView):
         user_store_view_object.count += 1
         user_store_view_object.save()
         return Response({'store-view-count': store_obj.view})
+
+
+class UserProductViewListView(generics.ListAPIView):
+    serializer_class = serializers.ProductSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = self.request.user.view_products
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
