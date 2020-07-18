@@ -402,6 +402,7 @@ class ShopeeScraper:
             return obj_product
         except:
             print('e', end='')
+            self.change_session()
             slack_notify('error store '+str(store_obj))
 
     def search_store(self, store_obj):
