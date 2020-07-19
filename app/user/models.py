@@ -31,9 +31,11 @@ class UserProductView(TimeStampedModel):
         ]
         ordering = ['-updated_at', ]
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,
+                                related_name='user_product_view_set')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+                             on_delete=models.CASCADE,
+                             related_name='user_product_view_set')
     count = models.IntegerField(default=0)
 
 

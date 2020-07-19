@@ -461,6 +461,6 @@ class UserProductViewListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = self.request.user.user_favoriate_product_set
+        queryset = self.request.user.view_products.order_by('user_product_view_set')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
