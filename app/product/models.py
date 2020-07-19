@@ -98,7 +98,7 @@ POST_IMAGE_TYPE = (('P', _('Picture')), ('V', _('Video')))
 
 class ProductImage(TimeStampedModel):
     post_image_type = models.CharField(
-        max_length=25, choices=POST_IMAGE_TYPE, null=True)
+        max_length=25, choices=POST_IMAGE_TYPE, null=True, default='P')
     source = models.CharField(_('URL Source'), max_length=1024, null=True)
     source_thumb = models.CharField(
         _('Thumb Small Link'), max_length=1024, null=True)
