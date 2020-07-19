@@ -34,6 +34,7 @@ class RecipientAdmin(admin.ModelAdmin):
 
 @admin.register(models.UserProductView)
 class UserProductViewAdmin(admin.ModelAdmin):
+    list_display = ['product', 'user', 'count', 'updated_at', 'created_at']
     pass
 
 
