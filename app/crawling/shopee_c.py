@@ -37,7 +37,7 @@ class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.session, self.proxies = get_session()
-        self.session.headers.update({'User-Agent': choice(_user_agents), }'X-Requested-With': 'XMLHttpRequest',)
+        self.session.headers.update({'User-Agent': choice(_user_agents), 'X-Requested-With': 'XMLHttpRequest', })
         self.session_refresh_count = 0
 
     def change_session(self):
@@ -46,7 +46,7 @@ class ShopeeScraper:
         else:
             new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
-        self.session.headers.update({'User-Agent': choice(_user_agents), }'X-Requested-With': 'XMLHttpRequest',)
+        self.session.headers.update({'User-Agent': choice(_user_agents), 'X-Requested-With': 'XMLHttpRequest', })
         self.session_refresh_count += 1
         return new_session
 
