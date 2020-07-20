@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework import status
 from allauth.account.adapter import get_adapter
+from django.forms.models import model_to_dict
 
 from django.contrib.auth import get_user_model
 from user import serializers
@@ -177,19 +178,32 @@ class UserStyleUpdateView(APIView):
 
     def get(self, request, format=None):
         user = self.request.user
-        pickAB_results = user.pickAB_results.select_related('pick_AB').prefetch_related('pick_AB__picks').all()
+        pickAB_results = user.pickAB_results.select_related('pick_AB').prefetch_related(
+            'pick_AB__picks', 'pick_AB__picks__primary_style', 'pick_AB__picks__secondary_style').all()
         points = {'simple': 0,
                   'sexy': 0,
                   'feminine': 0,
                   'lovely': 0,
-                  'street': 0, }
+                  'street': 0,
+                  'vintage': 0}
         for pick_result_obj in pickAB_results:
             selection = pick_result_obj.selection
             selected_pick = pick_result_obj.pick_AB.picks.all()[int(selection)]
             primary_style = selected_pick.primary_style
             secondary_style = selected_pick.secondary_style
-            points[str(primary_style)] += 4
-            points[str(secondary_style)] += 1
+            points[str(primary_style)] += 8
+            points[str(secondary_style)] += 2
+        user_product_views = user.view_products.select_related('style').all()
+        for product_obj in user_product_views:
+            if product_obj.style:
+                points[str(product_obj.style)] += 1
+        user_store_views = user.view_stores.select_related('primary_style').select_related('secondary_style').all()
+        for store_obj in user_store_views:
+            if store_obj.primary_style:
+                points[str(store_obj.primary_style)] += 2
+            if store_obj.secondary_style:
+                points[str(store_obj.secondary_style)] += 1
+
         p_style = None
         p_v = 0
         s_style = None
@@ -203,22 +217,21 @@ class UserStyleUpdateView(APIView):
                 s_v = p_v
                 p_style = key
                 p_v = value
-        print(p_style, s_style)
         primary_style = ProductStyle.objects.get(name=p_style)
         secondary_style = ProductStyle.objects.get(name=s_style)
-        UserStyleTaste.objects.create(user=user,
-                                      lovely=points['lovely'],
-                                      sexy=points['sexy'],
-                                      simple=points['simple'],
-                                      street=points['street'],
-                                      feminine=points['feminine'],
-                                      primary_style=primary_style,
-                                      secondary_style=secondary_style)
+        user_style_obj = UserStyleTaste.objects.create(user=user,
+                                                       lovely=points['lovely'],
+                                                       sexy=points['sexy'],
+                                                       simple=points['simple'],
+                                                       street=points['street'],
+                                                       feminine=points['feminine'],
+                                                       primary_style=primary_style,
+                                                       secondary_style=secondary_style)
         user.primary_style = primary_style
         user.secondary_style = secondary_style
         user.save()
-        print(points, primary_style, secondary_style)
-        return Response({'primary_style': p_style, 'secondary_style': s_style})
+        user_style_json = model_to_dict(user_style_obj)
+        return Response({'primary_style': p_style, 'secondary_style': s_style, 'user_style': user_style_json})
 
 
 class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
