@@ -514,4 +514,4 @@ if __name__ == '__main__':
     # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
-    update_shopee(50)
+    update_shopee(52)

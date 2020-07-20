@@ -85,7 +85,7 @@ def _get_free_proxies_2():
 def get_session(new=False, proxies=None):
     if new:
         proxies = _get_free_proxies()
-        proxies = proxies + _get_free_proxies_2()
+        proxies = proxies + _get_free_proxies_2() + DEFAULT_PROXIES
     elif proxies and len(proxies) > 0:
         proxies = proxies
     else:
@@ -103,7 +103,7 @@ def get_session(new=False, proxies=None):
             if check_valid.status_code == 200:
                 if len(check_valid.text.strip()) > 100:
                     continue
-                print("\nRequest page with IP:{}".format(check_valid.text.strip()), end='')
+                print("\nRequest page with IP:{}".format(check_valid.text.strip()))
                 return session, proxies
         except Exception as e:
             proxies.pop(i)

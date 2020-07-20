@@ -30,6 +30,7 @@ class HomepageCrawler:
     def change_session(self):
         if self.session_refresh_count > 5:
             new_session, self.proxies = get_session('new')
+            self.session_refresh_count = 0
         else:
             new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
