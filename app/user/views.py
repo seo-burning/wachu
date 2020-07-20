@@ -204,21 +204,9 @@ class UserStyleUpdateView(APIView):
             if store_obj.secondary_style:
                 points[str(store_obj.secondary_style)] += 1
 
-        p_style = None
-        p_v = 0
-        s_style = None
-        s_v = 0
-        for key, value in points.items():
-            if value > s_v:
-                s_v = value
-                s_style = key
-            if value > p_v:
-                s_style = p_style
-                s_v = p_v
-                p_style = key
-                p_v = value
-        primary_style = ProductStyle.objects.get(name=p_style)
-        secondary_style = ProductStyle.objects.get(name=s_style)
+        sort_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
+        primary_style = ProductStyle.objects.get(name=sort_points[0][0])
+        secondary_style = ProductStyle.objects.get(name=sort_points[1][0])
         user_style_obj = UserStyleTaste.objects.create(user=user,
                                                        lovely=points['lovely'],
                                                        sexy=points['sexy'],
@@ -230,8 +218,7 @@ class UserStyleUpdateView(APIView):
         user.primary_style = primary_style
         user.secondary_style = secondary_style
         user.save()
-        user_style_json = model_to_dict(user_style_obj)
-        return Response({'primary_style': p_style, 'secondary_style': s_style, 'user_style': user_style_json})
+        return Response({'primary_style': sort_points[0][0], 'secondary_style': sort_points[1][0], 'user_style': sort_points})
 
 
 class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
