@@ -46,7 +46,7 @@ if __name__ == '__main__':
         # slack_notify('*update homepage @' + date+'*')
         # update_homepage()
         slack_notify('*update shopee @' + date+'*')
-        update_shopee(100)
+        update_shopee(126)
         slack_notify('*calculating @' + date+'*')
         calculating()
         preview_image_update()
