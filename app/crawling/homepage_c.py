@@ -18,11 +18,12 @@ def update_homepage():
     # dosiin_result = get_dosiin()
     # dict_to_product_model(dosiin_result)
     home_page_list = [
-        # get_devons,
-        # get_olv, get_tsun,
-        # get_lepoulet,
-        # get_clothesbar, get_nowsaigon, get_hades,
-        get_degrey, get_libeworkshop, get_swe, get_blvck, get_tatichubeyoung,
+        get_devons,
+        get_olv, get_tsun,
+        get_lepoulet,
+        get_clothesbar, get_nowsaigon, get_hades,
+        get_degrey,
+        get_libeworkshop, get_swe, get_blvck, get_tatichubeyoung,
         get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela,
         get_colin,
         get_dirtycoins,

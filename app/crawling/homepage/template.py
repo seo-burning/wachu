@@ -47,7 +47,7 @@ class HomepageCrawler:
 
     def request_url(self, url):
         try:
-            response = self.session.get(url, timeout=1.5)
+            response = self.session.get(url, timeout=20)
             response.raise_for_status()
         except requests.HTTPError as e:
             # print(e)

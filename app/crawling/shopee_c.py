@@ -56,7 +56,7 @@ class ShopeeScraper:
                                         headers={'User-Agent': choice(_user_agents),
                                                  'X-Requested-With': 'XMLHttpRequest',
                                                  'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                                 }, timeout=3)
+                                                 }, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -74,7 +74,7 @@ class ShopeeScraper:
                                                                                               'Referer': 'https://shopee.vn/shop/' +
                                                                                               str(store_id) +
                                                                                               '/search?shopCollection=',
-                                                                                              }, timeout=3)
+                                                                                              }, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -321,9 +321,9 @@ class ShopeeScraper:
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
-        print('.', end='')
         # 0. 상품 json load
         data = self.__request_url_item(shopid, itemid).json()['item']
+        print('.', end='')
         # 1. 상품 삭제 확인
         if data == None:
             print('d', end='')
@@ -415,7 +415,7 @@ class ShopeeScraper:
         while list_length == 100:
             try:
                 error_try_count = 0
-                while True or error_try_count > 10:
+                while True or error_try_count > 20:
                     try:
                         response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                                       limit=list_length, newest=i*100)
@@ -447,7 +447,7 @@ class ShopeeScraper:
                 list_length = len(product_list)
                 i = i+1
             except:
-                print('\nEROOR')
+                print('\nERROR')
                 slack_notify('error store for whole list - '+str(store_obj) + '#' + str(i))
                 i = i+1
         return pk
@@ -504,10 +504,10 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    # store_obj = Store.objects.get(insta_id='thel.studios')
+    store_obj = Store.objects.get(insta_id='cocosin.official')
     # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # # # # pool.map(multi, product_list)
     # # # # # pool.close()
-    # obj = ShopeeScraper()
-    # obj.search_store(store_obj)
-    update_shopee(65)
+    obj = ShopeeScraper()
+    obj.search_store(store_obj)
+    # update_shopee(65)
