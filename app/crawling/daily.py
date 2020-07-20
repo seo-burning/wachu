@@ -42,9 +42,9 @@ if __name__ == '__main__':
         preview_image_update()
         slack_notify('*update data @' + date+'*' + 'done')
     elif at_time > 7:  # 14시 진행되는 크롤링         # 홈페이지 신규 상품 생성 / 쇼피 앞 절반 생성
-        slack_notify('*update data @' + date+'*')
-        slack_notify('*update homepage @' + date+'*')
-        update_homepage()
+        # slack_notify('*update data @' + date+'*')
+        # slack_notify('*update homepage @' + date+'*')
+        # update_homepage()
         slack_notify('*update shopee @' + date+'*')
         update_shopee(100)
         slack_notify('*calculating @' + date+'*')
