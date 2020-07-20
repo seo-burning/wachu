@@ -84,12 +84,13 @@ def _get_free_proxies_2():
 
 def get_session(new=False, proxies=None):
     if new:
-        # proxies = _get_free_proxies_2()
         proxies = _get_free_proxies()
+        proxies = proxies + _get_free_proxies_2() + DEFAULT_PROXIES
     elif proxies and len(proxies) > 0:
         proxies = proxies
     else:
         proxies = _get_free_proxies()
+        proxies = proxies + _get_free_proxies_2()
     for i in range(len(proxies)):
         # construct an HTTP session
         session = requests.Session()
@@ -98,10 +99,11 @@ def get_session(new=False, proxies=None):
         session.proxies = {"http": proxy, "https": proxy}
         print('c', end='')
         try:
-            check_valid = session.get("http://icanhazip.com", timeout=1.5)
+            check_valid = session.get("http://icanhazip.com", timeout=2)
             if check_valid.status_code == 200:
                 if len(check_valid.text.strip()) > 100:
                     continue
+                print(proxy)
                 print("\nRequest page with IP:{}".format(check_valid.text.strip()), end='')
                 return session, proxies
         except Exception as e:

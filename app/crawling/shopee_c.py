@@ -37,7 +37,6 @@ class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.session, self.proxies = get_session()
-        self.session.headers.update({'User-Agent': choice(_user_agents), 'X-Requested-With': 'XMLHttpRequest', })
         self.session_refresh_count = 0
 
     def change_session(self):
@@ -46,7 +45,6 @@ class ShopeeScraper:
         else:
             new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
-        self.session.headers.update({'User-Agent': choice(_user_agents), 'X-Requested-With': 'XMLHttpRequest', })
         self.session_refresh_count += 1
         return new_session
 
@@ -54,8 +52,10 @@ class ShopeeScraper:
         try:
             response = self.session.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
                                         .format(limit=limit, store_id=store_id, newest=newest),
-                                        headers={'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                                 }, timeout=1.5)
+                                        headers={'User-Agent': choice(_user_agents),
+                                                 'X-Requested-With': 'XMLHttpRequest',
+                                                 'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
+                                                 }, timeout=3)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -68,11 +68,12 @@ class ShopeeScraper:
     def __request_url_item(self, store_id, item_id):
         try:
             response = self.session.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
-                                        .format(item_id=item_id, store_id=store_id), headers={
-                                            'Referer': 'https://shopee.vn/shop/' +
-                                            str(store_id) +
-                                            '/search?shopCollection=',
-                                        }, timeout=1.5)
+                                        .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
+                                                                                              'X-Requested-With': 'XMLHttpRequest',
+                                                                                              'Referer': 'https://shopee.vn/shop/' +
+                                                                                              str(store_id) +
+                                                                                              '/search?shopCollection=',
+                                                                                              }, timeout=3)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -445,7 +446,7 @@ class ShopeeScraper:
                 list_length = len(product_list)
                 i = i+1
             except:
-                print('E', end='')
+                print('\nEROOR')
                 slack_notify('error store for whole list - '+str(store_obj) + '#' + str(i))
                 i = i+1
         return pk
@@ -512,4 +513,4 @@ if __name__ == '__main__':
     # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
-    update_shopee(43)
+    update_shopee(42)
