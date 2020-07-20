@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework import status
 from allauth.account.adapter import get_adapter
-from django.forms.models import model_to_dict
 
 from django.contrib.auth import get_user_model
 from user import serializers
@@ -207,18 +206,19 @@ class UserStyleUpdateView(APIView):
         sort_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
         primary_style = ProductStyle.objects.get(name=sort_points[0][0])
         secondary_style = ProductStyle.objects.get(name=sort_points[1][0])
-        user_style_obj = UserStyleTaste.objects.create(user=user,
-                                                       lovely=points['lovely'],
-                                                       sexy=points['sexy'],
-                                                       simple=points['simple'],
-                                                       street=points['street'],
-                                                       feminine=points['feminine'],
-                                                       primary_style=primary_style,
-                                                       secondary_style=secondary_style)
+        UserStyleTaste.objects.create(user=user,
+                                      lovely=points['lovely'],
+                                      sexy=points['sexy'],
+                                      simple=points['simple'],
+                                      street=points['street'],
+                                      feminine=points['feminine'],
+                                      primary_style=primary_style,
+                                      secondary_style=secondary_style)
         user.primary_style = primary_style
         user.secondary_style = secondary_style
         user.save()
-        return Response({'primary_style': sort_points[0][0], 'secondary_style': sort_points[1][0], 'user_style': sort_points})
+        return Response({'primary_style': sort_points[0][0],
+                         'secondary_style': sort_points[1][0], 'user_style': sort_points})
 
 
 class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
