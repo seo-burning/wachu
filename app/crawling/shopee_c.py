@@ -459,8 +459,6 @@ def update_shopee(start_index=0, end_index=None):
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
-            if i % 5 == 4:
-                obj.change_session()
             print("\n#" + str(i) + ' update ' + str(store_obj))
             updated = obj.search_store(store_obj)
             result_text = store_obj.insta_id + 'total : ' + str(updated) + '\n'
@@ -473,8 +471,6 @@ def validate_shopee(start_index=0, end_index=None):
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
     for i, store_obj in enumerate(store_list):
-        if i % 5 == 4:
-            obj.change_session()
         print("\n#" + str(i) + ' update ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
@@ -514,4 +510,4 @@ if __name__ == '__main__':
     # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
-    update_shopee(52)
+    update_shopee(65)

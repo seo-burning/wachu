@@ -84,13 +84,25 @@ def _get_free_proxies_2():
 
 def get_session(new=False, proxies=None):
     if new:
-        proxies = _get_free_proxies()
-        proxies = proxies + _get_free_proxies_2() + DEFAULT_PROXIES
+        try:
+            proxies = _get_free_proxies() + DEFAULT_PROXIES
+        except:
+            proxies = DEFAULT_PROXIES
+        try:
+            proxies = proxies + _get_free_proxies_2()
+        except:
+            pass
     elif proxies and len(proxies) > 0:
         proxies = proxies
     else:
-        proxies = _get_free_proxies()
-        proxies = proxies + _get_free_proxies_2()
+        try:
+            proxies = _get_free_proxies()
+        except:
+            proxies = DEFAULT_PROXIES
+        try:
+            proxies = proxies + _get_free_proxies_2()
+        except:
+            pass
     for i in range(len(proxies)):
         # construct an HTTP session
         session = requests.Session()
@@ -108,3 +120,4 @@ def get_session(new=False, proxies=None):
         except Exception as e:
             proxies.pop(i)
             continue
+    return session, proxies
