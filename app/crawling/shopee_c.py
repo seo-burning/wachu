@@ -42,6 +42,7 @@ class ShopeeScraper:
     def change_session(self):
         if self.session_refresh_count > 5:
             new_session, self.proxies = get_session('new')
+            self.session_refresh_count = 0
         else:
             new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
@@ -513,4 +514,4 @@ if __name__ == '__main__':
     # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
-    update_shopee(42)
+    update_shopee(50)

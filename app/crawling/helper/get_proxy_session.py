@@ -103,8 +103,7 @@ def get_session(new=False, proxies=None):
             if check_valid.status_code == 200:
                 if len(check_valid.text.strip()) > 100:
                     continue
-                print(proxy)
-                print("\nRequest page with IP:{}".format(check_valid.text.strip()), end='')
+                print("\nRequest page with IP:{}".format(check_valid.text.strip()))
                 return session, proxies
         except Exception as e:
             proxies.pop(i)

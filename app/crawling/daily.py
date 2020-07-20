@@ -17,6 +17,7 @@ def calculating():
 if __name__ == '__main__':
     date = datetime.datetime.now().strftime('%Y-%m-%d %H:00')
     time = int(datetime.datetime.now().strftime('%H'))
+    start_time = time.time()
 
     if time > 18:  # 25시에 진행되는 크롤링 (01:00)        # 쇼피 뒤 절반 생성 / 홈페이지 업데이트
         slack_notify('*update data @' + date+'*')
@@ -49,3 +50,5 @@ if __name__ == '__main__':
         calculating()
         preview_image_update()
         slack_notify('*update data @' + date+'*' + 'done')
+
+    slack_notify("--- %s seconds ---" % (time.time() - start_time))

@@ -18,7 +18,6 @@ def update_homepage():
     # dosiin_result = get_dosiin()
     # dict_to_product_model(dosiin_result)
     home_page_list = [
-        get_nowsaigon,
         get_devons,
         get_olv, get_tsun,
         get_lepoulet,
