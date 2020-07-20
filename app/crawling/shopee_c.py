@@ -36,12 +36,16 @@ _user_agents = [
 class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
-        self.proxy = proxy
-        self.session = get_session()
+        self.session, self.proxies = get_session()
+        self.session_refresh_count = 0
 
     def change_session(self):
-        new_session = get_session()
+        if self.session_refresh_count > 5:
+            new_session, self.proxies = get_session('new')
+        else:
+            new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
+        self.session_refresh_count += 1
         return new_session
 
     def __request_url(self, store_id, limit='100', newest='0'):
@@ -416,7 +420,6 @@ class ShopeeScraper:
                                                       limit=list_length, newest=i*100)
                         break
                     except:
-                        print('get new session')
                         new_session = self.change_session()
                         error_try_count += 1
                 product_list = response.json()['items']
@@ -428,7 +431,6 @@ class ShopeeScraper:
                                 store_obj, product['itemid'], product['view_count'])
                             break
                         except:
-                            print('get new session')
                             new_session = self.change_session()
                             error_try_count += 1
                     if (i == 0 and j == 0):
@@ -448,9 +450,9 @@ class ShopeeScraper:
         return pk
 
 
-def update_shopee():
+def update_shopee(start_index=0, end_index=None):
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
     file_path = './shopee_result.txt'
     with open(file_path, "w") as f:
         for i, store_obj in enumerate(store_list):
@@ -464,9 +466,9 @@ def update_shopee():
     os.remove(file_path)
 
 
-def validate_shopee():
+def validate_shopee(start_index=0, end_index=None):
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
     for i, store_obj in enumerate(store_list):
         if i % 5 == 4:
             obj.change_session()
@@ -503,10 +505,10 @@ def null_product(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='thel.studios')
-    # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    # # # # pool.map(multi, product_list)
-    # # # # pool.close()
-    obj = ShopeeScraper()
-    obj.search_store(store_obj)
-    # update_shopee()
+    # store_obj = Store.objects.get(insta_id='thel.studios')
+    # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    # # # # # pool.map(multi, product_list)
+    # # # # # pool.close()
+    # obj = ShopeeScraper()
+    # obj.search_store(store_obj)
+    update_shopee(17)
