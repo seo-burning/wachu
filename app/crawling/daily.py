@@ -16,27 +16,36 @@ def calculating():
 
 if __name__ == '__main__':
     date = datetime.datetime.now().strftime('%Y-%m-%d %H:00')
-    time = int(datetime.datetime.now().strftime('%I'))
+    time = int(datetime.datetime.now().strftime('%H'))
 
-    if time < 6:
+    if time > 18:  # 25시에 진행되는 크롤링 (01:00)        # 쇼피 뒤 절반 생성 / 홈페이지 업데이트
         slack_notify('*update data @' + date+'*')
-        # 새벽 생성
-        slack_notify('*update shopee @' + date+'*')
-        update_shopee()
+        # 쇼피 앞 절반 생성 / 홈페이지 생성
         slack_notify('*update homepage @' + date+'*')
         update_homepage()
+        slack_notify('*update shopee 0 ~ 100 @' + date+'*')
+        update_shopee(100)
         slack_notify('*calculating @' + date+'*')
         calculating()
         preview_image_update()
         slack_notify('*update data @' + date+'*' + 'done')
-    else:
-        slack_notify('*update(validate) data @' + date+'*')
-        # 오후 삭제
-        slack_notify('*update(validate)  shopee @' + date+'*')
-        validate_shopee()
-        slack_notify('*update(validate)  homepage @' + date+'*')
+    elif time > 22:  # 29시에 진행되는 크롤링 (05:00)  상품 검증
+        slack_notify('*validate data @' + date+'*')
+        slack_notify('*validate homepage @' + date+'*')
         validate_homepage()
+        slack_notify('*validate shopee @' + date+'*')
+        validate_shopee()
         slack_notify('*calculating @' + date+'*')
         calculating()
         preview_image_update()
-        slack_notify('*update(validate) data @' + date+'*' + 'done')
+        slack_notify('*update data @' + date+'*' + 'done')
+    elif time > 7:  # 14시 진행되는 크롤링         # 홈페이지 신규 상품 생성 / 쇼피 앞 절반 생성
+        slack_notify('*update data @' + date+'*')
+        slack_notify('*update homepage @' + date+'*')
+        update_homepage()
+        slack_notify('*update shopee @' + date+'*')
+        update_shopee(0, 100)
+        slack_notify('*calculating @' + date+'*')
+        calculating()
+        preview_image_update()
+        slack_notify('*update data @' + date+'*' + 'done')

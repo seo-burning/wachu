@@ -45,6 +45,7 @@ DEFAULT_PROXIES = ["1.251.31.43:80",
 
 
 def _get_free_proxies():
+    print('P', end='')
     url = "https://free-proxy-list.net/"
     # get the HTTP response and construct soup object
     soup = bs(requests.get(url).content, "html.parser")
@@ -74,7 +75,7 @@ def _get_free_proxies_2():
             port = tds[1].text.strip()
             host = f"{ip}:{port}"
             speed = tds[3].text.replace(' ms', '').strip()
-            if (int(speed) > 2000):
+            if (int(speed) > 1000):
                 proxies.append(host)
         except IndexError:
             continue
@@ -82,27 +83,27 @@ def _get_free_proxies_2():
 
 
 def get_session(new=False, proxies=None):
-    print('RS', end='')
     if new:
-        print('P', end='')
+        # proxies = _get_free_proxies_2()
         proxies = _get_free_proxies()
-    elif proxies:
+    elif proxies and len(proxies) > 0:
         proxies = proxies
     else:
-        print('p', end='')
-        proxies = _get_free_proxies_2()
+        proxies = _get_free_proxies()
     for i in range(len(proxies)):
         # construct an HTTP session
         session = requests.Session()
         # choose one random proxy
         proxy = random.choice(proxies)
         session.proxies = {"http": proxy, "https": proxy}
+        print('c', end='')
         try:
             check_valid = session.get("http://icanhazip.com", timeout=1.5)
             if check_valid.status_code == 200:
                 if len(check_valid.text.strip()) > 100:
                     continue
-                print("Request page with IP:", check_valid.text.strip())
+                print("\nRequest page with IP:{}".format(check_valid.text.strip()), end='')
                 return session, proxies
         except Exception as e:
+            proxies.pop(i)
             continue

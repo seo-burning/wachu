@@ -281,7 +281,7 @@ def dict_to_product_model(product_list):
         try:
             update_obj_product(obj_product)
         except:
-            slack_notify('error' + 'https://dabivn.com/admin/product/product/'+str(obj_product.pk))
+            slack_notify('error' + obj_product['product_link'])
 
 
 # Store

@@ -17,27 +17,26 @@ size_option_list = ['xs', 's', 'm', 'l', 'xl', 'free', 'freesize', '25', '26', '
                     '1', '2', '3', '4', '5', 'lớn', 'nhỏ']
 
 
-def get_proxies():
-    url = 'https://free-proxy-list.net/'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    proxy_list = soup.find('tbody')
-    proxies = set()
-    for rows in proxy_list.find_all('tr')[:5]:
-        proxies.add(rows.find_all('td')[0].text +
-                    ':'+rows.find_all('td')[1].text)
-    return proxies
-
-
 class HomepageCrawler:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
-        self.proxy = proxy
-        self.session = get_session()
+        self.session = requests.Session()
+        self.session.headers.update({'User-Agent': self.__random_agent(),
+                                     'X-Requested-With': 'XMLHttpRequest',
+                                     })
+        self.proxies = []
+        self.session_refresh_count = 0
 
-    def __change_session(self):
-        new_session = get_session()
+    def change_session(self):
+        if self.session_refresh_count > 5:
+            new_session, self.proxies = get_session('new')
+        else:
+            new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
+        self.session.headers.update({'User-Agent': self.__random_agent(),
+                                     'X-Requested-With': 'XMLHttpRequest',
+                                     })
+        self.session_refresh_count += 1
         return new_session
 
     def __random_agent(self):
@@ -47,10 +46,7 @@ class HomepageCrawler:
 
     def request_url(self, url):
         try:
-            response = self.session.get(url,
-                                        headers={'User-Agent': self.__random_agent(),
-                                                 'X-Requested-With': 'XMLHttpRequest',
-                                                 },)
+            response = self.session.get(url, timeout=1.5)
             response.raise_for_status()
         except requests.HTTPError as e:
             # print(e)
@@ -350,6 +346,7 @@ def sub_crawler(obj, url, store_pk, style, product_source, url_obj,
     product_list = []
     store = store_pk
     for product_obj in product_source:
+        error_try_count = 0
         print('.', end='')
         #     link and get json
         product_link_soup = product_obj.find("a", href=True)
@@ -359,7 +356,14 @@ def sub_crawler(obj, url, store_pk, style, product_source, url_obj,
         product_link = url + product_link_soup.get('href')
         if product_link not in duplicate_check_list:
             duplicate_check_list.append(product_link)
-            response = obj.request_url(product_link)
+            while True or error_try_count > 10:
+                try:
+                    response = obj.request_url(product_link)
+                    break
+                except:
+                    print('e', end='')
+                    new_session = obj.change_session()
+                    error_try_count += 1
             product_soup = BeautifulSoup(response.text, 'html.parser')
             try:
                 script_list = product_soup.find_all('script')
@@ -388,9 +392,17 @@ def homepage_crawler(url, store_pk, style,
     for url_obj in url_list:
         i = 1
         while True:
+            error_try_count = 0
             print(",", end='')
             request_url = url+"/collections/"+url_obj+"?page=" + str(i)
-            response = obj.request_url(request_url)
+            while True or error_try_count > 10:
+                try:
+                    response = obj.request_url(request_url)
+                    break
+                except:
+                    print('e', end='')
+                    new_session = obj.change_session()
+                    error_try_count += 1
             if response is None:
                 break
             soup = BeautifulSoup(response.text, 'html.parser')

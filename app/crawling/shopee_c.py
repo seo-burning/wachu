@@ -37,6 +37,7 @@ class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
         self.session, self.proxies = get_session()
+        self.session.headers.update({'User-Agent': choice(_user_agents), }'X-Requested-With': 'XMLHttpRequest',)
         self.session_refresh_count = 0
 
     def change_session(self):
@@ -45,6 +46,7 @@ class ShopeeScraper:
         else:
             new_session, self.proxies = get_session(proxies=self.proxies)
         self.session = new_session
+        self.session.headers.update({'User-Agent': choice(_user_agents), }'X-Requested-With': 'XMLHttpRequest',)
         self.session_refresh_count += 1
         return new_session
 
@@ -52,10 +54,8 @@ class ShopeeScraper:
         try:
             response = self.session.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
                                         .format(limit=limit, store_id=store_id, newest=newest),
-                                        headers={'User-Agent': choice(_user_agents),
-                                                 'X-Requested-With': 'XMLHttpRequest',
-                                                 'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                                 },)
+                                        headers={'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
+                                                 }, timeout=1.5)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -68,12 +68,11 @@ class ShopeeScraper:
     def __request_url_item(self, store_id, item_id):
         try:
             response = self.session.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
-                                        .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
-                                                                                              'X-Requested-With': 'XMLHttpRequest',
-                                                                                              'Referer': 'https://shopee.vn/shop/' +
-                                                                                              str(store_id) +
-                                                                                              '/search?shopCollection=',
-                                                                                              },)
+                                        .format(item_id=item_id, store_id=store_id), headers={
+                                            'Referer': 'https://shopee.vn/shop/' +
+                                            str(store_id) +
+                                            '/search?shopCollection=',
+                                        }, timeout=1.5)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -420,6 +419,7 @@ class ShopeeScraper:
                                                       limit=list_length, newest=i*100)
                         break
                     except:
+                        print('E', end='')
                         new_session = self.change_session()
                         error_try_count += 1
                 product_list = response.json()['items']
@@ -431,6 +431,7 @@ class ShopeeScraper:
                                 store_obj, product['itemid'], product['view_count'])
                             break
                         except:
+                            print('e', end='')
                             new_session = self.change_session()
                             error_try_count += 1
                     if (i == 0 and j == 0):
@@ -511,4 +512,4 @@ if __name__ == '__main__':
     # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
-    update_shopee(17)
+    update_shopee(43)
