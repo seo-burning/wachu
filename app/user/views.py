@@ -218,7 +218,8 @@ class UserStyleUpdateView(APIView):
         user.secondary_style = secondary_style
         user.save()
         return Response({'primary_style': sort_points[0][0],
-                         'secondary_style': sort_points[1][0], 'user_style': sort_points})
+                         'secondary_style': sort_points[1][0],
+                         'user_style': sort_points})
 
 
 class UserProfileImageUpdateView(generics.RetrieveUpdateAPIView):
