@@ -176,23 +176,6 @@ class StoreSerializer(serializers.ModelSerializer):
         return obj.favorite_users.count()
 
 
-class StoreListSerializer(serializers.ModelSerializer):
-    """Serailizer for Store objects"""
-    class Meta:
-        model = Store
-        fields = (
-            'is_new_post',
-            'insta_id',
-            'recent_post_1',
-            'recent_post_2',
-            'recent_post_3')
-        read_only_fields = ('is_new_post',
-                            'insta_id',
-                            'recent_post_1',
-                            'recent_post_2',
-                            'recent_post_3')
-
-
 class StoreRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
