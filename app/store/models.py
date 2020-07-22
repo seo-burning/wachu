@@ -165,7 +165,7 @@ class StoreRanking(TimeStampedModel):
 POST_IMAGE_TYPE = (('P', _('Picture')), ('V', _('Video')))
 
 
-class StoreAddress(TimeStampedModel):
+class StoreAddress(TimeStampedModel, ActiveModel):
     address = models.CharField(
         max_length=250, null=True)
     store = models.ForeignKey(
