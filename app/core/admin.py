@@ -66,6 +66,6 @@ class UserPushTokenAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Notice)
-admin.site.register(models.UserPushToken)
+admin.site.register(models.UserPushToken, UserPushTokenAdmin)
 admin.site.register(models.Region)
 admin.site.register(models.User, UserAdmin)

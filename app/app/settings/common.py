@@ -80,12 +80,13 @@ INSTALLED_APPS = [
 
     'advertisement',
     'core',
+    'notification',
+    'order',
     'pick',
     'product',
     'publish',
-    'store',
-    'order',
     'preorder',
+    'store',
     'user',
 ]
 

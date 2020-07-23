@@ -25,3 +25,6 @@ django-debug-toolbar
 
 #admin
 django-grappelli
+
+#Expo Notification
+exponent_server_sdk

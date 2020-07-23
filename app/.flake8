@@ -13,4 +13,4 @@ exclude =
   shopee_c.py,
   crawling,
   static
-max-line-length = 120
+max-line-length = 200
