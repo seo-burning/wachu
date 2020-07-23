@@ -39,8 +39,8 @@ class PushNotification(TimeStampedModel,
     data = models.CharField(max_length=1000, blank=True)
     title = models.CharField(max_length=100, )
     body = models.CharField(max_length=200,)
-    ttl = models.IntegerField(blank=True)
-    expiration = models.IntegerField(blank=True)
+    ttl = models.IntegerField(blank=True, null=True)
+    expiration = models.IntegerField(blank=True, null=True)
     priority = models.CharField(max_length=10,
                                 choices=PRIORITY_CHOICES,
                                 default='default')
