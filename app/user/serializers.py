@@ -194,6 +194,7 @@ class AuthTokenSerializer(serializers.Serializer):
         return attrs
 
 
+# 한 아이디로 여러 기기 가능하기에 1:다 여야한다.
 class PushTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPushToken

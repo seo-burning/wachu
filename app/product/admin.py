@@ -461,6 +461,7 @@ class Product(admin.ModelAdmin):
                'product_type_instagram',
                'product_pattern_print',
                'product_pattern_floral',
+               'product_pattern_tiedye',
                'product_pattern_polka',
                'product_pattern_striped',
                'product_pattern_texture',
@@ -573,6 +574,17 @@ class Product(admin.ModelAdmin):
         self.message_user(
             request, '{}건의 상품에 floral 패턴 추가'.format(updated_count))
     product_pattern_floral.short_description = 'floral 패턴 추가'
+
+    def product_pattern_tiedye(self, request, queryset):
+        tiedye_pattern = models.ProductPattern.objects.get(name='tiedye')
+        updated_count = 0
+        for obj in queryset.all():
+            obj.pattern.add(tiedye_pattern)
+            obj.save()
+            updated_count = updated_count + 1
+        self.message_user(
+            request, '{}건의 상품에 tiedye 패턴 추가'.format(updated_count))
+    product_pattern_tiedye.short_description = 'tiedye 패턴 추가'
 
     def product_pattern_polka(self, request, queryset):
         polka_pattern = models.ProductPattern.objects.get(name='polka')

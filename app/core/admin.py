@@ -61,6 +61,10 @@ class UserAdmin(BaseUserAdmin, ExportCsvMixin):
         return super().changelist_view(request, extra_context=extra_context)
 
 
+class UserPushTokenAdmin(admin.ModelAdmin):
+    list_display = ['is_active', 'user', 'created_at', 'push_token']
+
+
 admin.site.register(models.Notice)
 admin.site.register(models.UserPushToken)
 admin.site.register(models.Region)

@@ -25,6 +25,9 @@ class ProductTagGroupListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
 # https://medium.com/@chrisjune_13837/django-5-orm-queries-you-should-know-a0f4533b31e8
+# 100개 만들고, 셔플 기능, 날짜별 퍼블리싱 기능
+# 매일 화면이 바뀌는 느낌이 들어야 한다.
+# 여기에 커스텀 해주는 로직을 조금 더 넣는 것도 방법
     def get_queryset(self):
         user = self.request.user
         primary_style = user.primary_style
