@@ -9,6 +9,8 @@ from core import models
 from core.models import ExportCsvMixin
 
 
+# TODO ADmin 용 상속 템플릿 제작
+
 class UserAdmin(BaseUserAdmin, ExportCsvMixin):
     ordering = ['id']
     list_display = ['id', 'email', 'name', ]

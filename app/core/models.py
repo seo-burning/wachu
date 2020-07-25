@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     name = models.CharField(max_length=255)
     information_status = models.CharField(max_length=100, choices=INFORMATION_CHOICES_FIELD, default='new')
 
-    age = models.IntegerField(null=True)
+    age = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(
         max_length=100, choices=GENDER_CHOICES_FIELD, blank=True, null=True)
     region = models.ForeignKey(Region,

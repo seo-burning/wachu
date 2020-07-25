@@ -35,6 +35,8 @@ class StoreView(generics.ListAPIView):
                                                     then=2
                                                 ), default=5, output_field=IntegerField()
                                             )).order_by('weighted_ordering', 'current_ranking')
+        else:
+            queryset = Store.objects.filter(is_active=True)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
