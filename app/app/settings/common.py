@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'notification',
     'order',
     'pick',
+    'point',
     'product',
     'publish',
     'preorder',
