@@ -16,6 +16,7 @@ from core.models import UserPushToken
 from .models import UserFavoriteProduct, ProductReview, \
     Recipient, UserStyleTaste, UserProductView, UserStoreView
 from product.models import Product, ProductStyle
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -46,6 +47,27 @@ class CreatUserPushToken(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        push_token = request.data.__getitem__('push_token')
+        try:
+            default_push_token = UserPushToken.objects.get(push_token=push_token)
+            if default_push_token.user != request.user:
+                default_push_token.delete()
+        except ObjectDoesNotExist:
+            print('no default token exist')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UserUserPushTokenUpdateView(generics.RetrieveUpdateAPIView):
+    """Update user basic infomation"""
+    serializer_class = serializers.PushTokenSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserPushTokenListView(generics.ListAPIView):
