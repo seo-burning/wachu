@@ -5,7 +5,7 @@ from pick import models
 class PickSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Pick
-        fields = ['image', 'outlink']
+        fields = ['image', 'image_outlink', 'outlink', 'product']
 
 
 class PickABSerializer(serializers.ModelSerializer):

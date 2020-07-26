@@ -15,6 +15,17 @@ class PickSetView(generics.ListAPIView):
         return self.queryset.filter(is_published=True)
 
 
+class RandomPickListView(generics.ListAPIView):
+    serializer_class = serializers.PickSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = models.Pick.objects.all().order_by('?')
+        # user = self.request.user
+        return queryset
+
+
 class PickABResultCreateView(generics.CreateAPIView):
     serializer_class = serializers.PickABResultSerializer
     authentication_classes = (TokenAuthentication,)
