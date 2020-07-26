@@ -78,7 +78,7 @@ class Pick(TimeStampedModel, PickPointModel):
         default=None, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.id:
+        if not self.id and self.image:
             self.image = self.compressImage(self.image)
         super(Pick, self).save(*args, **kwargs)
 
@@ -99,7 +99,9 @@ class Pick(TimeStampedModel, PickPointModel):
 
     def __str__(self):
         if self.image:
-            thumb_image = create_presigned_url('wachu', 'media/'+str(self.image), expiration=3000)
+            thumb_image = create_presigned_url('wachu', 'media/' + str(self.image), expiration=3000)
+        elif self.image_outlink:
+            thumb_image = self.image_outlink
         else:
             thumb_image = "http://dabivn.comm"
 

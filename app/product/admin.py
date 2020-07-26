@@ -480,9 +480,19 @@ class Product(admin.ModelAdmin):
 
     def make_it_to_pick_object(self, request, queryset):
         for product_object in queryset.all():
-            pick_obj, is_created = Pick.objects.get_or_create(product=product_obj)
+            pick_obj, is_created = Pick.objects.get_or_create(product=product_object)
             if is_created:
+                pick_obj.image_outlink = product_object.product_thumbnail_image
+                # pick_obj.outlink = product_object.product_link
+                pick_obj.product_category.add(product_object.category)
+                for product_color in product_object.color.all():
+                    pick_obj.product_color.add(product_color)
+                pick_obj.primary_style = product_object.style
+                pick_obj.age = product_object.store.age
+                pick_obj.save()
                 pass
+            self.message_user(
+                request, 'https://dabivn.com/admin/pick/pick/{}'.format(pick_obj.pk))
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
