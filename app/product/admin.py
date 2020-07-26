@@ -485,6 +485,7 @@ class Product(admin.ModelAdmin):
                 pick_obj.image_outlink = product_object.product_thumbnail_image
                 # pick_obj.outlink = product_object.product_link
                 pick_obj.product_category.add(product_object.category)
+                pick_obj.product_sub_category.add(product_object.sub_category)
                 for product_color in product_object.color.all():
                     pick_obj.product_color.add(product_color)
                 pick_obj.primary_style = product_object.style
