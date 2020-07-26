@@ -27,7 +27,6 @@ class PickAdmin(admin.ModelAdmin):
 class PickABAdmin(admin.ModelAdmin):
     inlines = [PickInline, ]
     list_display = ('is_published', 'title', 'pick_num')
-    raw_id_fields = ('pick_AB', 'pick_A', 'pick_B')
 
     def pick_num(self, obj):
         pick_num = obj.picks.all().count()
@@ -36,4 +35,4 @@ class PickABAdmin(admin.ModelAdmin):
 
 @admin.register(models.PickABResult)
 class PickABResultAdmin(admin.ModelAdmin):
-    pass
+    raw_id_fields = ('pick_AB', 'pick_A', 'pick_B')
