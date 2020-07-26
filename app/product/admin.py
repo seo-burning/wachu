@@ -6,7 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
-
+from pick.models import Pick
 # Register your models here.
 
 
@@ -475,7 +475,14 @@ class Product(admin.ModelAdmin):
                'make_name_to_option',
                'product_category_dam_kieu',
                'product_category_ao_somi',
+               'make_it_to_pick_object'
                ]
+
+    def make_it_to_pick_object(self, request, queryset):
+        for product_object in queryset.all():
+            pick_obj, is_created = Pick.objects.get_or_create(product=product_obj)
+            if is_created:
+                pass
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)

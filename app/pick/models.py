@@ -69,6 +69,7 @@ class Pick(TimeStampedModel, PickPointModel):
         verbose_name_plural = _('Pick / 픽')
 
     image = models.ImageField(blank=True, upload_to='pick/%Y/%m')
+    image_outlink = models.URLField(null=True, blank=True, max_length=1000)
     outlink = models.URLField(null=True, blank=True, max_length=500)
     product = models.ForeignKey(Product, blank=True, null=True,
                                 on_delete=models.SET_NULL)
