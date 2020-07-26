@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel, User
-from product.models import ProductCategory, ProductColor, ProductStyle
+from product.models import ProductCategory, ProductColor, ProductStyle, Product
 from store.models import Age
 from utils.helper.image_processing import create_presigned_url
 
@@ -70,6 +70,8 @@ class Pick(TimeStampedModel, PickPointModel):
 
     image = models.ImageField(blank=True, upload_to='pick/%Y/%m')
     outlink = models.URLField(null=True, blank=True, max_length=500)
+    product = models.ForeignKey(Product, blank=True, null=True,
+                                on_delete=models.SET_NULL)
     ab_pick_set = models.ForeignKey(
         PickAB, related_name='picks', on_delete=models.SET_NULL,
         default=None, null=True, blank=True)

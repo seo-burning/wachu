@@ -8,7 +8,9 @@ class PickInline(admin.StackedInline):
     model = models.Pick
     max_num = 50
     extra = 0
-    fields = ('image', 'outlink', 'product_category', 'product_color', 'primary_style', 'secondary_style', 'age')
+    fields = ('image', 'outlink', 'product_category', 'product_color', 'primary_style', 'secondary_style', 'age', 'product')
+    raw_id_fields = ('product',)
+
     verbose_name = _('PickAB')
     verbose_name_plural = _('PickAB')
 
@@ -17,6 +19,7 @@ class PickInline(admin.StackedInline):
 class PickAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'ab_pick_set',
                     'primary_style', 'secondary_style', 'age')
+    raw_id_fields = ('product',)
 
 
 @admin.register(models.PickAB)
