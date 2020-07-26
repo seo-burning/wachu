@@ -30,7 +30,20 @@ class PickABResult(TimeStampedModel):
         User, on_delete=models.CASCADE, related_name='pickAB_results', default=None)
     pick_AB = models.ForeignKey(
         PickAB,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None)
+    pick_A = models.ForeignKey(
+        'Pick',
+        on_delete=models.SET_NULL,
+        related_name='pickAB_results_by_A',
+        null=True,
+        default=None)
+    pick_B = models.ForeignKey(
+        'Pick',
+        on_delete=models.SET_NULL,
+        related_name='pickAB_results_by_B',
+        null=True,
         default=None)
     selection = models.CharField(max_length=2, choices=(
         (0, 0), (1, 1), (2, 2)), null=True)
