@@ -1,6 +1,8 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from pick import serializers, models
 
@@ -15,15 +17,34 @@ class PickSetView(generics.ListAPIView):
         return self.queryset.filter(is_published=True)
 
 
-class RandomPickListView(generics.ListAPIView):
+class RandomPickListView(APIView):
     serializer_class = serializers.PickSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        queryset = models.Pick.objects.all().order_by('?')
-        # user = self.request.user
-        return queryset
+    def get(self, request):
+        user = request.user
+        pick_list_queryset = models.Pick.objects.all().order_by('?')
+        pick_ab_result_queryset = models.PickABResult.objects.select_related('pick_A', 'pick_B').filter(user=user)
+        pick_list = list(pick_list_queryset)
+        pick_ab_list = []
+        pk = 0
+        while (len(pick_ab_list) < 8):
+            picks = []
+            pick_a = pick_list.pop()
+            pick_b = pick_list.pop()
+            ab_exist = pick_ab_result_queryset.filter(pick_A=pick_a, pick_B=pick_b).exists()
+            ba_exist = pick_ab_result_queryset.filter(pick_A=pick_b, pick_B=pick_a).exists()
+            print(ab_exist)
+            if (ab_exist is False and ba_exist is False):
+                pk += 1
+                picks.append(self.serializer_class(pick_a).data)
+                picks.append(self.serializer_class(pick_b).data)
+                pick_ab_dict = {'pk': pk, 'picks': picks}
+                pick_ab_list.append(pick_ab_dict)
+            else:
+                continue
+        return Response(pick_ab_list)
 
 
 class PickABResultCreateView(generics.CreateAPIView):
