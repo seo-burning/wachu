@@ -21,4 +21,4 @@ class PickABResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PickABResult
-        fields = ('pick_AB', 'selection')
+        fields = ('pick_AB', 'pick_A', 'pick_B', 'selection')
