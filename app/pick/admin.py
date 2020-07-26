@@ -8,7 +8,8 @@ class PickInline(admin.StackedInline):
     model = models.Pick
     max_num = 50
     extra = 0
-    fields = ('image', 'image_outlink', 'outlink', 'product_category', 'product_color', 'primary_style', 'secondary_style', 'age', 'product')
+    fields = ('image', 'image_outlink', 'outlink', 'product_category',
+              'product_sub_category', 'product_color', 'primary_style', 'secondary_style', 'age', 'product')
     raw_id_fields = ('product',)
 
     verbose_name = _('PickAB')

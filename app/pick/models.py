@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel, User
-from product.models import ProductCategory, ProductColor, ProductStyle, Product
+from product.models import ProductCategory, ProductSubCategory, ProductColor, ProductStyle, Product
 from store.models import Age
 from utils.helper.image_processing import create_presigned_url
 
@@ -45,6 +45,10 @@ class PickPointModel(models.Model):
     # Categorizing Fields ( updated by admin user )
     product_category = models.ManyToManyField(
         ProductCategory,
+        blank=True,
+        symmetrical=False)
+    product_sub_category = models.ManyToManyField(
+        ProductSubCategory,
         blank=True,
         symmetrical=False)
     product_color = models.ManyToManyField(

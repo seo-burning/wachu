@@ -492,7 +492,8 @@ class Product(admin.ModelAdmin):
                 pick_obj.save()
                 pass
             self.message_user(
-                request, 'https://dabivn.com/admin/pick/pick/{}'.format(pick_obj.pk))
+                request,
+                mark_safe('<a herf="https://dabivn.com/admin/pick/pick/{pk}">https://dabivn.com/admin/pick/pick/{pk}</a>'.format(pk=pick_obj.pk)))
 
     def make_activate(self, request, queryset):
         updated_count = queryset.update(is_active=True)
