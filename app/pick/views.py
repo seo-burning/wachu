@@ -25,7 +25,7 @@ class MyPickListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        pickAB_results = self.request.user.pickAB_results.select_related('pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all().order_by('created_at')
+        pickAB_results = self.request.user.pickAB_results.select_related('pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all().order_by('-created_at')
         product_pk_list = []
         for pickAB_obj in pickAB_results:
             if pickAB_obj.pick_AB:
@@ -40,11 +40,15 @@ class MyPickListView(generics.ListAPIView):
                 product_pk_list.append(product_pk)
             else:
                 print(pickAB_obj)
-        print(product_pk_list)
-        queryset = Product.objects.filter(pk__in=product_pk_list)
+
+        used = set()
+        product_pk_list = list(set(product_pk_list))
+        unique_product_pk_list = [x for x in product_pk_list if x not in used and (used.add(x) or True)]
+
+        queryset = Product.objects.filter(pk__in=unique_product_pk_list)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        # TODO duplicated two times
-        queryset = sorted(queryset,  key=lambda x: product_pk_list.index(x.id))
+        # TODO SQL call duplicated two times
+        queryset = sorted(queryset,  key=lambda x: unique_product_pk_list.index(x.id))
         return queryset
 
 
