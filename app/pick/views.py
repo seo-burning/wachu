@@ -25,7 +25,8 @@ class MyPickListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        pickAB_results = self.request.user.pickAB_results.select_related('pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all().order_by('-created_at')
+        pickAB_results = self.request.user.pickAB_results.select_related(
+            'pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all().order_by('-created_at')
         product_pk_list = []
         for pickAB_obj in pickAB_results:
             if pickAB_obj.pick_AB:
@@ -42,7 +43,7 @@ class MyPickListView(generics.ListAPIView):
                 print(pickAB_obj)
 
         used = set()
-        product_pk_list = list(set(product_pk_list))
+        print(product_pk_list)
         unique_product_pk_list = [x for x in product_pk_list if x not in used and (used.add(x) or True)]
 
         queryset = Product.objects.filter(pk__in=unique_product_pk_list)
