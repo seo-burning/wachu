@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from pick import serializers, models
+from product.serializers import ProductSerializer
+from product.models import Product
 
 
 class PickSetView(generics.ListAPIView):
@@ -15,6 +17,33 @@ class PickSetView(generics.ListAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(is_published=True)
+
+
+class MyPickListView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        pickAB_results = self.request.user.pickAB_results.select_related('pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all()
+        product_pk_list = []
+        for pickAB_obj in pickAB_results[:200]:
+            if pickAB_obj.pick_AB:
+                continue
+            if pickAB_obj.selection == '0' and pickAB_obj.pick_A:
+                if pickAB_obj.pick_A.product:
+                    product_pk = pickAB_obj.pick_A.product.pk
+            elif pickAB_obj.selection == '1' and pickAB_obj.pick_B:
+                if pickAB_obj.pick_B.product:
+                    product_pk = pickAB_obj.pick_B.product.pk
+            if product_pk:
+                product_pk_list.append(product_pk)
+            else:
+                print(pickAB_obj)
+        print(product_pk_list)
+        queryset = Product.objects.filter(pk__in=product_pk_list)
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
 
 
 class RandomPickListView(APIView):

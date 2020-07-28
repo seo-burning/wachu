@@ -26,6 +26,11 @@ class PickAB(TimeStampedModel):
 
 
 class PickABResult(TimeStampedModel):
+    class Meta:
+        verbose_name = _('Pick AB Results / AB 픽 결과')
+        verbose_name_plural = _('Pick AB Results / AB 픽 결과')
+        ordering = ['-created_at']
+
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='pickAB_results', default=None)
     pick_AB = models.ForeignKey(
