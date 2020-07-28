@@ -25,9 +25,9 @@ class MyPickListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        pickAB_results = self.request.user.pickAB_results.select_related('pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all()
+        pickAB_results = self.request.user.pickAB_results.select_related('pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all().order_by('created_at')
         product_pk_list = []
-        for pickAB_obj in pickAB_results[:200]:
+        for pickAB_obj in pickAB_results:
             if pickAB_obj.pick_AB:
                 continue
             if pickAB_obj.selection == '0' and pickAB_obj.pick_A:
@@ -43,6 +43,8 @@ class MyPickListView(generics.ListAPIView):
         print(product_pk_list)
         queryset = Product.objects.filter(pk__in=product_pk_list)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        # TODO duplicated two times
+        queryset = sorted(queryset,  key=lambda x: product_pk_list.index(x.id))
         return queryset
 
 
