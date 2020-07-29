@@ -2,8 +2,21 @@ from django.db.models import Q
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from product import serializers, models
+
+
+class ProductDetailView(generics.RetrieveAPIView):
+    serializer_class = serializers.ProductSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = models.Product.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()  # here the object is retrieved
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class ProductCategoryListView(generics.ListAPIView):
