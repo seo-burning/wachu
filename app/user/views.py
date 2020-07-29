@@ -199,7 +199,9 @@ class UserStyleUpdateView(APIView):
 
     def get(self, request, format=None):
         user = self.request.user
-        pickAB_results = user.pickAB_results.select_related('pick_AB').prefetch_related(
+        pickAB_results = user.pickAB_results.select_related(
+            'pick_AB', 'pick_A', 'pick_B', 'pick_A__primary_style',
+            'pick_A__secondary_style', 'pick_B__primary_style', 'pick_B__secondary_style').prefetch_related(
             'pick_A',
             'pick_B',
             'pick_AB__picks',
@@ -219,8 +221,29 @@ class UserStyleUpdateView(APIView):
                 secondary_style = selected_pick.secondary_style
                 points[str(primary_style)] += 8
                 points[str(secondary_style)] += 2
+            elif pick_result_obj.pick_A and pick_result_obj.pick_B:
+                if selection == '0':
+                    if pick_result_obj.pick_A.primary_style:
+                        primary_style = pick_result_obj.pick_A.primary_style
+                        points[str(primary_style)] += 8
+                        if pick_result_obj.pick_A.secondary_style:
+                            secondary_style = pick_result_obj.pick_A.secondary_style
+                            points[str(secondary_style)] += 2
+                    else:
+                        print(pick_result_obj.pick_A.pk)
+                elif selection == '1':
+                    if pick_result_obj.pick_B.primary_style:
+                        primary_style = pick_result_obj.pick_B.primary_style
+                        points[str(primary_style)] += 8
+                        if pick_result_obj.pick_B.secondary_style:
+                            secondary_style = pick_result_obj.pick_B.secondary_style
+                            points[str(secondary_style)] += 2
+                    else:
+                        print('error')
+                else:
+                    print('??')
             else:
-                # TODO need to update
+                # TODO need to optimiaze and 예외처리
                 pass
         user_product_views = user.view_products.select_related('style').all()
         for product_obj in user_product_views:
