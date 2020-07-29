@@ -29,6 +29,7 @@ class MyPickListView(generics.ListAPIView):
             'pick_A', 'pick_A__product', 'pick_AB', 'pick_B', 'pick_B__product', ).all().order_by('-created_at')
         product_pk_list = []
         for pickAB_obj in pickAB_results:
+            product_pk = None
             if pickAB_obj.pick_AB:
                 continue
             if pickAB_obj.selection == '0' and pickAB_obj.pick_A:
