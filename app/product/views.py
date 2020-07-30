@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from product import serializers, models
+from user.models import UserProductView
 
 
 class ProductDetailView(generics.RetrieveAPIView):
@@ -15,6 +16,12 @@ class ProductDetailView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()  # here the object is retrieved
+        user = request.user
+        instance.view += 1
+        instance.save()
+        user_product_view_object, is_created = UserProductView.objects.get_or_create(user=user, product=instance)
+        user_product_view_object.count += 1
+        user_product_view_object.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

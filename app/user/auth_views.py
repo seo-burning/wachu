@@ -25,6 +25,18 @@ class FacebookLogin(SocialLoginView):
     authentication_classes = (authentication.TokenAuthentication,)
 
 
+# TODO Verifty JWT https://sarunw.com/posts/sign-in-with-apple-3/
+# {'iss': 'https://appleid.apple.com',
+#  'aud': 'host.exp.Exponent',
+#  'exp': 1596101654,
+#  'iat': 1596101054,
+#  'sub': '000025.184cf426f68e4b1b80a4075ce0ec9616.0257',
+#  'c_hash': 'vi_dfTl86x7HiPUiklk7HA',
+#  'email': 's3xmtys78s@privaterelay.appleid.com',
+#  'email_verified': 'true',
+#  'is_private_email': 'true',
+#  'auth_time': 1596101054,
+#  'nonce_supported': True}
 class TemporaryAppleLoginView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
 
@@ -35,6 +47,7 @@ class TemporaryAppleLoginView(APIView):
         client_token = request.data.__getitem__('client_token')
         try:
             decoded = jwt.decode(client_token, "", verify=False)
+            # TODO Validation
             user_unique_id = decoded['sub']
             created_client_token = AppleClientToken.objects.get(
                 user_unique_id=user_unique_id)
