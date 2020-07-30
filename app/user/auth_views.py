@@ -35,7 +35,7 @@ class TemporaryAppleLoginView(APIView):
         try:
             created_client_token = AppleClientToken.objects.get(
                 client_token=client_token)
-            data = {"key": created_client_token.user.auth_token}
+            data = {"key": created_client_token.user.auth_token.key}
             return Response(data, status=status.HTTP_200_OK)
         except AppleClientToken.DoesNotExist:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
@@ -46,14 +46,15 @@ class TemporaryAppleLoginConnectView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
 
     def post(self, request, format=None):
-        user = self.request
+        user = self.request.user
         client_token = request.data.__getitem__('client_token')
         try:
             created_client_token, is_exist = AppleClientToken.objects.get_or_create(
                 client_token=client_token)
             created_client_token.user = user
             created_client_token.save()
-            data = {"key": created_client_token.user.auth_token}
+            print(created_client_token.user.auth_token.key)
+            data = {"key": created_client_token.user.auth_token.key}
             return Response(data, status=status.HTTP_201_CREATED)
         except AppleClientToken.DoesNotExist:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
