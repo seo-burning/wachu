@@ -8,6 +8,7 @@ flake8>=3.6.0
 #Authentication
 django-allauth
 django-rest-auth
+pyjwt
 
 # S3 Setup
 boto3

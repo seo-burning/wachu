@@ -1,6 +1,6 @@
 from django.urls import path
 from django.conf.urls import include
-from user import views
+from user import views, auth_views
 
 
 app_name = 'user'
@@ -31,9 +31,11 @@ urlpatterns = [
     path('me/push_token/', views.CreatUserPushToken.as_view(),
          name='push_token'),
     path('facebook/', views.FacebookLogin.as_view(), name='fb_login'),
+    path('apple/', auth_views.TemporaryAppleLoginView.as_view(), name='apple_login'),
+    path('apple/connect/', auth_views.TemporaryAppleLoginConnectView.as_view(),
+         name='apple_login_connect'),
     path('facebook/connect/', views.FacebookLoginConnect.as_view(),
          name='fb_login_connect'),
-
     path('favorite/', views.FavoriteListView.as_view(),
          name='favorite'),
     path('favorite/product/', views.FavoriteProductListView.as_view()),
