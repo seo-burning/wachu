@@ -129,7 +129,7 @@ class UserPushToken(TimeStampedModel):
 class AppleClientToken(TimeStampedModel):
     client_token = models.CharField(max_length=2000)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+                             on_delete=models.CASCADE, null=True)
 
 
 class Notice(TimeStampedModel):
