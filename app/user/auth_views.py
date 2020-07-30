@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.models import AppleClientToken
 from rest_framework import status
+import jwt
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -33,9 +34,12 @@ class TemporaryAppleLoginView(APIView):
     def post(self, request, format=None):
         client_token = request.data.__getitem__('client_token')
         try:
+            decoded = jwt.decode(client_token, "", verify=False)
+            user_unique_id = decoded['sub']
             created_client_token = AppleClientToken.objects.get(
-                client_token=client_token)
+                user_unique_id=user_unique_id)
             data = {"key": created_client_token.user.auth_token.key}
+            print(data)
             return Response(data, status=status.HTTP_200_OK)
         except AppleClientToken.DoesNotExist:
             return Response({}, status=status.HTTP_404_NOT_FOUND)
@@ -49,8 +53,10 @@ class TemporaryAppleLoginConnectView(APIView):
         user = self.request.user
         client_token = request.data.__getitem__('client_token')
         try:
+            decoded = jwt.decode(client_token, "", verify=False)
+            user_unique_id = decoded['sub']
             created_client_token, is_exist = AppleClientToken.objects.get_or_create(
-                client_token=client_token)
+                user_unique_id=user_unique_id)
             created_client_token.user = user
             created_client_token.save()
             print(created_client_token.user.auth_token.key)
