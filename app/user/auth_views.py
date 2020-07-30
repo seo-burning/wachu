@@ -7,6 +7,7 @@ from allauth.account.adapter import get_adapter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.models import AppleClientToken
+from rest_framework import status
 
 
 class FacebookLoginConnect(SocialConnectView):
@@ -34,10 +35,10 @@ class TemporaryAppleLoginView(APIView):
         try:
             created_client_token = AppleClientToken.objects.get(
                 client_token=client_token)
-            print(created_client_token)
-            return Response({"is_exist": True})
+            data = {"key": created_client_token.user.auth_token}
+            return Response(data, status=status.HTTP_200_OK)
         except AppleClientToken.DoesNotExist:
-            return Response({"is_exist": 400})
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
 
 
 class TemporaryAppleLoginConnectView(APIView):
@@ -49,8 +50,10 @@ class TemporaryAppleLoginConnectView(APIView):
         client_token = request.data.__getitem__('client_token')
         try:
             created_client_token, is_exist = AppleClientToken.objects.get_or_create(
-                client_token=client_token, user=user)
-            print(created_client_token)
-            return Response({"is_exist": True})
+                client_token=client_token)
+            created_client_token.user = user
+            created_client_token.save()
+            data = {"key": created_client_token.user.auth_token}
+            return Response(data, status=status.HTTP_201_CREATED)
         except AppleClientToken.DoesNotExist:
-            return Response({"is_exist": 400})
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
