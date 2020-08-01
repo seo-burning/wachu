@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import PushNotification
+from .models import PushNotification, UserNotification
 from .expo_notification import send_push_message
 from core.models import UserPushToken
 from datetime import datetime
 # https://github.com/expo-community/expo-server-sdk-python
 
 
+# TODO User - Notification Model 도 만들어야함. 이걸로 현재 알람 내역에 대한 리스트 연동 필요.
 @admin.register(PushNotification)
 class PushNotificationAdmin(admin.ModelAdmin):
     list_display = ['title', 'body', 'user_scope', 'is_active', 'publish_date']
@@ -43,3 +44,8 @@ class PushNotificationAdmin(admin.ModelAdmin):
                                   channel_id=object.channel_id)
         queryset.update(is_active=True, publish_date=datetime.now())
     execute_push_notification.short_description = 'Push Notification 실행'
+
+
+@admin.register(UserNotification)
+class UserNotificationAdmin(admin.ModelAdmin):
+    pass

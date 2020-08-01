@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
 from utils.helper.model.abstract_model import TimeStampedModel, \
     ActiveModel
@@ -52,3 +53,14 @@ class PushNotification(TimeStampedModel,
     badge = models.IntegerField(default=1)
     channel_id = models.CharField(max_length=100, blank=True)
     publish_date = models.DateTimeField(blank=True, null=True)
+    thumb_image = models.ImageField(
+        blank=True, null=True, upload_to='notification/%Y/%m')
+
+
+class UserNotification(TimeStampedModel,
+                       ActiveModel):
+    publish_date = models.DateTimeField(blank=True, null=True)
+    notification = models.ForeignKey(PushNotification, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE)
+    is_read = models.BooleanField(default=True)

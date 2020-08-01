@@ -192,6 +192,7 @@ class UserInformationStatusUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+# TODO 색상 정보 추가 / 패턴 정보 추가 / 카테고리 정보 추가
 class UserStyleUpdateView(APIView):
     serializer_class = serializers.UserStyleSerializer
     authentication_classes = (authentication.TokenAuthentication,)
