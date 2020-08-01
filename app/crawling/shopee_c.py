@@ -10,7 +10,7 @@ import pytz
 from random import choice
 from django.db.models import Q
 import multiprocessing as mp
-from utils.slack import slack_notify, slack_upload_file
+from utils.slack import slack_notify
 from product.models import Product, ShopeeRating, ProductImage, ShopeeCategory,\
     ProductSize, ProductColor, ProductExtraOption, ProductOption, ProductPattern,\
     ShopeeColor, ShopeeSize, SourceExtraOption
@@ -464,7 +464,7 @@ def update_shopee(start_index=0, end_index=None):
             updated = obj.search_store(store_obj)
             result_text = store_obj.insta_id + 'total : ' + str(updated) + '\n'
             f.writelines(result_text)
-    slack_upload_file(file_path)
+    # slack_upload_file(file_path)
     os.remove(file_path)
 
 

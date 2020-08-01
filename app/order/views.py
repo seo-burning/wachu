@@ -6,6 +6,7 @@ from product.models import Product, ProductOption
 from rest_framework.views import APIView
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from utils.slack import slack_notify
 
 
 class CouponValidateView(APIView):
@@ -77,6 +78,7 @@ class OrderRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         return queryset
 
 
+# TODO add order
 class OrderCreateView(generics.CreateAPIView):
     serializer_class = serializers.OrderCreateSerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -112,6 +114,7 @@ class OrderCreateView(generics.CreateAPIView):
             models.AppliedCoupon.objects.create(coupon=coupon_obj, user=request.user, order=created_order)
         models.OrderStatusLog.objects.create(order=created_order, order_status='order-processing')
         headers = self.get_success_headers(serializer.data)
+        slack_notify('new order created', channel='#7_order')
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     # 주문을 만드면서, 각 단계에 대한 Order Status Log를 만들어야한다.

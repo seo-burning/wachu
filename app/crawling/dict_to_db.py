@@ -12,7 +12,7 @@ from store.models import Store, StorePost, Primary_Style, Age, Category
 from datetime import datetime
 from django.utils import timezone
 from helper.clean_text import get_cleaned_text, remove_html_tags, get_cleaned_text_from_pattern
-from utils.slack import slack_notify, slack_upload_file
+from utils.slack import slack_notify
 
 
 def get_default_description(obj_product):
