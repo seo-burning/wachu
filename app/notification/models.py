@@ -33,10 +33,10 @@ PRIORITY_CHOICES = [('default', 'default'), ('normal', 'normal'), ('high', 'high
 SOUND_CHOICES = [('default', 'default'), ('null', None), ]
 
 
-class PushNotification(TimeStampedModel,
-                       ActiveModel):
-    user_scope = models.CharField(max_length=1000,
-                                  default='ALL')
+class NotificationModel(models.Model):
+    class Meta:
+        abstract = True
+
     title = models.CharField(max_length=100, )
     body = models.CharField(max_length=200,)
     data = models.CharField(max_length=1000, blank=True)
@@ -52,6 +52,12 @@ class PushNotification(TimeStampedModel,
                              choices=SOUND_CHOICES)
     badge = models.IntegerField(default=1)
     channel_id = models.CharField(max_length=100, blank=True)
+
+
+class PushNotification(TimeStampedModel,
+                       ActiveModel, NotificationModel):
+    user_scope = models.CharField(max_length=1000,
+                                  default='ALL')
     publish_date = models.DateTimeField(blank=True, null=True)
     thumb_image = models.ImageField(
         blank=True, null=True, upload_to='notification/%Y/%m')
@@ -68,16 +74,17 @@ class PushNotificationResult(TimeStampedModel):
 
 
 class UserNotification(TimeStampedModel,
-                       ActiveModel):
+                       ActiveModel, NotificationModel):
+    is_read = models.BooleanField(default=False)
     publish_date = models.DateTimeField(blank=True, null=True)
-    notification = models.ForeignKey(PushNotification, on_delete=models.SET_NULL, null=True)
+    notification = models.ForeignKey(PushNotification,
+                                     on_delete=models.SET_NULL,
+                                     null=True, blank=True)
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE)
-    is_read = models.BooleanField(default=True)
+    thumb_image = models.ImageField(
+        blank=True, null=True, upload_to='notification/%Y/%m')
 
     def __str__(self):
-        if self.notification:
-            string_name = self.notification.title
-        else:
-            string_name = 'no-related-push-notification'
+        string_name = self.title
         return string_name + ' ====> '+str(self.user)
