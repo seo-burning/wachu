@@ -56,6 +56,16 @@ class PushNotification(TimeStampedModel,
     thumb_image = models.ImageField(
         blank=True, null=True, upload_to='notification/%Y/%m')
 
+    def __str__(self):
+        return self.title
+
+
+class PushNotificationResult(TimeStampedModel):
+    notification = models.ForeignKey(PushNotification, on_delete=models.SET_NULL, null=True)
+    total_push = models.IntegerField(default=0)
+    success_push = models.IntegerField(default=0)
+    fail_push = models.IntegerField(default=0)
+
 
 class UserNotification(TimeStampedModel,
                        ActiveModel):
@@ -64,3 +74,10 @@ class UserNotification(TimeStampedModel,
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE)
     is_read = models.BooleanField(default=True)
+
+    def __str__(self):
+        if self.notification:
+            string_name = self.notification.title
+        else:
+            string_name = 'no-related-push-notification'
+        return string_name + ' ====> '+str(self.user)

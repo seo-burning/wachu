@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PushNotification, UserNotification
+from .models import PushNotification, UserNotification, PushNotificationResult
 from .expo_notification import send_push_message
 from core.models import UserPushToken
 from datetime import datetime
@@ -48,4 +48,9 @@ class PushNotificationAdmin(admin.ModelAdmin):
 
 @admin.register(UserNotification)
 class UserNotificationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(PushNotificationResult)
+class PushNotificationResultAdmin(admin.ModelAdmin):
     pass
