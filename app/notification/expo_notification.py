@@ -40,6 +40,7 @@ def send_push_message(token,
                             badge=badge,
                             # channel_id=channel_id
                             ))
+            return True
         # Category & display_in_forground
         except PushServerError as exc:
             # Encountered some likely formatting/validation error.

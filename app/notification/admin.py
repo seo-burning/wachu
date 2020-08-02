@@ -30,18 +30,44 @@ class PushNotificationAdmin(admin.ModelAdmin):
             user_scope = object.user_scope
             if user_scope == 'ALL':
                 push_token_list = UserPushToken.objects.all()
+            total_push = len(push_token_list)
+            success_push = 0
+            fail_push = 0
             for push_token_obj in push_token_list:
-                send_push_message(token=push_token_obj.push_token,
-                                  title=object.title,
-                                  body=object.body,
-                                  data=object.data,
-                                  ttl=object.ttl,
-                                  expiration=object.expiration,
-                                  priority=object.priority,
-                                  subtitle=object.subtitle,
-                                  sound=object.sound,
-                                  badge=object.badge,
-                                  channel_id=object.channel_id)
+                is_sucess = send_push_message(token=push_token_obj.push_token,
+                                              title=object.title,
+                                              body=object.body,
+                                              data=object.data,
+                                              ttl=object.ttl,
+                                              expiration=object.expiration,
+                                              priority=object.priority,
+                                              subtitle=object.subtitle,
+                                              sound=object.sound,
+                                              badge=object.badge,
+                                              channel_id=object.channel_id)
+                if (is_sucess):
+                    success_push += 1
+                else:
+                    fail_push += 1
+                UserNotification.objects.create(title=object.title,
+                                                body=object.body,
+                                                data=object.data,
+                                                ttl=object.ttl,
+                                                expiration=object.expiration,
+                                                priority=object.priority,
+                                                subtitle=object.subtitle,
+                                                sound=object.sound,
+                                                badge=object.badge,
+                                                channel_id=object.channel_id,
+                                                publish_date=datetime.now(),
+                                                notification=object,
+                                                user=push_token_obj.user,
+                                                thumb_image=object.thumb_image
+                                                )
+            PushNotificationResult.objects.create(notification=object,
+                                                  total_push=total_push,
+                                                  success_push=success_push,
+                                                  fail_push=fail_push)
         queryset.update(is_active=True, publish_date=datetime.now())
     execute_push_notification.short_description = 'Push Notification 실행'
 
