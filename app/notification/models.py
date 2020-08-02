@@ -56,6 +56,9 @@ class NotificationModel(models.Model):
 
 class PushNotification(TimeStampedModel,
                        ActiveModel, NotificationModel):
+    class Meta:
+        ordering = ['is_active', '-publish_date', ]
+
     user_scope = models.CharField(max_length=1000,
                                   default='ALL')
     publish_date = models.DateTimeField(blank=True, null=True)
@@ -75,6 +78,8 @@ class PushNotificationResult(TimeStampedModel):
 
 class UserNotification(TimeStampedModel,
                        ActiveModel, NotificationModel):
+    class Meta:
+        ordering = ['-publish_date', ]
     is_read = models.BooleanField(default=False)
     publish_date = models.DateTimeField(blank=True, null=True)
     notification = models.ForeignKey(PushNotification,
