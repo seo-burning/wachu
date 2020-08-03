@@ -10,7 +10,7 @@ from homepage.inventory_version import get_olv, get_clothesbar, get_nowsaigon, g
 from dict_to_db import dict_to_product_model, dict_to_store_model
 from helper.request_helper import get_user_agents
 from utils.slack import slack_notify
-
+from store.models import Store
 
 def update_homepage():
     # # fivetheway_result = get_5theway()
@@ -37,8 +37,11 @@ def update_homepage():
             slack_notify('error occured homepage crawling ', str(i))
 
 
-def validate_homepage():
-    product_list = Product.objects.filter(product_source='HOMEPAGE', is_active=True)
+def validate_homepage(store=None):
+    if store:
+        product_list = Product.objects.filter(store=store)
+    else:
+        product_list = Product.objects.filter(product_source='HOMEPAGE', is_active=True)
     try:
         for obj_product in product_list:
             print('.', end='')
@@ -57,6 +60,8 @@ def validate_homepage():
 
 
 if __name__ == '__main__':
+    store = Store.objects.get(insta_id='dirtycoins.vn')
     # validate_homepage()
     update_homepage()
+    validate_homepage(store)
     pass

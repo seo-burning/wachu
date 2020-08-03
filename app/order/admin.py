@@ -41,7 +41,7 @@ class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
 
 @admin.register(OrderedProduct)
 class OrderedProductAdmin(admin.ModelAdmin):
-    # raw_id_fields = ['product', 'order']
+    raw_id_fields = ['product', 'order']
     readonly_fields = ['product', 'order']
 
     def get_queryset(self, request):

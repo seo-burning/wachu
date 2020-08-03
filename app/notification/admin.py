@@ -25,6 +25,7 @@ class PushNotificationAdmin(admin.ModelAdmin):
             request, '{} Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = 'Deactivate 상태로 변경'
 
+    # TODO 너무 많아서 Timeout 걸림. 다른 방식 적용 필요.
     def execute_push_notification(self, request, queryset):
         for object in queryset.all():
             user_scope = object.user_scope

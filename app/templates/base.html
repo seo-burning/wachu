@@ -4,10 +4,10 @@
   <head>
     <!-- Title -->
     <title>burningbros inc.</title>
-    <meta property="og:url" content="https://www.wachu.shop/" />
+    <meta property="og:url" content="https://dabivn.com/" />
     <meta property="og:title" content="burningbros." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="{% static 'assets/img/cover.jpg' %}" />
+    <meta property="og:image" content="{% static 'assets/img/images/device_icons/xxhdpi.jpg' %}" />
     <meta
       property="og:description"
       content="We are burning, burningbros. inc."
@@ -37,82 +37,29 @@
       rel="stylesheet"
       href="{% static 'assets/vendor/bootstrap/bootstrap.min.css' %}"
     />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/icon-awesome/css/font-awesome.min.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/icon-line-pro/style.css' %}"
-    />
-
+    <!-- CSS Global Compulsory -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <!-- CSS Implementing Plugins -->
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/icon-awesome/css/font-awesome.min.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/icon-hs/style.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/dzsparallaxer/dzsparallaxer.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/dzsparallaxer/dzsscroller/scroller.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/dzsparallaxer/advancedscroller/plugin.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/slick-carousel/slick/slick.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/cubeportfolio-full/cubeportfolio/css/cubeportfolio.min.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/fancybox/jquery.fancybox.css' %}"
-    />
+    <link rel="stylesheet" href="{% static 'assets/vendor/icon-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/icon-line/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/icon-hs/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/hamburgers/hamburgers.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/dzsparallaxer/dzsparallaxer.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/dzsparallaxer/dzsscroller/scroller.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/dzsparallaxer/advancedscroller/plugin.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/fancybox/jquery.fancybox.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/cubeportfolio-full/cubeportfolio/css/cubeportfolio.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendor/slick-carousel/slick/slick.css' %}">
 
     <!-- CSS Template -->
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/css/styles.op-consulting.css' %}"
-    />
-
-    <!-- Revolution Slider -->
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/revolution-slider/revolution/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/revolution-slider/revolution/css/settings.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/revolution-slider/revolution/css/layers.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/revolution-slider/revolution/css/navigation.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'assets/vendor/revolution-slider/revolution-addons/typewriter/css/typewriter.css' %}"
-    />
+    <link rel="stylesheet" href="{% static 'assets/css/styles.op-app.css' %}">
 
     <!-- CSS Customization -->
-    <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}">
   </head>
 
-  <body id="home-section">
+  <body id="home-section' %}">
     <main>
       <!-- Header -->
       <header
@@ -135,45 +82,20 @@
               >
                 <img
                   class="u-header__logo-img u-header__logo-img--main g-width-90"
-                  src="{% static 'assets/img/logo.png' %}"
-                  alt="Image description"
+                  src="{% static 'images/web_logo_2x.png' %}"
+                  alt="Dabi Logo"
+                   style="width: 50%; height: 50%"
                 />
                 <img
                   class="u-header__logo-img g-width-90"
-                  src="{% static 'assets/img/logo-dark.png' %}"
-                  alt="Image description"
+                  src="{% static 'images/web_logo_2x.png' %}"
+                  alt="Dabi Logo"
+                   style="width: 50%; height: 50%"
                 />
               </a>
               <!-- End Logo -->
 
               <!-- Navigation -->
-              <div
-                class="collapse navbar-collapse align-items-center flex-sm-row"
-                id="navBar"
-                data-mobile-scroll-hide="true"
-              >
-                <ul
-                  id="js-scroll-nav"
-                  class="navbar-nav text-uppercase g-letter-spacing-1 g-font-size-12 g-pt-20 g-pt-0--lg ml-auto"
-                >
-                  <li class="nav-item g-mr-15--lg g-mb-7 g-mb-0--lg">
-                    <a href="#home-section" class="nav-link p-0"
-                      >Vision<span class="sr-only">(current)</span></a
-                    >
-                  </li>
-                  <li class="nav-item g-mx-15--lg g-mb-7 g-mb-0--lg">
-                    <a href="#core-value-section" class="nav-link p-0"
-                      >Core value</a
-                    >
-                  </li>
-                  <li class="nav-item g-mx-15--lg g-mb-7 g-mb-0--lg">
-                    <a href="#team-section" class="nav-link p-0">Team</a>
-                  </li>
-                  <li class="nav-item g-mx-15--lg g-mb-7 g-mb-0--lg">
-                    <a href="#contact-section" class="nav-link p-0">Contact</a>
-                  </li>
-                </ul>
-              </div>
               <!-- End Navigation -->
             </div>
           </nav>
@@ -183,105 +105,35 @@
 
       {% block content %} {% endblock %}
 
-      <!-- Contact -->
       <footer id="contact-section" class="g-pos-rel">
         <!-- Content -->
         <div
-          class="g-bg-size-cover g-bg-img-hero u-bg-overlay g-bg-black-opacity-0_7--after g-pt-60 g-pb-40"
+          class="g-bg-size-cover g-bg-img-hero u-bg-overlay g-bg-black-opacity-0_7--after g-pt-50 g-pb-50"
         >
           <div class="container u-bg-overlay__inner">
             <div class="row align-items-center">
-              <div class="col-md-4 g-mb-10">
-                <h3 class="h4 g-color-white mb-4">Contact Info</h3>
-
-                <!-- Icon Block -->
+              <div class="col-md-12 g-mb-10">
+                <h3 class="h2 g-color-white mb-4">Burning bros.</h3>
                 <div class="media align-items-center mb-4">
-                  <div class="d-flex">
-                    <span class="u-icon-v1 u-icon-size--sm g-color-white mr-2">
-                      <i class="icon-hotel-restaurant-235 u-line-icon-pro"></i>
-                    </span>
-                  </div>
                   <div class="media-body">
                     <p class="g-color-white-opacity-0_6 mb-0">
-                      30, Gosan 2-gil, Mapo-gu, Seoul, <br />Republic of Korea
+                      30, Gosan 2-gil, Mapo-gu, Seoul, Republic of Korea<br />
+                      159 Xa lộ Hà Nội, Thảo Điền, Quận 2, Hồ Chí Minh, Vietnam
+                    </p>
+                    <p class="g-color-white-opacity-0_6 mb-0">
+                      Park, Sungjun / Seo, Seonguk | Mã số doanh nghiệp HQ : 337 87 01289
+                    </p>
+                    <p class="g-color-white-opacity-0_6 mb-0">
+                     Tổng đài hỗ trợ: su.seo@burningb.com | +84 3370932001
                     </p>
                   </div>
                 </div>
-                <!-- End Icon Block -->
-
-                <!-- Icon Block -->
-                <div class="media align-items-center mb-4">
-                  <div class="d-flex">
-                    <span class="u-icon-v1 u-icon-size--sm g-color-white mr-2">
-                      <i class="icon-communication-033 u-line-icon-pro"></i>
-                    </span>
-                  </div>
-                  <div class="media-body">
-                    <p class="g-color-white-opacity-0_6 mb-0">
-                      +82 10 9919 6919
-                    </p>
-                  </div>
-                </div>
-                <!-- End Icon Block -->
-
-                <!-- Icon Block -->
-                <div class="media align-items-center g-mb-60">
-                  <div class="d-flex">
-                    <span class="u-icon-v1 u-icon-size--sm g-color-white mr-2">
-                      <i class="icon-communication-062 u-line-icon-pro"></i>
-                    </span>
-                  </div>
-                  <div class="media-body">
-                    <p class="g-color-white-opacity-0_6 mb-0">
-                      su.seo@burningb.com
-                    </p>
-                  </div>
-                </div>
-                <!-- End Icon Block -->
+                          <p class="g-color-white-opacity-0_6 g-font-size-13 mb-0">
+            &copy; 2020 Burningbros. All Rights Reserved.
+          </p>
               </div>
             </div>
           </div>
-        </div>
-        <!-- End Content -->
-
-        <!-- Go To Top -->
-        <a
-          class="js-go-to text-center g-color-main g-color-primary--hover g-left-50x g-ml-minus-100"
-          href="#"
-          data-type="absolute"
-          data-position='{
-             "bottom": 65
-           }'
-          data-offset-top="400"
-          data-compensation="#js-header"
-          data-show-effect="fadeInUp"
-        >
-          <svg
-            version="1.1"
-            preserveAspectRatio="none"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            width="208px"
-            height="50px"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              fill="#fff"
-              d="M111.042,0h-0.085C81.962,0.042,50.96,42.999,6,42.999c-6,0-6,0-6,0v1h214v-1v-0.015C169.917,42.349,139.492,0.042,111.042,0z"
-            />
-          </svg>
-          <i
-            class="g-font-size-20 g-pos-abs g-bottom-20 g-left-50x g-ml-2 fa fa-angle-double-up"
-          ></i>
-        </a>
-        <!-- End Go To Top -->
-
-        <!-- Copyright -->
-        <div class="container text-center g-py-30">
-          <p class="g-font-size-13 mb-0">
-            &copy; 2019 Burningbros. All Rights Reserved.
-          </p>
         </div>
         <!-- End Copyright -->
       </footer>
@@ -289,178 +141,84 @@
     </main>
 
     <!-- JS Global Compulsory -->
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://code.jquery.com/jquery-migrate-3.1.0.min.js"
-      integrity="sha256-ycJeXbll9m7dHKeaPbXBkZH8BuP99SmPm/8q5O+SbBc="
-      crossorigin="anonymous"
-    ></script>
+<script   src="https://code.jquery.com/jquery-3.5.1.slim.min.js"   integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="   crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-migrate-3.3.1.min.js" integrity="sha256-APllMc0V4lf/Rb5Cz4idWUCYlBDG3b0EcN1Ushd3hpE=" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd" crossorigin="anonymous"></script>
     <script src="{% static 'assets/vendor/popper.js/popper.min.js' %}"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+
 
     <!-- JS Implementing Plugins -->
     <script src="{% static 'assets/vendor/appear.js' %}"></script>
-    <script src="{% static 'assets/vendor/slick-carousel/slick/slick.js' %}"></script>
-    <script src="{% static 'assets/vendor/cubeportfolio-full/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
     <script src="{% static 'assets/vendor/dzsparallaxer/dzsparallaxer.js' %}"></script>
     <script src="{% static 'assets/vendor/dzsparallaxer/dzsscroller/scroller.js' %}"></script>
     <script src="{% static 'assets/vendor/dzsparallaxer/advancedscroller/plugin.js' %}"></script>
     <script src="{% static 'assets/vendor/fancybox/jquery.fancybox.js' %}"></script>
+    <script src="{% static 'assets/vendor/cubeportfolio-full/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
+
+    <script src="{% static 'assets/vendor/slick-carousel/slick/slick.js' %}"></script>
 
     <!-- JS Unify -->
     <script src="{% static 'assets/js/hs.core.js' %}"></script>
     <script src="{% static 'assets/js/components/hs.header.js' %}"></script>
+    <script src="{% static 'assets/js/helpers/hs.hamburgers.js' %}"></script>
     <script src="{% static 'assets/js/components/hs.scroll-nav.js' %}"></script>
-    <script src="{% static 'assets/js/components/hs.counter.js' %}"></script>
-    <script src="{% static 'assets/js/components/hs.carousel.js' %}"></script>
+    <script src="{% static 'assets/js/components/hs.onscroll-animation.js' %}"></script>
+    <script src="{% static 'assets/js/components/hs.tabs.js' %}"></script>
     <script src="{% static 'assets/js/components/hs.cubeportfolio.js' %}"></script>
     <script src="{% static 'assets/js/components/hs.popup.js' %}"></script>
+    <script src="{% static 'assets/js/components/hs.carousel.js' %}"></script>
     <script src="{% static 'assets/js/components/hs.go-to.js' %}"></script>
-
-    <!-- JS Revolution Slider -->
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/jquery.themepunch.tools.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/jquery.themepunch.revolution.min.js' %}"></script>
-
-    <script src="{% static 'assets/vendor/revolution-slider/revolution-addons/typewriter/js/revolution.addon.typewriter.min.js' %}"></script>
-
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.actions.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.carousel.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.kenburn.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.layeranimation.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.migration.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.navigation.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.parallax.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.slideanims.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/revolution-slider/revolution/js/extensions/revolution.extension.video.min.js' %}"></script>
 
     <!-- JS Customization -->
     <script src="{% static 'assets/js/custom.js' %}"></script>
-
     <!-- JS Plugins Init. -->
     <script>
-      $(document).on("ready", function() {
+      $(document).on('ready', function () {
         // initialization of carousel
-        $.HSCore.components.HSCarousel.init(".js-carousel");
+        $.HSCore.components.HSCarousel.init('.js-carousel');
 
         // initialization of header
-        $.HSCore.components.HSHeader.init($("#js-header"));
-        // initialization of go to section
-        $.HSCore.components.HSGoTo.init(".js-go-to");
+        $.HSCore.components.HSHeader.init($('#js-header'));
+        $.HSCore.helpers.HSHamburgers.init('.hamburger');
 
-        // initialization of counters
-        var counters = $.HSCore.components.HSCounter.init(
-          '[class*="js-counter"]'
-        );
+        // initialization of tabs
+        $.HSCore.components.HSTabs.init('[role="tablist"]');
+
+        // initialization of scroll animation
+        $.HSCore.components.HSOnScrollAnimation.init('[data-animation]');
+
+        // initialization of go to section
+        $.HSCore.components.HSGoTo.init('.js-go-to');
 
         // initialization of popups
-        $.HSCore.components.HSPopup.init(".js-fancybox");
+        $.HSCore.components.HSPopup.init('.js-fancybox-media', {
+          helpers: {
+            media: {},
+            overlay: {
+              css: {
+                'background': 'rgba(255, 255, 255, .8)'
+              }
+            }
+          }
+        });
       });
 
-      $(window).on("load", function() {
+      $(window).on('load', function() {
         // initialization of HSScrollNav
-        $.HSCore.components.HSScrollNav.init($("#js-scroll-nav"), {
+        $.HSCore.components.HSScrollNav.init($('#js-scroll-nav'), {
           duration: 700
         });
 
         // initialization of cubeportfolio
-        $.HSCore.components.HSCubeportfolio.init(".cbp");
+        $.HSCore.components.HSCubeportfolio.init('.cbp');
       });
 
-      var tpj = jQuery;
-
-      var revapi1014;
-      tpj(document).ready(function() {
-        if (tpj("#rev_slider_1014_1").revolution == undefined) {
-          revslider_showDoubleJqueryError("#rev_slider_1014_1");
-        } else {
-          revapi1014 = tpj("#rev_slider_1014_1")
-            .show()
-            .revolution({
-              sliderType: "standard",
-              jsFileLocation: "revolution/js/",
-              sliderLayout: "fullscreen",
-              dottedOverlay: "none",
-              delay: 9000,
-              navigation: {
-                keyboardNavigation: "off",
-                keyboard_direction: "horizontal",
-                mouseScrollNavigation: "off",
-                mouseScrollReverse: "default",
-                onHoverStop: "off",
-                touch: {
-                  touchenabled: "on",
-                  swipe_threshold: 75,
-                  swipe_min_touches: 1,
-                  swipe_direction: "horizontal",
-                  drag_block_vertical: false
-                }
-              },
-              responsiveLevels: [1240, 1024, 778, 778],
-              gridwidth: [1240, 1024, 778, 480],
-              gridheight: [600, 500, 400, 300],
-              lazyType: "smart",
-              scrolleffect: {
-                fade: "on",
-                grayscale: "on",
-                on_slidebg: "on",
-                on_parallax_layers: "on",
-                direction: "top",
-                multiplicator_layers: "1.4",
-                tilt: "10",
-                disable_on_mobile: "off"
-              },
-              parallax: {
-                type: "scroll",
-                origo: "slidercenter",
-                speed: 400,
-                levels: [
-                  5,
-                  10,
-                  15,
-                  20,
-                  25,
-                  30,
-                  35,
-                  40,
-                  45,
-                  46,
-                  47,
-                  48,
-                  49,
-                  50,
-                  51,
-                  55
-                ]
-              },
-              shadow: 0,
-              spinner: "off",
-              stopLoop: "off",
-              stopAfterLoops: -1,
-              stopAtSlide: -1,
-              shuffle: "off",
-              autoHeight: "off",
-              fullScreenAutoWidth: "off",
-              fullScreenAlignForce: "off",
-              fullScreenOffsetContainer: "",
-              fullScreenOffset: "0px",
-              hideThumbsOnMobile: "off",
-              hideSliderAtLimit: 0,
-              hideCaptionAtLimit: 0,
-              hideAllCaptionAtLilmit: 0,
-              debugMode: false,
-              fallbacks: {
-                simplifyAll: "off",
-                nextSlideOnWindowFocus: "off",
-                disableFocusListener: false
-              }
-            });
-        }
-
-        RsTypewriterAddOn(tpj, revapi1014);
+      $(window).on('resize', function () {
+        setTimeout(function () {
+          $.HSCore.components.HSTabs.init('[role="tablist"]');
+        }, 200);
       });
     </script>
   </body>
