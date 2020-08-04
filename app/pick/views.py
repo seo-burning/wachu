@@ -47,7 +47,7 @@ class MyPickListView(generics.ListAPIView):
         print(product_pk_list)
         unique_product_pk_list = [x for x in product_pk_list if x not in used and (used.add(x) or True)]
 
-        queryset = Product.objects.filter(pk__in=unique_product_pk_list, is_active=True)
+        queryset = Product.objects.filter(pk__in=unique_product_pk_list)
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         # TODO SQL call duplicated two times
         queryset = sorted(queryset,  key=lambda x: unique_product_pk_list.index(x.id))
@@ -61,7 +61,7 @@ class RandomPickListView(APIView):
 
     def get(self, request):
         user = request.user
-        pick_list_queryset = models.Pick.objects.filter(is_active=True).order_by('?')
+        pick_list_queryset = models.Pick.objects.all().order_by('?')
         pick_ab_result_queryset = models.PickABResult.objects.select_related('pick_A', 'pick_B').filter(user=user)
         pick_list = list(pick_list_queryset)
         pick_ab_list = []

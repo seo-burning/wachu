@@ -18,7 +18,7 @@ class PickInline(admin.StackedInline):
 
 @admin.register(models.Pick)
 class PickAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'ab_pick_set',
+    list_display = ('__str__', 'ab_pick_set','product',
                     'primary_style', 'secondary_style', 'age')
     raw_id_fields = ('product',)
 

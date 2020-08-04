@@ -507,12 +507,8 @@ def du_check(po):
             print('d', end='')
             po.validation = 'R'
             po.is_active = False
-            po.delete()
             break
 
-
-def null_product(po):
-    po.delete()
 
 
 if __name__ == '__main__':
@@ -524,4 +520,4 @@ if __name__ == '__main__':
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
     # update_shopee(65)
-    validate_shopee(159)
+    validate_shopee(164)
