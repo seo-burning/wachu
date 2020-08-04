@@ -23,6 +23,7 @@ slackclient
 
 #debug
 django-debug-toolbar
+sentry_sdk
 
 #admin
 django-grappelli
