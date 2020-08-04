@@ -49,6 +49,7 @@ urlpatterns = [
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     url(r'^accounts/', include('allauth.urls')),
     path('', TemplateView.as_view(template_name='index.html')),
+    # TODO mobile optimization
     path('privacy-policy/',
          TemplateView.as_view(template_name='privacypolicy.html')),
     path('terms-of-service/',

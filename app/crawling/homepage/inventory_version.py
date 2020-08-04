@@ -141,11 +141,11 @@ def get_olv():
                                      url_list)
 
 
-def get_colin():
-    print('\nupdate colin')
-    url_list = ['all', ]
-    return template.homepage_crawler("https://colin.vn", 692, 'feminine',
-                                     url_list, block_name='product-item')
+# def get_colin():
+#     print('\nupdate colin')
+#     url_list = ['all', ]
+#     return template.homepage_crawler("http://colin.vn", 692, 'feminine',
+#                                      url_list, block_name='product-item')
 
 
 def get_devons():

@@ -6,11 +6,12 @@ from homepage.dottie import get_dottie
 from dosiin.dosiin_crawling import get_dosiin
 from homepage.inventory_version import get_olv, get_clothesbar, get_nowsaigon, get_hades, get_dirtycoins,  \
     get_degrey, get_libeworkshop, get_swe, get_blvck, get_tsun, get_tatichubeyoung, get_edini,\
-    get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela, get_lepoulet, get_colin, get_devons
+    get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela, get_lepoulet, get_devons
 from dict_to_db import dict_to_product_model, dict_to_store_model
 from helper.request_helper import get_user_agents
 from utils.slack import slack_notify
 from store.models import Store
+
 
 def update_homepage():
     # # fivetheway_result = get_5theway()
@@ -25,13 +26,13 @@ def update_homepage():
         get_degrey,
         get_libeworkshop, get_swe, get_blvck, get_tatichubeyoung,
         get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela,
-        get_colin,
         get_dirtycoins,
     ]
 
     for i, home_page_obj in enumerate(home_page_list):
         try:
             product_list = home_page_obj()
+            print('\n')
             dict_to_product_model(product_list)
         except:
             slack_notify('error occured homepage crawling ', str(i))
@@ -63,5 +64,4 @@ if __name__ == '__main__':
     store = Store.objects.get(insta_id='dirtycoins.vn')
     # validate_homepage()
     update_homepage()
-    validate_homepage(store)
     pass
