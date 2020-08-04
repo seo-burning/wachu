@@ -144,7 +144,7 @@ class ProductTagGroup(TimeStampedModel, ActiveModel):
             pattern = 'pattern='+self.pattern.name + '&'
         if (self.store):
             store = 'store='+str(self.store.pk) + '&'
-        return ('http://dabivn.com/api/product/category/' +
+        return ('https://dabivn.com/api/product/category/' +
                 category+sub_category+color+style+pattern+store+product_number)
 
     def get_related_queryset(self):

@@ -522,4 +522,4 @@ if __name__ == '__main__':
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
     # update_shopee(65)
-    validate_shopee()
+    validate_shopee(15)
