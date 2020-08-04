@@ -37,7 +37,11 @@ _user_agents = [
 class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
         self.user_agents = user_agents
-        self.session, self.proxies = get_session()
+        self.session = requests.Session()
+        self.session.headers.update({'User-Agent': self.__random_agent(),
+                                     'X-Requested-With': 'XMLHttpRequest',
+                                     })
+        self.proxies = []
         self.session_refresh_count = 0
 
     def change_session(self):
@@ -49,6 +53,12 @@ class ShopeeScraper:
         self.session = new_session
         self.session_refresh_count += 1
         return new_session
+
+    def __random_agent(self):
+        if self.user_agents and isinstance(self.user_agents, list):
+            return choice(self.user_agents)
+        return choice(_user_agents)
+
 
     def __request_url(self, store_id, limit='100', newest='0'):
         try:
