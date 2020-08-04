@@ -5,6 +5,7 @@ from django.db.models import Case, When, IntegerField
 
 from store import serializers
 from store.models import Store, StorePost, StoreAddress
+from utils.slack import slack_notify
 
 
 class StoreView(generics.ListAPIView):
@@ -13,30 +14,35 @@ class StoreView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        user = self.request.user
-        primary_style = user.primary_style
-        secondary_style = user.secondary_style
-        print(primary_style, secondary_style)
-        if primary_style is not None and secondary_style is not None:
-            queryset = Store.objects.filter(is_active=True
-                                            ).annotate(weighted_ordering=Case(
-                                                When(
-                                                    primary_style__name=str(secondary_style),
-                                                    then=3
-                                                ), When(
-                                                    secondary_style__name=str(secondary_style),
-                                                    then=4
-                                                ),
-                                                When(
-                                                    primary_style__name=str(primary_style),
-                                                    then=1
-                                                ), When(
-                                                    secondary_style__name=str(primary_style),
-                                                    then=2
-                                                ), default=5, output_field=IntegerField()
-                                            )).order_by('weighted_ordering', 'current_ranking')
-        else:
+        try:
+            user = self.request.user
+            primary_style = user.primary_style
+            secondary_style = user.secondary_style
+            print(primary_style, secondary_style)
+            if primary_style is not None and secondary_style is not None:
+                queryset = Store.objects.filter(is_active=True
+                                                ).annotate(weighted_ordering=Case(
+                                                    When(
+                                                        primary_style__name=str(secondary_style),
+                                                        then=3
+                                                    ), When(
+                                                        secondary_style__name=str(secondary_style),
+                                                        then=4
+                                                    ),
+                                                    When(
+                                                        primary_style__name=str(primary_style),
+                                                        then=1
+                                                    ), When(
+                                                        secondary_style__name=str(primary_style),
+                                                        then=2
+                                                    ), default=5, output_field=IntegerField()
+                                                )).order_by('weighted_ordering', 'current_ranking')
+            else:
+                queryset = Store.objects.filter(is_active=True)
+        except Exception as e:
             queryset = Store.objects.filter(is_active=True)
+            slack_notify('error occured during get store list', channel='#6_qc')
+            slack_notify(e, channel='#6_qc')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 

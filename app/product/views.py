@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from product import serializers, models
 from user.models import UserProductView
+from utils.slack import slack_notify
 
 
 class ProductDetailView(generics.RetrieveAPIView):
@@ -33,39 +34,42 @@ class ProductCategoryListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = models.Product.objects.filter(is_active=True)
-        category = self.kwargs['product_category']
-        if (category != 'all'):
-            queryset = queryset.filter(category__name=category)
-        sub_category = self.request.query_params.get('sub-category')
-        if (sub_category):
-            queryset = queryset.filter(sub_category__name=sub_category)
-        color = self.request.query_params.get('color')
-        if (color):
-            color_filter = color.split(',')
-            queryset = queryset.filter(color__name__in=color_filter)
-        style = self.request.query_params.get('style')
-        if (style):
-            style_filter = style.split(',')
-            queryset = queryset.filter(style__name__in=style_filter)
-        pattern = self.request.query_params.get('pattern')
-        if (pattern):
-            pattern_filter = pattern.split(',')
-            queryset = queryset.filter(pattern__name__in=pattern_filter)
-        region = self.request.query_params.get('region')
-        if (region):
-            region_filter = region.split(',')
-            queryset = queryset.filter(store__region__name__in=region_filter)
-        store = self.request.query_params.get('store')
-        if (store):
-            queryset = queryset.filter(store__pk=store)
-        min_price = self.request.query_params.get('min-price')
-        if (min_price):
-            queryset = queryset.filter(Q(original_price__gte=min_price, is_discount=False)
-                                       | Q(discount_price__gte=min_price, is_discount=True))
-        max_price = self.request.query_params.get('max-price')
-        if (max_price):
-            queryset = queryset.filter(Q(original_price__lte=max_price, is_discount=False)
-                                       | Q(discount_price__lte=max_price, is_discount=True))
+        try:
+            category = self.kwargs['product_category']
+            if (category != 'all'):
+                queryset = queryset.filter(category__name=category)
+            sub_category = self.request.query_params.get('sub-category')
+            if (sub_category):
+                queryset = queryset.filter(sub_category__name=sub_category)
+            color = self.request.query_params.get('color')
+            if (color):
+                color_filter = color.split(',')
+                queryset = queryset.filter(color__name__in=color_filter)
+            style = self.request.query_params.get('style')
+            if (style):
+                style_filter = style.split(',')
+                queryset = queryset.filter(style__name__in=style_filter)
+            pattern = self.request.query_params.get('pattern')
+            if (pattern):
+                pattern_filter = pattern.split(',')
+                queryset = queryset.filter(pattern__name__in=pattern_filter)
+            region = self.request.query_params.get('region')
+            if (region):
+                region_filter = region.split(',')
+                queryset = queryset.filter(store__region__name__in=region_filter)
+            store = self.request.query_params.get('store')
+            if (store):
+                queryset = queryset.filter(store__pk=store)
+            min_price = self.request.query_params.get('min-price')
+            if (min_price):
+                queryset = queryset.filter(Q(original_price__gte=min_price, is_discount=False) | Q(discount_price__gte=min_price, is_discount=True))
+            max_price = self.request.query_params.get('max-price')
+            if (max_price):
+                queryset = queryset.filter(Q(original_price__lte=max_price, is_discount=False) | Q(discount_price__lte=max_price, is_discount=True))
+        except Exception as e:
+            queryset = models.Product.objects.filter(is_active=True)
+            slack_notify('error occured during get product list', channel='#6_qc')
+            slack_notify(e, channel='#6_qc')
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
