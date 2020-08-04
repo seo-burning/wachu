@@ -68,12 +68,13 @@ class ShopeeScraper:
                                                  'X-Requested-With': 'XMLHttpRequest',
                                                  'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
                                                  }, timeout=10)
-            response.raise_for_status()
+            # response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
             pass
         except requests.RequestException:
-            raise requests.RequestException
+            print(requests.RequestException)
+            pass
         else:
             return response
 
@@ -86,12 +87,13 @@ class ShopeeScraper:
                                                                                               str(store_id) +
                                                                                               '/search?shopCollection=',
                                                                                               }, timeout=10)
-            response.raise_for_status()
+            # response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
             pass
         except requests.RequestException:
-            raise requests.RequestException
+            print(requests.RequestException)
+            pass
         else:
             return response
 
@@ -522,4 +524,4 @@ if __name__ == '__main__':
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
     # update_shopee(65)
-    validate_shopee(15)
+    validate_shopee(159)
