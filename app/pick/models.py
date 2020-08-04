@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import TimeStampedModel, User
+from core.abstract_models import ActiveModel
 from product.models import ProductCategory, ProductSubCategory, ProductColor, ProductStyle, Product
 from store.models import Age
 from utils.helper.image_processing import create_presigned_url
@@ -85,7 +86,7 @@ class PickPointModel(models.Model):
         Age, on_delete=models.SET_NULL, null=True, blank=True)
 
 
-class Pick(TimeStampedModel, PickPointModel):
+class Pick(TimeStampedModel, PickPointModel, ActiveModel):
     class Meta:
         verbose_name = _('Pick / 픽')
         verbose_name_plural = _('Pick / 픽')
