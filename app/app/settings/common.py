@@ -23,6 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 
 # .config_secret 폴더 및 하위 파일 경로
 # TODO Docker 환경변수로 설정 필요.
+# TODO add API Performance Monitoring
 SECRET_KEY = "!tx*78@vcu(ee71csue0p%zm#id_q9oeaqk^%)pt&9+pvnlins"
 
 # CONFIG_SECRET_DIR = os.path.join(BASE_DIR, '.config_secret')
