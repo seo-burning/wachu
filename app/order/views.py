@@ -115,12 +115,12 @@ class OrderCreateView(generics.CreateAPIView):
         models.OrderStatusLog.objects.create(order=created_order, order_status='order-processing')
         headers = self.get_success_headers(serializer.data)
         # 토큰 생성 여부
-        message_body = '주문이 완료되었습니다. + 주문 번호 : ' + self.slug
+        message_body = 'Mã số đơn hàng: : ' + created_order.slug
         push_response_success = 'Failed'
         try:
             user_push_token_set = created_order.customer.userpushtoken_set.all()
             for token_object in user_push_token_set:
-                push_response = send_push_message(token_object.push_token, message_body, '주문 완료')
+                push_response = send_push_message(token_object.push_token, message_body, 'Xác nhận đặt hàng')
                 if push_response:
                     push_response_success = 'Sent'
         except Exception as e:
