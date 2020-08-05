@@ -1,3 +1,5 @@
+from sentry_sdk.integrations.django import DjangoIntegration
+import sentry_sdk
 import os
 from .common import *
 
@@ -24,3 +26,13 @@ AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_LOCATION = 'static'
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+sentry_sdk.init(
+    dsn="https://9dff4d52420943a0b2e17cdc1159eee5@o398991.ingest.sentry.io/5376553",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    # send_default_pii=True
+)

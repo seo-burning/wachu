@@ -149,3 +149,14 @@ class OrderStatusLogCreateView(generics.CreateAPIView):
         order_obj.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class DeliveryStatusView(generics.ListAPIView):
+    serializer_class = serializers.DeliveryStatusSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        order_slug = self.kwargs['slug']
+        queryset = models.DeliveryStatus.objects.filter(order__slug=order_slug)
+        return queryset

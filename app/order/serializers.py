@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from order.models import Order, OrderedProduct, Coupon, AppliedCoupon, OrderStatusLog
+from order.models import Order, OrderedProduct, \
+    Coupon, AppliedCoupon, OrderStatusLog, DeliveryStatus
 from product.serializers import ProductSerializer, ProductOptionSerializer
 
 
@@ -94,3 +95,9 @@ class OrderStatusLogCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderStatusLog
         fields = ['order', 'order_status', 'delivery_status']
+
+
+class DeliveryStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryStatus
+        exclude = ['order', ]

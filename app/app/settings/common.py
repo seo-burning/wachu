@@ -249,16 +249,3 @@ GRAPPELLI_INDEX_DASHBOARD = {
 }
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 AWS_QUERYSTRING_AUTH = False
-
-
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-sentry_sdk.init(
-    dsn="https://9dff4d52420943a0b2e17cdc1159eee5@o398991.ingest.sentry.io/5376553",
-    integrations=[DjangoIntegration()],
-
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    # send_default_pii=True
-)
