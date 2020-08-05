@@ -9,7 +9,7 @@ urlpatterns = [
     path('user/', views.OrderSummaryView.as_view(), name='order_summary'),
     path('update/<int:pk>/', views.OrderRetrieveUpdateView.as_view(),
          name='order_retrieve_update'),
-    path('coupon/', views.CouponListView.as_view(), name='coupo_list'),
+    path('coupon/', views.CouponListView.as_view(), name='coupon_list'),
     path('coupon/validate/', views.CouponValidateView.as_view(), name='validate_coupon'),
     path('delivery-status/<str:slug>/', views.DeliveryStatusView.as_view(), name='delivery_status'),
     path('<str:status>/', views.OrderListView.as_view(), name='order_list'),

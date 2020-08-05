@@ -45,6 +45,7 @@ class DeliveryTrackingCodeModel(models.Model):
     delivery_tracking_code = models.CharField(u'배송조회 번호', max_length=50, blank=True, null=True, default=None)
 
 
+# TODO Order Status Update Make Automatically Push and blah blah
 class DeliveryStatusModel(models.Model):
     class Meta:
         abstract = True
@@ -153,6 +154,7 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
 
     def save(self, *args, **kwargs):
         """ Add Slug creating/checking to save method. """
+        # TODO 이전 필드랑 비교하는 것..?
         slug_save(self)  # call slug_save, listed below
         super(Order, self).save(*args, **kwargs)
 

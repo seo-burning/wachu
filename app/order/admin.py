@@ -13,6 +13,14 @@ class DeliveryStatusInline(admin.TabularInline):
     extra = 0
 
 
+class OrderStatusLogInline(admin.TabularInline):
+    model = OrderStatusLog
+    readonly_fields = ['order_status', 'created_at']
+    fields = ['order_status', 'created_at']
+    extra = 0
+    can_delete = False
+
+
 class OrderedProductInline(admin.TabularInline):
     model = OrderedProduct
     fields = ['product_thumbnail_image',
@@ -42,9 +50,17 @@ class OrderedProductInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
-    inlines = [OrderedProductInline, DeliveryStatusInline]
-    list_display = ['is_active', 'order_status', 'created_at', 'slug', 'customer']
+    inlines = [OrderStatusLogInline, OrderedProductInline, DeliveryStatusInline]
+    list_display = ['is_active',
+                    'order_status', 'created_at', 'slug', 'customer']
     actions = ['make_activate', 'make_deactivate', ]
+
+    def save_model(self, request, obj, form, change):
+        if 'order_status' in form.changed_data:
+            new_order_status = form.cleaned_data.get('order_status')
+            OrderStatusLog.objects.create(order_status=new_order_status,
+                                          order=obj)
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(OrderedProduct)

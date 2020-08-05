@@ -125,8 +125,8 @@ class OrderCreateView(generics.CreateAPIView):
                     push_response_success = 'Sent'
         except Exception as e:
             print(e)
-        slack_notify('new order created (Push : {})+ https://dabivn.com/admin/order/order/{}'.format(
-            push_response_success, created_order.pk), channel='#7_order')
+        slack_notify('#{pk} - Order created (Push : {push})+ https://dabivn.com/admin/order/order/{pk}'.format(
+            push=push_response_success, pk=created_order.pk), channel='#7_order')
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     # 주문을 만드면서, 각 단계에 대한 Order Status Log를 만들어야한다.
@@ -145,8 +145,14 @@ class OrderStatusLogCreateView(generics.CreateAPIView):
         order_pk = request.data.__getitem__('order')
         order_status = request.data.__getitem__('order_status')
         order_obj = models.Order.objects.get(pk=order_pk)
+        previous_status = order_obj.order_status
+        if order_status == 'cancelled':
+            order_obj.is_active = False
         order_obj.order_status = order_status
         order_obj.save()
+        slack_notify('#{pk} - Order Status Change {previous_status} => {order_status} https://dabivn.com/admin/order/order/{pk}'.format(
+            previous_status=previous_status, order_status=order_status, pk=order_obj.pk), channel='#7_order')
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
