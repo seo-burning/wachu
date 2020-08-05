@@ -120,7 +120,7 @@ class OrderedProduct(PriceModel, TimeStampedModel):
         return ordered_product_string
 
 
-class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
+class OrderStatusLog(OrderStatusModel, TimeStampedModel):
     class Meta:
         verbose_name = u'주문 상태'
         verbose_name_plural = verbose_name
@@ -173,3 +173,13 @@ def slug_save(obj):
             if slug_is_wrong:
                 # create another slug and check it again
                 obj.slug = get_random_string(8)
+
+
+class DeliveryStatus(models.Model):
+    delivery_status = models.CharField(u'배송상태', max_length=500, blank=True)
+    order = models.ForeignKey('Order', verbose_name=u'주문서',
+                              on_delete=models.CASCADE, null=True)
+    status_timestamp = models.DateTimeField(blank=True)
+
+    def __str__(self):
+        return self.delivery_status

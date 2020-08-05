@@ -1,9 +1,16 @@
 from django.contrib import admin
-from .models import Order, OrderedProduct, OrderStatusLog, Coupon, AppliedCoupon
+from .models import Order, OrderedProduct, OrderStatusLog, \
+    Coupon, AppliedCoupon, DeliveryStatus
 # Register your models here.
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from utils.helper.admin.mixins import ToggleActiveMixin
+
+
+class DeliveryStatusInline(admin.TabularInline):
+    model = DeliveryStatus
+    fields = ['delivery_status', 'status_timestamp']
+    extra = 0
 
 
 class OrderedProductInline(admin.TabularInline):
@@ -35,7 +42,7 @@ class OrderedProductInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
-    inlines = [OrderedProductInline, ]
+    inlines = [OrderedProductInline, DeliveryStatusInline]
     list_display = ['is_active', 'order_status', 'created_at', 'slug', 'customer']
     actions = ['make_activate', 'make_deactivate', ]
 
