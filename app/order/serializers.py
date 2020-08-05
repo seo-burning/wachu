@@ -33,7 +33,12 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['order_status', 'applied_coupons', 'orderedproduct_set', 'slug', 'original_price', 'discount_price',
+        fields = ['order_status',
+                  'delivery_company',
+                  'delivery_tracking_code',
+                  'applied_coupons',
+                  'orderedproduct_set',
+                  'slug', 'original_price', 'discount_price',
                   'discount_rate', 'is_free_ship', 'shipping_price', 'currency',
                   'total_price',  'payment', 'coupon_discounted',
                   'recipient_name', 'contact_number', 'country',
