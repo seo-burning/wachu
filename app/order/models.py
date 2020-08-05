@@ -177,7 +177,7 @@ def slug_save(obj):
 
 class DeliveryStatus(models.Model):
     class Meta:
-        ordering = ['status_timestamp']
+        ordering = ['-status_timestamp']
 
     delivery_status = models.CharField(u'배송상태', max_length=500, blank=True)
     order = models.ForeignKey('Order', verbose_name=u'주문서',
