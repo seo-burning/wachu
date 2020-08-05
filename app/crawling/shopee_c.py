@@ -59,7 +59,6 @@ class ShopeeScraper:
             return choice(self.user_agents)
         return choice(_user_agents)
 
-
     def __request_url(self, store_id, limit='100', newest='0'):
         try:
             response = self.session.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
@@ -510,7 +509,6 @@ def du_check(po):
             break
 
 
-
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
     # store_obj = Store.objects.get(insta_id='cocosin.official')
@@ -519,5 +517,4 @@ if __name__ == '__main__':
     # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
-    # update_shopee(65)
-    validate_shopee(164)
+    pass
