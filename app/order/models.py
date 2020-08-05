@@ -35,6 +35,16 @@ class PaymentModel(models.Model):
     payment = models.CharField(u'결제 방식', max_length=50)
 
 
+class DeliveryTrackingCodeModel(models.Model):
+    class Meta:
+        abstract = True
+    DELIVERY_COMPANY_CHOICES = [('JT', 'J&T Express'), ('GHN', 'Giao Hàng Nhanh'), ]
+
+    delivery_company = models.CharField(u'배송업체', choices=DELIVERY_COMPANY_CHOICES,
+                                        max_length=50, blank=True, null=True, default=None)
+    delivery_tracking_code = models.CharField(u'배송조회 번호', max_length=50, blank=True, null=True, default=None)
+
+
 class DeliveryStatusModel(models.Model):
     class Meta:
         abstract = True
@@ -124,7 +134,7 @@ class OrderStatusLog(OrderStatusModel, TimeStampedModel, DeliveryStatusModel):
 
 
 class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
-            RecipientModel, PaymentModel):
+            RecipientModel, PaymentModel, DeliveryTrackingCodeModel):
     class Meta:
         verbose_name = u'주문'
         verbose_name_plural = verbose_name

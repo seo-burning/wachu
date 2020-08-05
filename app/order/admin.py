@@ -8,7 +8,8 @@ from utils.helper.admin.mixins import ToggleActiveMixin
 
 class OrderedProductInline(admin.TabularInline):
     model = OrderedProduct
-    fields = ['product_thumbnail_image', 'product_link',
+    fields = ['product_thumbnail_image',
+              'product_link',
               'product_option', 'quantity',
               'original_price',
               'discount_price',
