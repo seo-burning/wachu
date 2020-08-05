@@ -38,7 +38,7 @@ class PaymentModel(models.Model):
 class DeliveryTrackingCodeModel(models.Model):
     class Meta:
         abstract = True
-    DELIVERY_COMPANY_CHOICES = [('JT', 'J&T Express'), ('GHN', 'Giao Hàng Nhanh'), ]
+    DELIVERY_COMPANY_CHOICES = [('J&T Express', 'JT_Express'), ('Giao Hàng Nhanh', 'Giao_Hang_Nhanh'), ]
 
     delivery_company = models.CharField(u'배송업체', choices=DELIVERY_COMPANY_CHOICES,
                                         max_length=50, blank=True, null=True, default=None)
