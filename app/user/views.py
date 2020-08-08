@@ -214,6 +214,7 @@ class UserStyleUpdateView(APIView):
                   'lovely': 0,
                   'street': 0,
                   'vintage': 0}
+        color_points = {}
         for pick_result_obj in pickAB_results:
             selection = pick_result_obj.selection
             if pick_result_obj.pick_AB:
@@ -224,23 +225,21 @@ class UserStyleUpdateView(APIView):
                 points[str(secondary_style)] += 2
             elif pick_result_obj.pick_A and pick_result_obj.pick_B:
                 if selection == '0':
-                    if pick_result_obj.pick_A.primary_style:
-                        primary_style = pick_result_obj.pick_A.primary_style
-                        points[str(primary_style)] += 8
-                        if pick_result_obj.pick_A.secondary_style:
-                            secondary_style = pick_result_obj.pick_A.secondary_style
-                            points[str(secondary_style)] += 2
-                    else:
-                        print(pick_result_obj.pick_A.pk)
+                    selected_pick = pick_result_obj.pick_A
                 elif selection == '1':
-                    if pick_result_obj.pick_B.primary_style:
-                        primary_style = pick_result_obj.pick_B.primary_style
+                    selected_pick = pick_result_obj.pick_B
+                    if selected_pick.primary_style:
+                        primary_style = selected_pick.primary_style
                         points[str(primary_style)] += 8
-                        if pick_result_obj.pick_B.secondary_style:
-                            secondary_style = pick_result_obj.pick_B.secondary_style
-                            points[str(secondary_style)] += 2
-                    else:
-                        print('error')
+                    if selected_pick.secondary_style:
+                        secondary_style = selected_pick.secondary_style
+                        points[str(secondary_style)] += 2
+                    if selected_pick.product_color:
+                        for color_obj in selected_pick.product_color.all():
+                            if color_obj.name in color_points:
+                                color_points[color_obj.name] += 2
+                            else:
+                                color_points[color_obj.name] = 2
                 else:
                     print('??')
             else:
@@ -250,6 +249,12 @@ class UserStyleUpdateView(APIView):
         for product_obj in user_product_views:
             if product_obj.style:
                 points[str(product_obj.style)] += 1
+            if product_obj.color:
+                for color_obj in product_obj.color.all():
+                    if color_obj.name in color_points:
+                        color_points[color_obj.name] += 1
+                    else:
+                        color_points[color_obj.name] = 1
         user_store_views = user.view_stores.select_related('primary_style').select_related('secondary_style').all()
         for store_obj in user_store_views:
             if store_obj.primary_style:
@@ -258,6 +263,8 @@ class UserStyleUpdateView(APIView):
                 points[str(store_obj.secondary_style)] += 1
 
         sort_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
+        sort_color_points = sorted(color_points.items(), key=lambda x: x[1], reverse=True)
+        print(sort_color_points)
         primary_style = ProductStyle.objects.get(name=sort_points[0][0])
         secondary_style = ProductStyle.objects.get(name=sort_points[1][0])
         UserStyleTaste.objects.create(user=user,

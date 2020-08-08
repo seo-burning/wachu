@@ -94,7 +94,7 @@ class OrderStatusLogCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderStatusLog
-        fields = ['order', 'order_status', 'delivery_status']
+        fields = ['order', 'order_status', ]
 
 
 class DeliveryStatusSerializer(serializers.ModelSerializer):

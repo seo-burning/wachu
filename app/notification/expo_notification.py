@@ -9,6 +9,7 @@ from core.models import UserPushToken
 
 
 # TODO push token 예외 처리와 channel_id 처리
+# 일반적으로는 특정 parameter를 가지고, 특정 route로 네비게이션 하는 것. dict => route / params (또다른 dictionary)
 # TODO push token 특정 위치로 날아가는거 처리
 # Basic arguments. You should extend this function with the push features you
 # want to use, or simply pass in a `PushMessage` object.
@@ -32,13 +33,13 @@ def send_push_message(token,
                 PushMessage(to=token,
                             body=body,
                             title=title,
-                            # data=data,
+                            data=data,
                             ttl=ttl,
                             expiration=expiration,
                             priority=priority,
                             sound=sound,
                             badge=badge,
-                            # channel_id=channel_id
+                            channel_id=channel_id
                             ))
             return True
         # Category & display_in_forground
@@ -63,3 +64,7 @@ def send_push_message(token,
             # Encountered some other per-notification error.
             print(exc)
             pass
+
+# from notification.expo_notification import send_push_message
+# token = "ExponentPushToken[4lj2vJFckW5W3AFWJgxXT-]"
+# send_push_message(token, 'test', 'test_123',data={'route':'store','params':{}})

@@ -106,7 +106,8 @@ class OrderedProduct(PriceModel, TimeStampedModel):
 
     order = models.ForeignKey('Order', verbose_name=u'주문서',
                               on_delete=models.SET_NULL, null=True)
-    product = models.ForeignKey(Product, verbose_name=u'제품', on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, verbose_name=u'제품',
+                                on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(u'수량', default=1)
     product_option = models.ForeignKey(ProductOption, verbose_name=u'제품 옵션',
                                        on_delete=models.SET_NULL,

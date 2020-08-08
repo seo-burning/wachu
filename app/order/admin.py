@@ -61,6 +61,7 @@ class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
             OrderStatusLog.objects.create(order_status=new_order_status,
                                           order=obj)
         super().save_model(request, obj, form, change)
+        # TODO Push Alarm 1. Navagation 가능한 Data 심기, 2. 푸쉬 알림 보내기 확인 창 띄우기(쉽지 않아 보임.), 3. 무조건 보낸다..?, 4. 별도의 푸쉬 알림 보내는 걸 만든다?
 
 
 @admin.register(OrderedProduct)
