@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
-from product.models import Product, ProductStyle
+from product.models import Product, ProductStyle, ProductColor
 from store.models import Store
 from django.db.models.constraints import UniqueConstraint
 
@@ -121,6 +121,18 @@ class UserStyleTaste(TimeStampedModel):
     simple = models.IntegerField(default=0)
     street = models.IntegerField(default=0)
     feminine = models.IntegerField(default=0)
+    first_color = models.ForeignKey(ProductColor,
+                                    related_name='color_on_first_set',
+                                    on_delete=models.SET_NULL,
+                                    default=None, null=True, blank=True)
+    second_color = models.ForeignKey(ProductColor,
+                                     related_name='color_on_second_set',
+                                     on_delete=models.SET_NULL,
+                                     default=None, null=True, blank=True)
+    third_color = models.ForeignKey(ProductColor,
+                                    related_name='color_on_third_set',
+                                    on_delete=models.SET_NULL,
+                                    default=None, null=True, blank=True)
     primary_style = models.ForeignKey(
         ProductStyle, on_delete=models.SET_NULL,
         related_name='user_style_tastes_on_primary_style',
