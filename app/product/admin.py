@@ -759,10 +759,11 @@ class Product(admin.ModelAdmin):
                 </style> "
         stock_is_null = 'False' if obj.stock == 0 else ''
         pick_set_exist = obj.pick_set.exists()
+        # TODO pick_set_style 변경
         product_info = '<img src="{url}" width="200" height="200" border="1" style="padding:10px"/>\
                         <p class="bold {subcategory}">{category} > {subcategory}</p>\
                         <h4>{name}</h4>\
-                        <p class="{style}"> Pick exists : {pick_set_exist}</p>\
+                        <p class="{pick_set_exist}"> Pick exists : {pick_set_exist}</p>\
                         <p class="light right">{created_at}</p>\
                         <p class="{style}">스타일 : {style}</p>\
                         <p>가격 :{original_price} VND \
