@@ -51,7 +51,7 @@ class OrderListView(generics.ListAPIView):
             queryset = models.Order.objects.filter(customer=self.request.user)
         elif (order_status == 'cancel-refund-exchange'):
             queryset = models.Order.objects.filter(customer=self.request.user)
-            queryset = models.Order.objects.filter(Q(order_status='cancelled') | Q(
+            queryset = queryset.filter(Q(order_status='cancelled') | Q(
                 order_status='change-processing') | Q(order_status='refund-processing') |
                 Q(order_status='refund-complete'))
         else:
