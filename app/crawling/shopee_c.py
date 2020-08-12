@@ -511,7 +511,7 @@ def du_check(po):
 
 if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='queen_accessories925')
+    store_obj = Store.objects.get(insta_id='minastore.vn')
     # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # # # # pool.map(multi, product_list)
     # # # # # pool.close()
