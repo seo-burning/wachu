@@ -54,6 +54,7 @@ class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
     list_display = ['is_active',
                     'order_status', 'created_at', 'slug', 'customer']
     actions = ['make_activate', 'make_deactivate', ]
+    list_filter = ['is_active', ]
 
     def save_model(self, request, obj, form, change):
         if 'order_status' in form.changed_data:

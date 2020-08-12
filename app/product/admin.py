@@ -444,8 +444,9 @@ class Product(admin.ModelAdmin):
                  ]
     list_display_links = ['product_summary', ]
     search_fields = ['store__insta_id', 'name', 'pk']
-    list_select_related = ('category', 'sub_category')
-    list_prefetch_related = ('size', 'color')
+    list_select_related = ('category', 'sub_category',
+                           'preorder_campaign', 'store', 'style', 'post', 'shopee_rating')
+    list_prefetch_related = ('size', 'color', 'pick_set')
     list_filter = [
         'is_active',
         'validation',
@@ -757,9 +758,11 @@ class Product(admin.ModelAdmin):
                         div.active { background-color : rgba(223, 245, 223,0.3) }\
                 </style> "
         stock_is_null = 'False' if obj.stock == 0 else ''
+        pick_set_exist = obj.pick_set.exists()
         product_info = '<img src="{url}" width="200" height="200" border="1" style="padding:10px"/>\
                         <p class="bold {subcategory}">{category} > {subcategory}</p>\
                         <h4>{name}</h4>\
+                        <p class="{style}"> Pick exists : {pick_set_exist}</p>\
                         <p class="light right">{created_at}</p>\
                         <p class="{style}">스타일 : {style}</p>\
                         <p>가격 :{original_price} VND \
@@ -767,6 +770,7 @@ class Product(admin.ModelAdmin):
                         </p>\
                         <p class={stock_is_null}>재고 / stock : {stock}</p>'.format(
             url=obj.product_thumbnail_image,
+            pick_set_exist=pick_set_exist,
             category=obj.category,
             subcategory=obj.sub_category,
             created_at=obj.created_at,
@@ -779,6 +783,7 @@ class Product(admin.ModelAdmin):
             discount_price=obj.discount_price,
             discount_rate=obj.discount_rate
         )
+
         if obj.stock_available is False:
             status = 'no-stock'
         elif obj.validation == 'R':
