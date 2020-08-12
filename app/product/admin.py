@@ -476,6 +476,7 @@ class Product(admin.ModelAdmin):
                'make_name_to_option',
                'product_category_dam_kieu',
                'product_category_ao_somi',
+               'product_set_vest',
                'make_it_to_pick_object'
                ]
 
@@ -571,7 +572,14 @@ class Product(admin.ModelAdmin):
         updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
-    product_category_ao_somi.short_description = 'Ao somi'
+    product_category_ao_somi.short_description = '상품 카테고리 분류 - Ao somi'
+
+    def product_set_vest(self, request, queryset):
+        vest_sub_category = models.ProductSubCategory.objects.get(pk=73)
+        updated_count = queryset.update(sub_category=vest_sub_category, category=vest_sub_category.category)
+        self.message_user(
+            request, '{}건의 상품 분류'.format(updated_count))
+    product_set_vest.short_description = '상품 카테고리 분류 - Set / Vest'
 
     def product_pattern_print(self, request, queryset):
         print_pattern = models.ProductPattern.objects.get(name='print')
