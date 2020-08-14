@@ -263,8 +263,9 @@ class UserStyleUpdateView(APIView):
                 points[str(store_obj.secondary_style)] += 1
 
         sort_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
+        color_points.pop('white')
+        color_points.pop('black')
         sort_color_points = sorted(color_points.items(), key=lambda x: x[1], reverse=True)
-        print(sort_color_points)
         primary_style = ProductStyle.objects.get(name=sort_points[0][0])
         secondary_style = ProductStyle.objects.get(name=sort_points[1][0])
         UserStyleTaste.objects.create(user=user,
@@ -279,6 +280,7 @@ class UserStyleUpdateView(APIView):
         user.secondary_style = secondary_style
         user.save()
         return Response({'primary_style': sort_points[0][0],
+                         'user_first_color': sort_color_points[0][0],
                          'secondary_style': sort_points[1][0],
                          'user_style': sort_points})
 
