@@ -66,6 +66,10 @@ class ProductCategoryListView(generics.ListAPIView):
             max_price = self.request.query_params.get('max-price')
             if (max_price):
                 queryset = queryset.filter(Q(original_price__lte=max_price, is_discount=False) | Q(discount_price__lte=max_price, is_discount=True))
+            is_discount = self.request.query_params.get('is-discount')
+            print(is_discount)
+            if (is_discount):
+                queryset = queryset.filter(is_discount=is_discount)
         except Exception as e:
             queryset = models.Product.objects.filter(is_active=True)
             slack_notify('error occured during get product list', channel='#6_qc')
