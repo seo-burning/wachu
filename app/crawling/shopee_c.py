@@ -318,7 +318,7 @@ class ShopeeScraper:
             obj_product.is_free_ship = data['show_free_shipping']
             obj_product.shipping_price = 0
         else:
-            obj_product.shipping_price = 25000
+            obj_product.shipping_price = None
 
     def __update_pattern(self, obj_product):
         pattern_list = ProductPattern.objects.all()
