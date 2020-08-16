@@ -21,6 +21,14 @@ class OrderStatusLogInline(admin.TabularInline):
     can_delete = False
 
 
+class OrderGroupStatusLogInline(admin.TabularInline):
+    model = OrderGroupStatusLog
+    readonly_fields = ['order_status', 'created_at']
+    fields = ['order_status', 'created_at']
+    extra = 0
+    can_delete = False
+
+
 class OrderedProductInline(admin.TabularInline):
     model = OrderedProduct
     fields = ['product_thumbnail_image',
@@ -64,7 +72,7 @@ class OrderInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
     inlines = [OrderStatusLogInline, OrderedProductInline, DeliveryStatusInline]
-    list_display = ['is_active',
+    list_display = ['is_active', 'store',
                     'order_status', 'created_at', 'slug', 'customer']
     actions = ['make_activate', 'make_deactivate', ]
     list_filter = ['is_active', ]
@@ -109,7 +117,9 @@ class AppliedCouponAdmin(admin.ModelAdmin):
 
 @admin.register(OrderGroup)
 class OrderGroupAdmin(admin.ModelAdmin, ToggleActiveMixin):
-    inlines = [OrderInline, ]
+    inlines = [OrderInline, OrderGroupStatusLogInline]
+    list_display = ['is_active',
+                    'order_status', 'created_at', 'slug', 'customer']
 
 
 @admin.register(OrderGroupStatusLog)
