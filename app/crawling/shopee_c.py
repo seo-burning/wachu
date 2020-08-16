@@ -86,7 +86,7 @@ class ShopeeScraper:
                                                                                               str(store_id) +
                                                                                               '/search?shopCollection=',
                                                                                               }, timeout=10)
-            # response.raise_for_status()
+            response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
             pass
@@ -486,7 +486,15 @@ def validate_shopee(start_index=0, end_index=None):
         print("\n#" + str(i) + ' update ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
-            obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+            error_try_count = 0
+            while True or error_try_count > 20:
+                try:
+                    obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+                    print(product_obj.shopee_item_id)
+                    break
+                except:
+                    obj.change_session()
+                    error_try_count += 1
 
 
 def multi(product_obj):
@@ -510,11 +518,12 @@ def du_check(po):
 
 
 if __name__ == '__main__':
-    # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='minastore.vn')
-    # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    # # # # # pool.map(multi, product_list)
-    # # # # # pool.close()
+    # # pool = mp.Pool(processes=64)
+    store_obj = Store.objects.get(insta_id='gumac.vn')
+    # # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    # # # # # # pool.map(multi, product_list)
+    # # # # # # pool.close()
     obj = ShopeeScraper()
     obj.search_store(store_obj)
-    pass
+    # pass
+    # validate_shopee(0)

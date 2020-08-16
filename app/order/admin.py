@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Order, OrderedProduct, OrderStatusLog, \
-    Coupon, AppliedCoupon, DeliveryStatus
+    Coupon, AppliedCoupon, DeliveryStatus, OrderGroup, OrderGroupStatusLog
 # Register your models here.
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -91,4 +91,14 @@ class CouponAdmin(admin.ModelAdmin):
 
 @admin.register(AppliedCoupon)
 class AppliedCouponAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(OrderGroup)
+class OrderGroupAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(OrderGroupStatusLog)
+class OrderGroupStatusLogAdmin(admin.ModelAdmin):
     pass

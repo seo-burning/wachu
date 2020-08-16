@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 
 from product.models import PriceModel, Product, ProductOption
+from store.models import Store
 from user.models import RecipientModel
 
 from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, PublicModel
@@ -15,6 +16,7 @@ class OrderStatusModel(models.Model):
 
     STATUS_CHOICES = [
         ('order-processing', '주문 완료'),
+        ('order-confirmed', '주문 확인'),
         ('delivery', '배송 중'),
         ('delivered', '배송 완료'),
         ('order-complete', '구매 완료'),
@@ -39,7 +41,7 @@ class DeliveryTrackingCodeModel(models.Model):
     class Meta:
         abstract = True
     DELIVERY_COMPANY_CHOICES = [('J&T Express', 'JT_Express'), ('Giao Hàng Nhanh', 'Giao_Hang_Nhanh'), ]
-
+    estimated_delivery_date = models.DateField(null=True, blank=True)
     delivery_company = models.CharField(u'배송업체', choices=DELIVERY_COMPANY_CHOICES,
                                         max_length=50, blank=True, null=True, default=None)
     delivery_tracking_code = models.CharField(u'배송조회 번호', max_length=50, blank=True, null=True, default=None)
@@ -135,8 +137,13 @@ class OrderStatusLog(OrderStatusModel, TimeStampedModel):
         return str(self.order)
 
 
-class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
-            RecipientModel, PaymentModel, DeliveryTrackingCodeModel):
+class Order(OrderStatusModel,
+            TimeStampedModel,
+            PriceModel,
+            ActiveModel,
+            RecipientModel,
+            PaymentModel,
+            DeliveryTrackingCodeModel):
     class Meta:
         verbose_name = u'주문'
         verbose_name_plural = verbose_name
@@ -144,11 +151,15 @@ class Order(OrderStatusModel, TimeStampedModel, PriceModel, ActiveModel,
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL,
                                  on_delete=models.SET_NULL, null=True)
+    store = models.ForeignKey(Store,
+                              on_delete=models.SET_NULL,
+                              null=True)
     extra_message = models.CharField(max_length=255, blank=True)
     coupon_discounted = models.IntegerField(default=0)
     total_price = models.IntegerField(default=0)
     # blank if it needs to be migrated to a model that didn't already have this
     slug = models.SlugField(max_length=8, blank=True)
+    order_group = models.ForeignKey('OrderGroup', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return str(self.pk) + ' ' + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")
@@ -189,3 +200,45 @@ class DeliveryStatus(models.Model):
 
     def __str__(self):
         return self.delivery_status
+
+
+class OrderGroup(OrderStatusModel,
+                 TimeStampedModel,
+                 PriceModel,
+                 ActiveModel,
+                 RecipientModel,
+                 PaymentModel,):
+    class Meta:
+        verbose_name = u'주문 그룹'
+        verbose_name_plural = verbose_name
+        ordering = ['-created_at']
+
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                 on_delete=models.SET_NULL, null=True)
+    extra_message = models.CharField(max_length=255, blank=True)
+    coupon_discounted = models.IntegerField(default=0)
+    total_price = models.IntegerField(default=0)
+    # blank if it needs to be migrated to a model that didn't already have this
+    slug = models.SlugField(max_length=8, blank=True)
+
+    def __str__(self):
+        return str(self.pk) + ' ' + self.created_at.strftime("%m/%d/%Y, %H:%M:%S")
+
+    def save(self, *args, **kwargs):
+        """ Add Slug creating/checking to save method. """
+        # TODO 이전 필드랑 비교하는 것..?
+        slug_save(self)  # call slug_save, listed below
+        super(OrderGroup, self).save(*args, **kwargs)
+
+
+class OrderGroupStatusLog(OrderStatusModel, TimeStampedModel):
+    class Meta:
+        verbose_name = u'주문 그룹 상태'
+        verbose_name_plural = verbose_name
+        ordering = ['-created_at', 'ordered_product']
+
+    ordered_product = models.ForeignKey('OrderedProduct', verbose_name=u'주문 제품',
+                                        on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return str(self.order)

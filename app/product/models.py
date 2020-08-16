@@ -215,7 +215,7 @@ class PriceModel(models.Model):
     discount_rate = models.IntegerField(null=True, blank=True)
     currency = models.CharField(choices=CURRENCY_TYPE, max_length=20, default='VND')
     is_free_ship = models.BooleanField(default=False)
-    shipping_price = models.IntegerField(default=0)
+    shipping_price = models.IntegerField(default=None, null=True, blank=True)
 
 
 class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):

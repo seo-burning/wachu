@@ -63,6 +63,14 @@ class ShopeeRatingSerializer(serializers.ModelSerializer):
                   'shopee_3_star_count', 'shopee_4_star_count', 'shopee_5_star_count')
 
 
+class ProductThumbSerializer(serializers.ModelSerializer):
+    store = serializers.StringRelatedField(many=False)
+
+    class Meta:
+        model = models.Product
+        fields = ['pk', 'product_thumbnail_image', 'name', 'store']
+
+
 class ProductSerializer(serializers.ModelSerializer):
     product_image_set = ProductImageSerializer(read_only=True, many=True)
     sub_category = serializers.StringRelatedField(many=False)

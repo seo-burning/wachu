@@ -62,6 +62,6 @@ def validate_homepage(store=None):
 
 if __name__ == '__main__':
     store = Store.objects.get(insta_id='dirtycoins.vn')
-    # validate_homepage()
-    update_homepage()
+    validate_homepage()
+    # update_homepage()
     pass
