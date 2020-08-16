@@ -171,7 +171,24 @@ class OrderGroupCreateView(generics.CreateAPIView):
                 discount_rate=ordered_product_obj['discount_rate'],
                 is_free_ship=ordered_product_obj['is_free_ship'],
             )
+        models.OrderGroupStatusLog.objects.create(order_group=created_order_group, order_status='order-processing')
         headers = self.get_success_headers(serializer.data)
+        # 토큰 생성 여부
+        message_body = 'Mã số đơn hàng: : ' + created_order_group.slug
+        push_response_success = 'Failed'
+        try:
+            user_push_token_set = created_order.customer.userpushtoken_set.all()
+            for token_object in user_push_token_set:
+                push_response = send_push_message(token_object.push_token, message_body, 'Xác nhận đặt hàng')
+                if push_response:
+                    push_response_success = 'Sent'
+        except Exception as e:
+            print(e)
+        try:
+            slack_notify('#{pk} - Order Group created (Push : {push})+ https://dabivn.com/admin/order/ordergroup/{pk}'.format(
+                push=push_response_success, pk=created_order_group.pk), channel='#7_order')
+        except Exception:
+            pass
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 

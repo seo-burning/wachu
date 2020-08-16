@@ -235,10 +235,10 @@ class OrderGroupStatusLog(OrderStatusModel, TimeStampedModel):
     class Meta:
         verbose_name = u'주문 그룹 상태'
         verbose_name_plural = verbose_name
-        ordering = ['-created_at', 'ordered_product']
+        ordering = ['-created_at', 'order_group']
 
-    ordered_product = models.ForeignKey('OrderedProduct', verbose_name=u'주문 제품',
-                                        on_delete=models.SET_NULL, null=True)
+    order_group = models.ForeignKey('OrderGroup', verbose_name=u'주문 제품 그룹',
+                                    on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return str(self.order)
