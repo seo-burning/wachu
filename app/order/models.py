@@ -241,4 +241,4 @@ class OrderGroupStatusLog(OrderStatusModel, TimeStampedModel):
                                     on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return str(self.order)
+        return str(self.order_group)

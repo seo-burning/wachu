@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Order, OrderedProduct, OrderStatusLog, \
-    Coupon, AppliedCoupon, DeliveryStatus, OrderGroup, OrderGroupStatusLog
+    Coupon, AppliedCoupon, DeliveryStatus, \
+    OrderGroup, OrderGroupStatusLog
 # Register your models here.
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -125,3 +126,38 @@ class OrderGroupAdmin(admin.ModelAdmin, ToggleActiveMixin):
 @admin.register(OrderGroupStatusLog)
 class OrderGroupStatusLogAdmin(admin.ModelAdmin):
     pass
+
+
+# for obj in Order.objects.all():
+#     group_obj, is_created = OrderGroup.objects.get_or_create(
+#         is_active=obj.is_active,
+#         customer=obj.customer,
+#         extra_message=obj.extra_message,
+#         coupon_discounted=obj.coupon_discounted,
+#         total_price=obj.total_price,
+#         slug=obj.slug,
+#         order_status=obj.order_status,
+#         original_price=obj.original_price,
+#         discount_price=obj.discount_price,
+#         discount_rate=obj.discount_rate,
+#         currency=obj.currency,
+#         is_free_ship=obj.is_free_ship,
+#         shipping_price=obj.shipping_price,
+#         # created_at=obj.created_at,
+#         # updated_at=obj.updated_at,
+#         payment=obj.payment,
+#         recipient_name=obj.recipient_name,
+#         contact_number=obj.contact_number,
+#         country=obj.country,
+#         city=obj.city,
+#         district=obj.district,
+#         ward=obj.ward,
+#         additional_address=obj.additional_address
+#     )
+#     group_obj.created_at = obj.created_at
+#     group_obj.updated_at = obj.updated_at
+#     group_obj.save()
+#     print(group_obj, is_created)
+#     obj.order_group = group_obj
+#     OrderGroupStatusLog.objects.get_or_create(order_group=group_obj, order_status=group_obj.order_status)
+#     obj.save()
