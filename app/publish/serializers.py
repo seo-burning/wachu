@@ -52,7 +52,7 @@ class LinkingBannerSerializer(serializers.ModelSerializer):
                   'coupon_code',
                   'banner_type',
                   'primary_color',
-                  'secondary_color')
+                  'secondary_color', 'data')
 
 
 class PostImageSerializer(serializers.ModelSerializer):

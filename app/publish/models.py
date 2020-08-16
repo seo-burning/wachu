@@ -9,7 +9,7 @@ from store.models import StorePost
 from product import models as p_models
 from store.models import Store
 # Create your models here.
-BANNER_TYPE = [('linking', 'LINKING'), ('base', 'BASIC'), ('coupon', 'COUPON')]
+BANNER_TYPE = [('linking', 'LINKING'), ('base', 'BASIC'), ('coupon', 'COUPON'), ('navigation', 'NAVIGATION')]
 
 
 class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
@@ -36,6 +36,7 @@ class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
     banner_type = models.CharField(default='base', max_length=20, choices=BANNER_TYPE)
     primary_color = models.CharField(max_length=20, blank=True)
     secondary_color = models.CharField(max_length=20, blank=True)
+    data = models.CharField(null=True, blank=True, max_length=500)
 
     def __str__(self):
         return self.title
