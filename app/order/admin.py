@@ -48,6 +48,19 @@ class OrderedProductInline(admin.TabularInline):
         ))
 
 
+class OrderInline(admin.TabularInline):
+    model = Order
+    fields = ['is_active',
+              'order_status', 'store',  'total_price', 'product_num', ]
+    readonly_fields = ['is_active', 'total_price', 'store', 'product_num',
+                       'order_status', ]
+    extra = 0
+    show_change_link = True
+
+    def product_num(self, instance):
+        return len(instance.orderedproduct_set.all())
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
     inlines = [OrderStatusLogInline, OrderedProductInline, DeliveryStatusInline]
@@ -95,8 +108,8 @@ class AppliedCouponAdmin(admin.ModelAdmin):
 
 
 @admin.register(OrderGroup)
-class OrderGroupAdmin(admin.ModelAdmin):
-    pass
+class OrderGroupAdmin(admin.ModelAdmin, ToggleActiveMixin):
+    inlines = [OrderInline, ]
 
 
 @admin.register(OrderGroupStatusLog)

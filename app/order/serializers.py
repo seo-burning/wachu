@@ -252,7 +252,7 @@ class OrderGroupDetailSerializer(serializers.ModelSerializer):
 class OrderGroupCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderGroup
-        exclude = ['customer',  'currency', 'country', 'slug', ]
+        exclude = ['customer',  'currency', 'country', ]
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
