@@ -70,6 +70,9 @@ class ProductCategoryListView(generics.ListAPIView):
             print(is_discount)
             if (is_discount):
                 queryset = queryset.filter(is_discount=is_discount)
+            order_by = self.request.query_params.get('order-by')
+            if (order_by):
+                queryset = queryset.order_by(order_by)
         except Exception as e:
             queryset = models.Product.objects.filter(is_active=True)
             slack_notify('error occured during get product list', channel='#6_qc')
