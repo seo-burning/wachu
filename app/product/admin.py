@@ -125,7 +125,7 @@ class ProductSizeThroughInline(admin.TabularInline):
 class ProductShopeeCategoryThroughInline(admin.TabularInline):
     model = models.Product.shopee_category.through
     fields = ['product_thumbnail_image', 'product_link',
-              'product_out_link', ]
+              'product_out_link', 'category', 'sub_category']
     readonly_fields = ['product_thumbnail_image',
                        'product_link', 'product_out_link']
     extra = 0
