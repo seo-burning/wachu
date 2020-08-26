@@ -415,7 +415,7 @@ class ShopeeRatingInline(admin.StackedInline):
 class Product(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
     list_per_page = 25
-    raw_id_fields = ['store', 'post']
+    raw_id_fields = ['store', 'post', 'shopee_category', ]
     list_display = [
         'product_summary',
         'option_summary',

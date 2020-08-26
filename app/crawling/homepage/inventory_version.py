@@ -133,6 +133,8 @@ def get_lepoulet():
     return template.homepage_crawler("https://lepoulet.vn", 52, None,
                                      url_list=['all'], block_name='product-block')
 
+# TODO Check get_olv
+
 
 def get_olv():
     print('\nupdate olv')
