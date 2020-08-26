@@ -65,6 +65,20 @@ def send_push_message(token,
             print(exc)
             pass
 
+
 # from notification.expo_notification import send_push_message
 # token = "ExponentPushToken[4lj2vJFckW5W3AFWJgxXT-]"
 # send_push_message(token, 'test', 'test_123',data={'route':'store','params':{}})
+# if __name__ == '__main__':
+#     user_push_tokens = UserPushToken.objects.all()
+#     title = input('title : ')
+#     body = input('body : ')
+    # pool = mp.Pool(processes=64)
+    # pool.map()
+# for token in user_push_tokens:
+#     try:
+#         expo_notification.send_push_message(token.push_token, body, title)
+#         print('.', end='')
+#     except:
+#         print('e', end='')
+#         pass

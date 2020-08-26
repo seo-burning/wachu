@@ -151,7 +151,10 @@ class OrderGroupCreateView(generics.CreateAPIView):
             original_price = ordered_product_obj['original_price']
             created_order.original_price += original_price
             if ('discount_price' in ordered_product_obj and ordered_product_obj['discount_price']):
-                created_order.discount_price += ordered_product_obj['discount_price']
+                if created_order.discount_price:
+                    created_order.discount_price += ordered_product_obj['discount_price']
+                else:
+                    created_order.discount_price = ordered_product_obj['discount_price']
                 discount_price = ordered_product_obj['discount_price']
                 created_order.total_price += discount_price
             else:
