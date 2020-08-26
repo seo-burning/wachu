@@ -38,13 +38,14 @@ class OrderedProductInline(admin.TabularInline):
               'original_price',
               'discount_price',
               'discount_rate',
-              'is_free_ship']
+              'is_free_ship', 'product', ]
+    raw_id_fields = ['product', ]
     readonly_fields = ['product_thumbnail_image', 'product_link',
                        'product_option', 'quantity',
                        'original_price',
                        'discount_price',
                        'discount_rate',
-                       'is_free_ship']
+                       'is_free_ship', 'product', ]
     extra = 0
 
     def product_link(self, instance):
@@ -89,12 +90,13 @@ class OrderAdmin(admin.ModelAdmin, ToggleActiveMixin):
 
 @admin.register(OrderedProduct)
 class OrderedProductAdmin(admin.ModelAdmin):
-    raw_id_fields = ['product', 'order']
-    readonly_fields = ['product', 'order']
+    raw_id_fields = ['product', 'product_option', 'order']
+    # readonly_fields = ['product', 'product_option', 'order']
+    field = ['quantity', 'product_option', 'order', 'product']
 
     def get_queryset(self, request):
         qs = super(OrderedProductAdmin, self).get_queryset(request)
-        return qs.select_related('product', 'order')
+        return qs.select_related('product', 'order', 'product_option')
 
 
 @admin.register(OrderStatusLog)
@@ -121,6 +123,7 @@ class OrderGroupAdmin(admin.ModelAdmin, ToggleActiveMixin):
     inlines = [OrderInline, OrderGroupStatusLogInline]
     list_display = ['is_active',
                     'order_status', 'created_at', 'slug', 'customer']
+    actions = ['make_activate', 'make_deactivate', ]
 
 
 @admin.register(OrderGroupStatusLog)

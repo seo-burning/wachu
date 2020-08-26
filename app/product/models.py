@@ -344,4 +344,4 @@ class ProductOption(PriceModel, TimeStampedModel):
             option_string = option_string + ' color : ' + self.color.name
         if self.extra_option:
             option_string = option_string + ' extra_option : ' + self.extra_option
-        return self.name + '\n' + option_string
+        return "#" + str(self.pk) + ' ' + self.name + '\n' + option_string
