@@ -125,15 +125,17 @@ class ProductSizeThroughInline(admin.TabularInline):
 class ProductShopeeCategoryThroughInline(admin.TabularInline):
     model = models.Product.shopee_category.through
     fields = ['product_thumbnail_image', 'product_link',
-              'product_out_link', 'category', 'sub_category']
+              'product_out_link', ]
     readonly_fields = ['product_thumbnail_image',
                        'product_link', 'product_out_link']
     extra = 0
 
     def product_thumbnail_image(self, instance):
         return mark_safe('<img src="{url}" \
-        width="400" height="400" border="1" />'.format(
-            url=instance.product.product_thumbnail_image
+        width="400" height="400" border="1" /><p>{category} - {subcategory}</p>'.format(
+            url=instance.product.product_thumbnail_image,
+            category=instance.product.category,
+            subcategory=instance.product.sub_category
         ))
 
     def product_link(self, instance):
