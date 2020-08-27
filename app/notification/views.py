@@ -1,5 +1,6 @@
 from rest_framework import generics, authentication, permissions
 from .models import UserNotification
+from core.models import UserPushToken
 from .serializers import UserNotificationSerializer, UserNotificationReadUpdateSerializer
 
 
@@ -23,11 +24,14 @@ class UserNotificationListView(generics.ListAPIView):
 
 class UserNotificationListByTokenView(generics.ListAPIView):
     serializer_class = UserNotificationSerializer
-    # authentication_classes = (authentication.TokenAuthentication,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        # user = self.request.user
         push_token = self.kwargs['push_token']
-        queryset = UserNotification.objects.filter(push_token=push_token)
+        try:
+            token_obj = UserPushToken.objects.get(push_token=push_token)
+        except Exception:
+            token_obj = None
+        queryset = UserNotification.objects.filter(user=self.request.user, push_token=token_obj)
         return queryset
