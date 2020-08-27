@@ -49,7 +49,8 @@ class PushNotificationAdmin(admin.ModelAdmin):
                                                 publish_date=datetime.now(),
                                                 notification=object,
                                                 user=push_token_obj.user,
-                                                thumb_image=object.thumb_image
+                                                thumb_image=object.thumb_image,
+                                                push_token=push_token_obj
                                                 )
             PushNotificationResult.objects.create(notification=object,
                                                   total_push=total_push,
