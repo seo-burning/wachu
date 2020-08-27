@@ -19,3 +19,15 @@ class UserNotificationListView(generics.ListAPIView):
         user = self.request.user
         queryset = UserNotification.objects.filter(user=user)
         return queryset
+
+
+class UserNotificationListByTokenView(generics.ListAPIView):
+    serializer_class = UserNotificationSerializer
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        # user = self.request.user
+        push_token = self.kwargs['push_token']
+        queryset = UserNotification.objects.filter(push_token=push_token)
+        return queryset

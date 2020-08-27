@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from core.models import UserPushToken
 from utils.helper.model.abstract_model import TimeStampedModel, \
     ActiveModel
 # Create your models here.
@@ -89,6 +89,7 @@ class UserNotification(TimeStampedModel,
         get_user_model(), on_delete=models.CASCADE)
     thumb_image = models.ImageField(
         blank=True, null=True, upload_to='notification/%Y/%m')
+    push_token = models.ForeignKey(UserPushToken, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         string_name = self.title
