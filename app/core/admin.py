@@ -65,6 +65,7 @@ class UserAdmin(BaseUserAdmin, ExportCsvMixin):
 
 class UserPushTokenAdmin(admin.ModelAdmin):
     list_display = ['is_active', 'user', 'created_at', 'push_token']
+    list_filter = ['is_active', ]
 
 
 admin.site.register(models.Notice)
