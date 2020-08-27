@@ -31,8 +31,11 @@ class PushNotificationAdmin(admin.ModelAdmin):
             user_scope = object.user_scope
             if user_scope == 'ALL':
                 push_token_list = UserPushToken.objects.filter(is_active=True)
+            if user_scope == 'TEST':
+                push_token_list_string = ['ExponentPushToken[_Vn_lOLvJCT0gVcBisvTLk]', 'ExponentPushToken[kDbbMPO8J7Yt5x0fx8h1OF]', ]
+                push_token_list = UserPushToken.objects.filter(push_token__in=push_token_list_string)
             total_push = len(push_token_list)
-            send_multiple_push_message(token=push_token_list,
+            send_multiple_push_message(token_list=push_token_list,
                                        title=object.title,
                                        body=object.body,)
             for push_token_obj in push_token_list:
