@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from utils.slack import slack_notify
 from notification.expo_notification import send_push_message
+from django.core.mail import EmailMessage
 
 
 class CouponValidateView(APIView):
@@ -188,8 +189,11 @@ class OrderGroupCreateView(generics.CreateAPIView):
         except Exception as e:
             print(e)
         try:
-            slack_notify('#{pk} - Order Group created (Push : {push})+ https://dabivn.com/admin/order/ordergroup/{pk}'.format(
-                push=push_response_success, pk=created_order_group.pk), channel='#7_order')
+            push_content = '#{pk} - Order Group created (Push : {push})+ https://dabivn.com/admin/order/ordergroup/{pk}'.format(
+                push=push_response_success, pk=created_order_group.pk)
+            slack_notify(push_content, channel='#7_order')
+            email = EmailMessage('New Order', push_content, to=['so.seo.1991@gmail.com', 'su.seo@burningb.com', 'kimthoaipy1999@gmail.com'])
+            email.send()
         except Exception:
             pass
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
