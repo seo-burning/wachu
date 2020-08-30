@@ -130,23 +130,29 @@ def send_multiple_push_message(token_list,
         pass
 
 
-def send_test_notification(body, title, data=None):
+def send_test_notification(body, title, route=None, params=None):
     user_push_token_list = []
     user_push_token_1 = UserPushToken.objects.get(push_token='ExponentPushToken[_Vn_lOLvJCT0gVcBisvTLk]')
     user_push_token_2 = UserPushToken.objects.get(push_token='ExponentPushToken[TTFcgxLxhAdB8TiU5UnRQA]')
     user_push_token_list.append(user_push_token_1)
     user_push_token_list.append(user_push_token_2)
+    data = None
+    if (route):
+        data = '{"route":"' + route + '"}'
+    print(data)
     send_multiple_push_message(user_push_token_list, body, title, data)
-    notification_obj, is_created = PushNotification.objects.get_or_create(title=title, body=body, data=data)
+    notification_obj, is_created = PushNotification.objects.get_or_create(title=title, body=body, data=data, route=route, params=params)
     print(is_created)
     for push_token_obj in user_push_token_list:
-        UserNotification.objects.create(title=notification_obj.title,
-                                        body=notification_obj.body,
-                                        data=notification_obj.data,
+        UserNotification.objects.create(title=title,
+                                        body=body,
+                                        data=data,
                                         publish_date=datetime.now(),
                                         notification=notification_obj,
                                         user=push_token_obj.user,
-                                        push_token=push_token_obj
+                                        push_token=push_token_obj,
+                                        route=route,
+                                        params=params
                                         )
 
 

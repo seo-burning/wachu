@@ -39,7 +39,7 @@ class NotificationModel(models.Model):
 
     title = models.CharField(max_length=100, )
     body = models.CharField(max_length=200,)
-    data = models.CharField(max_length=1000, blank=True)
+    data = models.CharField(max_length=1000, blank=True, null=True)
     ttl = models.IntegerField(blank=True, null=True)
     expiration = models.IntegerField(blank=True, null=True)
     priority = models.CharField(max_length=10,
