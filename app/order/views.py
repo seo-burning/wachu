@@ -193,8 +193,8 @@ class OrderGroupCreateView(generics.CreateAPIView):
                 push=push_response_success, pk=created_order_group.pk)
             slack_notify(push_content, channel='#7_order')
             email = EmailMessage('New Order', push_content, to=['so.seo.1991@gmail.com', 'su.seo@burningb.com', 'kimthoaipy1999@gmail.com'])
-            slack_notify('email sent {success}'.format(success=email), channel='#7_order')
             email.send()
+            slack_notify('email sent {success}'.format(success=email), channel='#7_order')
         except Exception:
             pass
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

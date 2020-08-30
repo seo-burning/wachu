@@ -327,6 +327,20 @@ class ShopeeScraper:
             if get_cleaned_text(pattern_obj.name) in name_string or get_cleaned_text(pattern_obj.display_name) in name_string:
                 obj_product.pattern.add(pattern_obj)
 
+    def __update_images(self, obj_product, data, is_created=True):
+        obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
+            data['image'] + '_tn'
+        if (is_created == False):
+            previous_images = ProductImage.objects.filter(product=obj_product)
+            for previous_image in previous_images:
+                previous_image.delete()
+        for product_image in data['images']:
+            obj_image, image_is_created = ProductImage.objects.get_or_create(
+                source='https://cf.shopee.vn/file/' + product_image,
+                source_thumb='https://cf.shopee.vn/file/' + product_image+'_tn',
+                product=obj_product,
+                post_image_type='P')
+
     def get_or_create_product(self, store_obj, itemid, view_count=None):
         shopid = store_obj.shopee_numeric_id
         # 0. 상품 생성 및 호출
@@ -361,16 +375,7 @@ class ShopeeScraper:
                 obj_product.name = data['name']
                 obj_product.description = data['description']
                 # image
-                obj_product.product_thumbnail_image = 'https://cf.shopee.vn/file/' + \
-                    data['image'] + '_tn'
-                obj_product.save()
-                for product_image in data['images']:
-                    obj_image, image_is_created = ProductImage.objects.get_or_create(
-                        source='https://cf.shopee.vn/file/' + product_image,
-                        source_thumb='https://cf.shopee.vn/file/' + product_image+'_tn',
-                        product=obj_product,
-                        post_image_type='P')
-
+                self.__update_images(obj_product, data, is_created)
                 # 2. 상품 사이즈 / 컬러 정보 업데이트
                 if (data['size_chart'] != None):
                     obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
@@ -390,6 +395,10 @@ class ShopeeScraper:
                 # 2. 패턴 추가
                 self.__update_pattern(obj_product)
 
+            if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
+                    data['image'] + '_tn'):
+                print('recreate images', end='')
+                self.__update_images(obj_product, data, False)
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
             obj_product.updated_at = datetime.datetime.now()
@@ -519,10 +528,10 @@ def du_check(po):
 
 if __name__ == '__main__':
     # # pool = mp.Pool(processes=64)
-    # store_obj = Store.objects.get(insta_id='gumac.vn')
-    # # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    # # # # # # pool.map(multi, product_list)
-    # # # # # # pool.close()
+    # store_obj = Store.objects.get(insta_id='dicao.vn')
+    # # # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
+    # # # # # # # pool.map(multi, product_list)
+    # # # # # # # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(store_obj)
     # pass

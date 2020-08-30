@@ -12,7 +12,7 @@ class PushNotificationSerializer(serializers.ModelSerializer):
 class UserNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserNotification
-        fields = ['title', 'body', 'publish_date', 'pk',
+        fields = ['title', 'route', 'params', 'body', 'publish_date', 'pk',
                   'thumb_image', 'data', 'is_read']
 
 

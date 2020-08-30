@@ -6,6 +6,8 @@ from exponent_server_sdk import PushServerError
 from requests.exceptions import ConnectionError
 from requests.exceptions import HTTPError
 from core.models import UserPushToken
+from .models import UserNotification, PushNotification
+from datetime import datetime
 
 
 # TODO push token 예외 처리와 channel_id 처리
@@ -13,6 +15,11 @@ from core.models import UserPushToken
 # TODO push token 특정 위치로 날아가는거 처리
 # Basic arguments. You should extend this function with the push features you
 # want to use, or simply pass in a `PushMessage` object.
+
+# class PushClientWithRetry(PushClient):
+#     def _publish_internal(self, push_messages):
+
+
 def send_push_message(token,
                       body='',
                       title='',
@@ -26,7 +33,6 @@ def send_push_message(token,
                       channel_id=None,
                       ):
     token_valid = PushClient().is_exponent_push_token(token.push_token)
-    print(token_valid)
     if (token_valid):
         try:
             response = PushClient().publish(
@@ -41,17 +47,18 @@ def send_push_message(token,
                             badge=badge,
                             channel_id=channel_id
                             ))
-            return True
         # Category & display_in_forground
         except PushServerError as exc:
             # Encountered some likely formatting/validation error.
+            print('PushServerError')
             print(exc)
-            pass
+            raise
         except (ConnectionError, HTTPError) as exc:
             # Encountered some Connection or HTTP error - retry a few times in
             # case it is transient.
+            print('ConnectionError or HTTPError')
             print(exc)
-            pass
+            raise
         try:
             # We got a response back, but we don't know whether it's an error yet.
             # This call raises errors so we can handle them with normal exception
@@ -59,7 +66,8 @@ def send_push_message(token,
             response.validate_response()
         except DeviceNotRegisteredError:
             # Mark the push token as inactive
-            UserPushToken.objects.filter(token=token).update(active=False)
+            print('Device is not Registered. Make it deactivated')
+            UserPushToken.objects.filter(token=token).update(is_active=False)
         except PushResponseError as exc:
             # Encountered some other per-notification error.
             print(exc)
@@ -122,17 +130,46 @@ def send_multiple_push_message(token_list,
         pass
 
 
-def send_multiple_push_message_to_all(body, title):
-    # user_push_token_list = UserPushToken.objects.filter(is_active=True)
+def send_test_notification(body, title, data=None):
     user_push_token_list = []
-    user_push_token = UserPushToken.objects.get(push_token='ExponentPushToken[_Vn_lOLvJCT0gVcBisvTLk]')
-    for i in range(0, 150):
-        user_push_token_list.append(user_push_token)
-    i = 0
+    user_push_token_1 = UserPushToken.objects.get(push_token='ExponentPushToken[_Vn_lOLvJCT0gVcBisvTLk]')
+    user_push_token_2 = UserPushToken.objects.get(push_token='ExponentPushToken[TTFcgxLxhAdB8TiU5UnRQA]')
+    user_push_token_list.append(user_push_token_1)
+    user_push_token_list.append(user_push_token_2)
+    send_multiple_push_message(user_push_token_list, body, title, data)
+    notification_obj, is_created = PushNotification.objects.get_or_create(title=title, body=body, data=data)
+    print(is_created)
+    for push_token_obj in user_push_token_list:
+        UserNotification.objects.create(title=notification_obj.title,
+                                        body=notification_obj.body,
+                                        data=notification_obj.data,
+                                        publish_date=datetime.now(),
+                                        notification=notification_obj,
+                                        user=push_token_obj.user,
+                                        push_token=push_token_obj
+                                        )
+
+
+def send_multiple_push_message_to_all(body, title, data=None):
+    user_push_token_list = UserPushToken.objects.filter(is_active=True)
+    print("total push estimate : {}".format(len(user_push_token_list)))
+    # user_push_token_list = []
+    # user_push_token = UserPushToken.objects.get(push_token='ExponentPushToken[_Vn_lOLvJCT0gVcBisvTLk]')
+    # for i in range(0, 150):
+    #     user_push_token_list.append(user_push_token)
+    i = 50
     while True:
-        if i + 100 > len(user_push_token_list):
-            send_multiple_push_message(user_push_token_list[i:], body, title)
+        if i + 50 > len(user_push_token_list):
+            try:
+                send_multiple_push_message(user_push_token_list[i:], body, title, data)
+                print("push success from {} to end".format(i))
+            except Exception:
+                print("error occured from {} to end".format(i))
             break
         else:
-            send_multiple_push_message(user_push_token_list[i:i + 100], body, title)
-            i = i + 100
+            try:
+                send_multiple_push_message(user_push_token_list[i:i + 50], body, title, data)
+                print("push success from {} to {}".format(i, i+50))
+            except Exception:
+                print("error occured from {} to {}".format(i, i+50))
+            i = i + 50

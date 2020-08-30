@@ -9,7 +9,7 @@ from datetime import datetime
 # TODO User - Notification Model 도 만들어야함. 이걸로 현재 알람 내역에 대한 리스트 연동 필요.
 @admin.register(PushNotification)
 class PushNotificationAdmin(admin.ModelAdmin):
-    list_display = ['title', 'body', 'user_scope', 'is_active', 'publish_date']
+    list_display = ['title', 'body', 'route', 'user_scope', 'is_active', 'publish_date']
     actions = ['make_activate',
                'make_deactivate', 'execute_push_notification']
 

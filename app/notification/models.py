@@ -54,8 +54,16 @@ class NotificationModel(models.Model):
     channel_id = models.CharField(max_length=100, blank=True)
 
 
+class DataRouteModel(models.Model):
+    class Meta:
+        abstract = True
+
+    route = models.CharField(max_length=100, blank=True, null=True)
+    params = models.CharField(max_length=1000, blank=True, null=True)
+
+
 class PushNotification(TimeStampedModel,
-                       ActiveModel, NotificationModel):
+                       ActiveModel, NotificationModel, DataRouteModel):
     class Meta:
         ordering = ['is_active', '-publish_date', ]
 
@@ -77,7 +85,7 @@ class PushNotificationResult(TimeStampedModel):
 
 
 class UserNotification(TimeStampedModel,
-                       ActiveModel, NotificationModel):
+                       ActiveModel, NotificationModel, DataRouteModel):
     class Meta:
         ordering = ['-publish_date', ]
     is_read = models.BooleanField(default=False)

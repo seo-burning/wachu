@@ -1,7 +1,8 @@
 from rest_framework import generics, authentication, permissions
 from .models import UserNotification
 from core.models import UserPushToken
-from .serializers import UserNotificationSerializer, UserNotificationReadUpdateSerializer
+from .serializers import UserNotificationSerializer, \
+    UserNotificationReadUpdateSerializer
 
 
 class UserNotificationUpdateView(generics.UpdateAPIView):
