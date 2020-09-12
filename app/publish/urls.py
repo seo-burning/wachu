@@ -7,5 +7,4 @@ urlpatterns = [
     path('main-page/tags/', views.ProductTagGroupListView.as_view()),
     path('main-page/banner/', views.BannerPublishView.as_view()),
     path('magazine/', views.MagazinePublishView.as_view()),
-    path('test/', views.TestPostSerializer.as_view())
 ]

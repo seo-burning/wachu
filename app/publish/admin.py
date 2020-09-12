@@ -114,24 +114,24 @@ class MainPagePublishAdmin(admin.ModelAdmin):
 class BannerPublishAdmin(admin.ModelAdmin):
     inlines = [ProductGroupInline, LinkingBannerInline]
     fields = ['is_published', 'date', ]
-    list_display = ['is_published', 'date', 'post_group_number']
+    list_display = ['is_published', 'date', 'product_group_number']
     list_display_links = ['date']
     ordering = ['date']
 
-    def post_group_number(self, instance):
-        return len(instance.postgroup_set.all())
+    def product_group_number(self, instance):
+        return len(instance.productgroup_set.all())
 
 
 @admin.register(models.MagazinePublish)
 class MagazinePublishAdmin(admin.ModelAdmin):
     inlines = [ProductGroupInline, ]
     fields = ['is_published', 'date', ]
-    list_display = ['is_published', 'date', 'post_group_number']
+    list_display = ['is_published', 'date', 'product_group_number']
     list_display_links = ['date']
     ordering = ['date']
 
-    def post_group_number(self, instance):
-        return len(instance.postgroup_set.all())
+    def product_group_number(self, instance):
+        return len(instance.productgroup_set.all())
 
 
 @admin.register(models.ProductTagGroup)
