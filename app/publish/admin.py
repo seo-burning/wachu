@@ -76,12 +76,12 @@ class ProductGroupAdmin(admin.ModelAdmin):
               'list_thumb_picture', 'published_banner',
               'published_magazine']
     list_display = ['__str__', 'published_banner',
-                    'published_magazine', 'title', 'post_number']
+                    'published_magazine', 'title', 'product_number']
     list_display_links = ['__str__', 'title']
     extra = 0
 
-    def post_number(self, instance):
-        return len(instance.post_list.all())
+    def product_number(self, instance):
+        return len(instance.product_list.all())
 
 
 class ProductGroupInline(admin.StackedInline):
