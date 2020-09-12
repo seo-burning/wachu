@@ -84,11 +84,11 @@ class StorePostSerializer(serializers.ModelSerializer):
         return queryset
 
 
-class PostGroupSerializer(serializers.ModelSerializer):
+class ProductGroupSerializer(serializers.ModelSerializer):
     post_list = StorePostSerializer(many=True)
 
     class Meta:
-        model = models.PostGroup
+        model = models.ProductGroup
         fields = ('ordering', 'title', 'post_list',
                   'cover_picture', 'list_thumb_picture')
 
@@ -148,7 +148,7 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
 
 
 class BannerPublishSerializer(serializers.ModelSerializer):
-    postgroup_set = PostGroupSerializer(read_only=True, many=True)
+    postgroup_set = ProductGroupSerializer(read_only=True, many=True)
     linkingbanner_set = LinkingBannerSerializer(read_only=True, many=True)
 
     class Meta:
@@ -162,7 +162,7 @@ class BannerPublishSerializer(serializers.ModelSerializer):
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(Prefetch(
             'postgroup_set',
-            queryset=models.PostGroup.objects.order_by('ordering')))
+            queryset=models.ProductGroup.objects.order_by('ordering')))
         queryset = queryset.prefetch_related(
             'postgroup_set__post_list',
             'postgroup_set__post_list__post_image_set',
@@ -177,7 +177,7 @@ class BannerPublishSerializer(serializers.ModelSerializer):
 
 
 class MagazinePublishSerializer(serializers.ModelSerializer):
-    postgroup_set = PostGroupSerializer(read_only=True, many=True)
+    postgroup_set = ProductGroupSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.MagazinePublish
@@ -190,7 +190,7 @@ class MagazinePublishSerializer(serializers.ModelSerializer):
         # select_related for "to-one" relationships
         queryset = queryset.prefetch_related(Prefetch(
             'postgroup_set',
-            queryset=models.PostGroup.objects.order_by('ordering')))
+            queryset=models.ProductGroup.objects.order_by('ordering')))
         queryset = queryset.prefetch_related(
             'postgroup_set__post_list',
             'postgroup_set__post_list__post_image_set',

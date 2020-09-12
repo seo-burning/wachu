@@ -9,7 +9,6 @@ import json
 import requests
 from store import models
 from product.models import Product, ProductImage
-from publish.models import PostGroup
 from core.models import ExportCsvMixin
 from .forms import ProductFormForInstagramPost, ProductInlineFormSet
 from utils.helper.image_processing import create_presigned_url
@@ -64,11 +63,6 @@ class PostImageInline(admin.StackedInline):
             width="300" height="300" border="1" />'.format(
             url=obj.source_thumb
         ))
-
-
-class PostGroupInline(admin.TabularInline):
-    model = PostGroup.post_list.through
-    extra = 1
 
 
 class StorePostInline(admin.StackedInline):
@@ -399,7 +393,7 @@ class PostRelatedProductFilter(admin.SimpleListFilter):
 
 @admin.register(models.StorePost)
 class StorePostAdmin(admin.ModelAdmin):
-    inlines = [ProductCreateInline, PostImageInline, PostGroupInline]
+    inlines = [ProductCreateInline, PostImageInline]
     model = models.StorePost
     readonly_fields = ('post_like', 'post_score',
                        'post_description',

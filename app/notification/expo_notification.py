@@ -143,39 +143,210 @@ def send_test_notification(body, title, route=None, params=None):
     send_multiple_push_message(user_push_token_list, body, title, data)
     notification_obj, is_created = PushNotification.objects.get_or_create(title=title, body=body, data=data, route=route, params=params)
     print(is_created)
-    for push_token_obj in user_push_token_list:
-        UserNotification.objects.create(title=title,
-                                        body=body,
-                                        data=data,
-                                        publish_date=datetime.now(),
-                                        notification=notification_obj,
-                                        user=push_token_obj.user,
-                                        push_token=push_token_obj,
-                                        route=route,
-                                        params=params
-                                        )
+    # for push_token_obj in user_push_token_list:
+    #     UserNotification.objects.create(title=title,
+    #                                     body=body,
+    #                                     data=data,
+    #                                     publish_date=datetime.now(),
+    #                                     notification=notification_obj,
+    #                                     user=push_token_obj.user,
+    #                                     push_token=push_token_obj,
+    #                                     route=route,
+    #                                     params=params
+    #                                     )
+    objs = [UserNotification(title=title,
+                             body=body,
+                             data=data,
+                             publish_date=datetime.now(),
+                             notification=notification_obj,
+                             user=push_token_obj.user,
+                             push_token=push_token_obj,
+                             route=route,
+                             params=params
+                             )
+            for push_token_obj in user_push_token_list]
+    UserNotification.objects.bulk_create(objs=objs)
+    notification_obj.is_active = True
+    notification_obj.publish_date = datetime.now()
+    notification_obj.user_scope = 'ALL'
+    notification_obj.save()
 
 
-def send_multiple_push_message_to_all(body, title, data=None):
+def send_multiple_push_message_to_all(body, title, route=None, params=None):
     user_push_token_list = UserPushToken.objects.filter(is_active=True)
     print("total push estimate : {}".format(len(user_push_token_list)))
-    # user_push_token_list = []
-    # user_push_token = UserPushToken.objects.get(push_token='ExponentPushToken[_Vn_lOLvJCT0gVcBisvTLk]')
-    # for i in range(0, 150):
-    #     user_push_token_list.append(user_push_token)
-    i = 50
+    data = None
+    if (route):
+        data = '{"route":"' + route + '"}'
+    print(data)
+    i = 100
+    notification_obj, is_created = PushNotification.objects.get_or_create(title=title,
+                                                                          body=body,
+                                                                          data=data,
+                                                                          route=route,
+                                                                          params=params)
+    print(is_created)
     while True:
-        if i + 50 > len(user_push_token_list):
+        if i + 100 > len(user_push_token_list):
             try:
                 send_multiple_push_message(user_push_token_list[i:], body, title, data)
                 print("push success from {} to end".format(i))
             except Exception:
                 print("error occured from {} to end".format(i))
+            objs = [UserNotification(title=title,
+                                     body=body,
+                                     data=data,
+                                     publish_date=datetime.now(),
+                                     notification=notification_obj,
+                                     user=push_token_obj.user,
+                                     push_token=push_token_obj,
+                                     route=route,
+                                     params=params
+                                     )
+                    for push_token_obj in user_push_token_list[i:]]
+            UserNotification.objects.bulk_create(objs=objs)
             break
         else:
             try:
-                send_multiple_push_message(user_push_token_list[i:i + 50], body, title, data)
-                print("push success from {} to {}".format(i, i+50))
+                send_multiple_push_message(user_push_token_list[i:i + 100], body, title, data)
+                print("push success from {} to {}".format(i, i+100))
             except Exception:
-                print("error occured from {} to {}".format(i, i+50))
-            i = i + 50
+                print("error occured from {} to {}".format(i, i+100))
+            i = i + 100
+            objs = [UserNotification(title=title,
+                                     body=body,
+                                     data=data,
+                                     publish_date=datetime.now(),
+                                     notification=notification_obj,
+                                     user=push_token_obj.user,
+                                     push_token=push_token_obj,
+                                     route=route,
+                                     params=params
+                                     )
+                    for push_token_obj in user_push_token_list[i:i + 100]]
+            UserNotification.objects.bulk_create(objs=objs)
+
+    notification_obj.is_active = True
+    notification_obj.publish_date = datetime.now()
+    notification_obj.user_scope = 'ALL'
+    notification_obj.save()
+
+
+def send_multiple_push_message_to_new_user(body, title, route=None, params=None):
+    user_push_token_list = UserPushToken.objects.filter(is_active=True).filter(pk__gte=3326)
+    print("total push estimate : {}".format(len(user_push_token_list)))
+    data = None
+    if (route):
+        data = '{"route":"' + route + '"}'
+    print(data)
+    i = 100
+    notification_obj, is_created = PushNotification.objects.get_or_create(title=title,
+                                                                          body=body,
+                                                                          data=data,
+                                                                          route=route,
+                                                                          params=params)
+    print(is_created)
+    while True:
+        if i + 100 > len(user_push_token_list):
+            try:
+                send_multiple_push_message(user_push_token_list[i:], body, title, data)
+                print("push success from {} to end".format(i))
+            except Exception:
+                print("error occured from {} to end".format(i))
+            objs = [UserNotification(title=title,
+                                     body=body,
+                                     data=data,
+                                     publish_date=datetime.now(),
+                                     notification=notification_obj,
+                                     user=push_token_obj.user,
+                                     push_token=push_token_obj,
+                                     route=route,
+                                     params=params
+                                     )
+                    for push_token_obj in user_push_token_list[i:]]
+            UserNotification.objects.bulk_create(objs=objs)
+            break
+        else:
+            try:
+                send_multiple_push_message(user_push_token_list[i:i + 100], body, title, data)
+                print("push success from {} to {}".format(i, i+100))
+            except Exception:
+                print("error occured from {} to {}".format(i, i+100))
+            i = i + 100
+            objs = [UserNotification(title=title,
+                                     body=body,
+                                     data=data,
+                                     publish_date=datetime.now(),
+                                     notification=notification_obj,
+                                     user=push_token_obj.user,
+                                     push_token=push_token_obj,
+                                     route=route,
+                                     params=params
+                                     )
+                    for push_token_obj in user_push_token_list[i:i + 100]]
+            UserNotification.objects.bulk_create(objs=objs)
+
+    notification_obj.is_active = True
+    notification_obj.publish_date = datetime.now()
+    notification_obj.user_scope = 'ALL'
+    notification_obj.save()
+
+
+def send_multiple_push_message_to_old_user(body, title, route=None, params=None):
+    user_push_token_list = UserPushToken.objects.filter(is_active=True).filter(pk__lte=3325)
+    print("total push estimate : {}".format(len(user_push_token_list)))
+    data = None
+    if (route):
+        data = '{"route":"' + route + '"}'
+    print(data)
+    i = 100
+    notification_obj, is_created = PushNotification.objects.get_or_create(title=title,
+                                                                          body=body,
+                                                                          data=data,
+                                                                          route=route,
+                                                                          params=params)
+    print(is_created)
+    while True:
+        if i + 100 > len(user_push_token_list):
+            try:
+                send_multiple_push_message(user_push_token_list[i:], body, title, data)
+                print("push success from {} to end".format(i))
+            except Exception:
+                print("error occured from {} to end".format(i))
+            objs = [UserNotification(title=title,
+                                     body=body,
+                                     data=data,
+                                     publish_date=datetime.now(),
+                                     notification=notification_obj,
+                                     user=push_token_obj.user,
+                                     push_token=push_token_obj,
+                                     route=route,
+                                     params=params
+                                     )
+                    for push_token_obj in user_push_token_list[i:]]
+            UserNotification.objects.bulk_create(objs=objs)
+            break
+        else:
+            try:
+                send_multiple_push_message(user_push_token_list[i:i + 100], body, title, data)
+                print("push success from {} to {}".format(i, i+100))
+            except Exception:
+                print("error occured from {} to {}".format(i, i+100))
+            i = i + 100
+            objs = [UserNotification(title=title,
+                                     body=body,
+                                     data=data,
+                                     publish_date=datetime.now(),
+                                     notification=notification_obj,
+                                     user=push_token_obj.user,
+                                     push_token=push_token_obj,
+                                     route=route,
+                                     params=params
+                                     )
+                    for push_token_obj in user_push_token_list[i:i + 100]]
+            UserNotification.objects.bulk_create(objs=objs)
+
+    notification_obj.is_active = True
+    notification_obj.publish_date = datetime.now()
+    notification_obj.user_scope = 'ALL'
+    notification_obj.save()

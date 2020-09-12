@@ -527,12 +527,12 @@ def du_check(po):
 
 
 if __name__ == '__main__':
-    # # pool = mp.Pool(processes=64)
-    # store_obj = Store.objects.get(insta_id='dicao.vn')
+    # pool = mp.Pool(processes=64)
+    store_obj = Store.objects.get(insta_id='julys__store')
     # # # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
     # # # # # # # pool.map(multi, product_list)
     # # # # # # # pool.close()
-    # obj = ShopeeScraper()
-    # obj.search_store(store_obj)
+    obj = ShopeeScraper()
+    obj.search_store(store_obj)
     # pass
-    validate_shopee(100)
+    # validate_shopee(100)

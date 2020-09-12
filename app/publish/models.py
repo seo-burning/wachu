@@ -5,7 +5,6 @@ from django.db.models.constraints import UniqueConstraint
 from django.db.models import Q
 
 from core.abstract_models import TimeStampedModel, ActiveModel, OrderingModel
-from store.models import StorePost
 from product import models as p_models
 from store.models import Store
 # Create your models here.
@@ -42,7 +41,7 @@ class LinkingBanner(TimeStampedModel, ActiveModel, OrderingModel):
         return self.title
 
 
-class PostGroup(TimeStampedModel):
+class ProductGroup(TimeStampedModel):
     class Meta:
         ordering = ('ordering',)
         verbose_name = u'상품 그룹 / Product Group'
@@ -54,9 +53,9 @@ class PostGroup(TimeStampedModel):
         blank=True, upload_to='post-group-cover/%Y/%m')
     list_thumb_picture = models.ImageField(
         blank=True, upload_to='post-group-list-thumb/%Y/%m')
-    post_list = models.ManyToManyField(StorePost, blank=True,
-                                       symmetrical=False,
-                                       related_name="post_set")
+    product_list = models.ManyToManyField(p_models.Product, blank=True,
+                                          symmetrical=False,
+                                          related_name="product_set")
     published_banner = models.ForeignKey(
         'BannerPublish', on_delete=models.SET_NULL, null=True, blank=True,)
     published_magazine = models.ForeignKey(

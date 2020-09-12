@@ -5,8 +5,8 @@ from publish import models
 
 
 # TODO Preview need to be fixed
-class StorePostInline(admin.TabularInline):
-    model = models.PostGroup.post_list.through
+class ProductInLine(admin.TabularInline):
+    model = models.ProductGroup.product_list.through
     fields = ['post_name', ]
     readonly_fields = ['post_name', ]
     extra = 0
@@ -69,9 +69,9 @@ class LinkingBannerInline(admin.StackedInline):
         return False
 
 
-@admin.register(models.PostGroup)
-class PostGroupAdmin(admin.ModelAdmin):
-    inlines = [StorePostInline]
+@admin.register(models.ProductGroup)
+class ProductGroupAdmin(admin.ModelAdmin):
+    inlines = [ProductInLine]
     fields = ['title', 'ordering', 'cover_picture',
               'list_thumb_picture', 'published_banner',
               'published_magazine']
@@ -84,8 +84,8 @@ class PostGroupAdmin(admin.ModelAdmin):
         return len(instance.post_list.all())
 
 
-class PostGroupInline(admin.StackedInline):
-    model = models.PostGroup
+class ProductGroupInline(admin.StackedInline):
+    model = models.ProductGroup
     show_change_link = True
     fields = ['ordering', 'title', '__str__']
     readonly_fields = ['title', '__str__']
@@ -108,7 +108,7 @@ class MainPagePublishAdmin(admin.ModelAdmin):
 
 @admin.register(models.BannerPublish)
 class BannerPublishAdmin(admin.ModelAdmin):
-    inlines = [PostGroupInline, LinkingBannerInline]
+    inlines = [ProductGroupInline, LinkingBannerInline]
     fields = ['is_published', 'date', ]
     list_display = ['is_published', 'date', 'post_group_number']
     list_display_links = ['date']
@@ -120,7 +120,7 @@ class BannerPublishAdmin(admin.ModelAdmin):
 
 @admin.register(models.MagazinePublish)
 class MagazinePublishAdmin(admin.ModelAdmin):
-    inlines = [PostGroupInline, ]
+    inlines = [ProductGroupInline, ]
     fields = ['is_published', 'date', ]
     list_display = ['is_published', 'date', 'post_group_number']
     list_display_links = ['date']
