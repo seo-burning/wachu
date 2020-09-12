@@ -148,30 +148,30 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
 
 
 class BannerPublishSerializer(serializers.ModelSerializer):
-    postgroup_set = ProductGroupSerializer(read_only=True, many=True)
+    # postgroup_set = ProductGroupSerializer(read_only=True, many=True)
     linkingbanner_set = LinkingBannerSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.BannerPublish
-        fields = ('date', 'postgroup_set', 'linkingbanner_set')
+        fields = ('date', 'linkingbanner_set')
 
 # https://medium.com/quant-five/speed-up-django-nested-foreign-key-serializers-w-prefetch-related-ae7981719d3f
     @staticmethod
     def setup_eager_loading(queryset):
         """ Perform necessary eager loading of data. """
         # select_related for "to-one" relationships
-        queryset = queryset.prefetch_related(Prefetch(
-            'postgroup_set',
-            queryset=models.ProductGroup.objects.order_by('ordering')))
-        queryset = queryset.prefetch_related(
-            'postgroup_set__post_list',
-            'postgroup_set__post_list__post_image_set',
-            'postgroup_set__post_list__store',
-            'postgroup_set__post_list__store__category',
-            'postgroup_set__post_list__store__primary_style',
-            'postgroup_set__post_list__store__secondary_style',
-            'postgroup_set__post_list__store__age',
-        )
+        # queryset = queryset.prefetch_related(Prefetch(
+        #     'postgroup_set',
+        #     queryset=models.ProductGroup.objects.order_by('ordering')))
+        # queryset = queryset.prefetch_related(
+        #     'postgroup_set__post_list',
+        #     'postgroup_set__post_list__post_image_set',
+        #     'postgroup_set__post_list__store',
+        #     'postgroup_set__post_list__store__category',
+        #     'postgroup_set__post_list__store__primary_style',
+        #     'postgroup_set__post_list__store__secondary_style',
+        #     'postgroup_set__post_list__store__age',
+        # )
 
         return queryset
 
