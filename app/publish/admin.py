@@ -7,15 +7,18 @@ from publish import models
 # TODO Preview need to be fixed
 class ProductInLine(admin.TabularInline):
     model = models.ProductGroup.product_list.through
-    fields = ['post_name', ]
-    readonly_fields = ['post_name', ]
+    fields = ['product_link', 'product_thumb', 'product_name']
+    readonly_fields = ['product_link', 'product_thumb', 'product_name']
     extra = 0
 
-    def post_name(self, instance):
-        return mark_safe('<img src="{url}" \
-        width="200" height="200" border="1" />'.format(
-            url=instance.storepost.post_thumb_image
-        ))
+    def product_link(self, instance):
+        return mark_safe('<a href="https://dabivn.com/admin/product/product/{}">product link</a>'.format(instance.product.pk))
+
+    def product_thumb(self, instance):
+        return mark_safe(instance.product)
+
+    def product_name(self, instance):
+        return instance.product.name
 
 
 class ProductTagGroupInline(admin.StackedInline):
@@ -74,9 +77,10 @@ class ProductGroupAdmin(admin.ModelAdmin):
     inlines = [ProductInLine]
     fields = ['title', 'ordering', 'cover_picture',
               'list_thumb_picture', 'published_banner',
-              'published_magazine']
+              'published_magazine', 'product_list']
     list_display = ['__str__', 'published_banner',
                     'published_magazine', 'title', 'product_number']
+    raw_id_fields = ['product_list', ]
     list_display_links = ['__str__', 'title']
     extra = 0
 

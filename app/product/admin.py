@@ -414,7 +414,7 @@ class ShopeeRatingInline(admin.StackedInline):
 
 
 @admin.register(models.Product)
-class Product(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
     list_per_page = 25
     raw_id_fields = ['store', 'post', 'shopee_category', ]
@@ -447,7 +447,8 @@ class Product(admin.ModelAdmin):
     list_display_links = ['product_summary', ]
     search_fields = ['store__insta_id', 'name', 'pk']
     list_select_related = ('category', 'sub_category',
-                           'preorder_campaign', 'store', 'style', 'post', 'shopee_rating')
+                           'preorder_campaign', 'store', 'style',
+                           'post', 'shopee_rating')
     list_prefetch_related = ('size', 'color', 'pick_set')
     list_filter = [
         'is_active',
