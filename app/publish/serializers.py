@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db.models import Prefetch
 from publish import models
+from product.serializers import ProductSerializer
 
 # TODO Need to 최적화 (Nested Serializer)
 
@@ -20,12 +21,48 @@ class LinkingBannerSerializer(serializers.ModelSerializer):
                   'secondary_color', 'data')
 
 
-class ProductGroupSerializer(serializers.ModelSerializer):
+class ProductGroupInLineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.ProductGroup
         fields = ('ordering', 'title',
-                  'cover_picture', 'list_thumb_picture')
+                  'cover_picture', 'list_thumb_picture', 'pk')
+
+
+class ProductGroupSerializer(serializers.ModelSerializer):
+    product_list = ProductSerializer(many=True)
+
+    class Meta:
+        model = models.ProductGroup
+        fields = ('product_list',)
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # select_related for "to-one" relationships
+        queryset = queryset.prefetch_related(
+            'product_list__category',
+            'product_list__shopee_rating',
+            'product_list__style',
+            'product_list__sub_category',
+            'product_list__store',
+            'product_list__store__age',
+            'product_list__store__primary_style',
+            'product_list__store__secondary_style',
+            'product_list__post__post_image_set',
+            'product_list__color',
+            'product_list__size',
+            'product_list__extra_option',
+            'product_list__favorite_users',
+            'product_list__store__favorite_users',
+            'product_list__store__category',
+            'product_list__product_image_set',
+            'product_list__store__product_category',
+            'product_list__product_options',
+            'product_list__product_options__size',
+            'product_list__product_options__color',
+        )
+        return queryset
 
 
 class ProductTagGroupSerializer(serializers.ModelSerializer):
@@ -83,7 +120,7 @@ class MainPagePublishSerializer(serializers.ModelSerializer):
 
 
 class BannerPublishSerializer(serializers.ModelSerializer):
-    productgroup_set = ProductGroupSerializer(read_only=True, many=True)
+    productgroup_set = ProductGroupInLineSerializer(read_only=True, many=True)
     linkingbanner_set = LinkingBannerSerializer(read_only=True, many=True)
 
     class Meta:
@@ -111,7 +148,7 @@ class BannerPublishSerializer(serializers.ModelSerializer):
 
 
 class MagazinePublishSerializer(serializers.ModelSerializer):
-    postgroup_set = ProductGroupSerializer(read_only=True, many=True)
+    postgroup_set = ProductGroupInLineSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.MagazinePublish

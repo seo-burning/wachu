@@ -7,4 +7,6 @@ urlpatterns = [
     path('main-page/tags/', views.ProductTagGroupListView.as_view()),
     path('main-page/banner/', views.BannerPublishView.as_view()),
     path('magazine/', views.MagazinePublishView.as_view()),
+    path('exhibition/<int:pk>/', views.ProductGroupDetailView.as_view()),
+
 ]

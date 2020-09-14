@@ -7,6 +7,17 @@ from publish import serializers, models
 from django.db.models import Case, When, IntegerField
 
 
+class ProductGroupDetailView(generics.RetrieveAPIView):
+    serializer_class = serializers.ProductGroupSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = models.ProductGroup.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
+
+
 class MainPagePublishView(generics.ListAPIView):
     serializer_class = serializers.MainPagePublishSerializer
     authentication_classes = (TokenAuthentication,)
