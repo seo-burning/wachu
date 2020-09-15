@@ -26,7 +26,8 @@ class ProductGroupInLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProductGroup
         fields = ('ordering', 'title',
-                  'cover_picture', 'list_thumb_picture', 'pk')
+                  'cover_picture', 'list_thumb_picture',
+                  'pk')
 
 
 class ProductGroupSerializer(serializers.ModelSerializer):

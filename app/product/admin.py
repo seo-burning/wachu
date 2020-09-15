@@ -452,6 +452,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_prefetch_related = ('size', 'color', 'pick_set')
     list_filter = [
         'is_active',
+        'is_discount',
         'validation',
         'stock_available',
         'sub_category',
