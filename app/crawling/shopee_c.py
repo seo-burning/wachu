@@ -66,7 +66,7 @@ class ShopeeScraper:
                                         headers={'User-Agent': choice(_user_agents),
                                                  'X-Requested-With': 'XMLHttpRequest',
                                                  'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                                 }, timeout=10)
+                                                 }, timeout=20)
             # response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -85,7 +85,7 @@ class ShopeeScraper:
                                                                                               'Referer': 'https://shopee.vn/shop/' +
                                                                                               str(store_id) +
                                                                                               '/search?shopCollection=',
-                                                                                              }, timeout=10)
+                                                                                              }, timeout=20)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -420,12 +420,8 @@ class ShopeeScraper:
 
             # 5. 생성 후 최종 검증
             if is_created:
-                if obj_product.validation == 'V' and obj_product.stock_available:
-                    obj_product.is_active = True
-                    obj_product.save()
-                if obj_product.validation == 'R':
-                    obj_product.is_active = False
-                    obj_product.save()
+                obj_product.is_active = False
+                obj_product.save()
         return obj_product
 
     def search_store(self, store_obj):
@@ -528,11 +524,10 @@ def du_check(po):
 
 if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
-    store_obj = Store.objects.get(insta_id='julys__store')
-    # # # # # # product_list = Product.objects.filter(store=store_obj, product_source='SHOPEE')
-    # # # # # # # pool.map(multi, product_list)
-    # # # # # # # pool.close()
-    obj = ShopeeScraper()
-    obj.search_store(store_obj)
-    # pass
-    # validate_shopee(100)
+    # store_list = Store.objects.filter(is_active=True, store_type='IS')
+    # obj = ShopeeScraper()
+    # pool.map(obj.search_store, store_list)
+    # pool.close()
+    # obj = ShopeeScraper()
+    # obj.search_store(Store.objects.get(insta_id='xinh_store'))
+    validate_shopee(125)

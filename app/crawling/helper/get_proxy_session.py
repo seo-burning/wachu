@@ -32,7 +32,7 @@ DEFAULT_PROXIES = ["1.251.31.43:80",
                    "80.241.222.138:80",
                    "13.75.114.68:25222",
                    "139.59.129.114:3128",
-                   "177.69.203.67:3128	",
+                   "177.69.203.67:3128",
                    "20.43.156.109:80",
                    "80.241.222.137;80",
                    "91.205.174.26:80",
@@ -111,7 +111,7 @@ def get_session(new=False, proxies=None):
         session.proxies = {"http": proxy, "https": proxy}
         print('c', end='')
         try:
-            check_valid = session.get("http://icanhazip.com", timeout=2)
+            check_valid = session.get("http://icanhazip.com", timeout=3)
             if check_valid.status_code == 200:
                 if len(check_valid.text.strip()) > 100:
                     continue
