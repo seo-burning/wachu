@@ -432,15 +432,19 @@ class ShopeeScraper:
         while list_length == 100:
             # try:
             error_try_count = 0
-            while True or error_try_count > 20:
+            while True or error_try_count > 10:
                 try:
                     response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                                   limit=list_length, newest=i*100)
                     product_list = response.json()['items']
                     break
                 except:
+                    if error_try_count > 5 and error_try_count % 2 == 0:
+                        print('R', end='')
+                        new_session = self.change_session()
+                    else:
+                        continue
                     print('E', end='')
-                    new_session = self.change_session()
                     error_try_count += 1
             for j, product in enumerate(product_list):
                 error_try_count = 0
