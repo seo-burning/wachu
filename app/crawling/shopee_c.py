@@ -470,12 +470,15 @@ class ShopeeScraper:
         return pk
 
 
-def update_shopee(start_index=0, end_index=None):
+def update_shopee(start_index=0, end_index=None, reverse=False):
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
+    for i, store_obj in enumerate(store_list):
+        print("\n#" + str(i) + ' update ' + str(store_obj))
+        updated = obj.search_store(store_obj)
 
 
-def validate_shopee(start_index=0, end_index=None):
+def validate_shopee(start_index=0, end_index=None, reverse=False):
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
     for i, store_obj in enumerate(store_list):
