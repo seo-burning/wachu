@@ -26,7 +26,7 @@ def update_homepage():
         get_degrey,
         get_libeworkshop, get_swe, get_blvck, get_tatichubeyoung,
         get_heyyoustudio, get_errorist, get_fusionism, get_shebyshj, get_cecicela,
-        get_dirtycoins,
+        # get_dirtycoins,
     ]
 
     for i, home_page_obj in enumerate(home_page_list):
