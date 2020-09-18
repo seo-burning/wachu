@@ -16,26 +16,30 @@ def calculating():
 
 
 def first_set(group_name):
+    slack_notify('>'+group_name+' homepage & shopee 160~')
     update_homepage()
-    slack_notify('>'+group_name+'update homepage complete')
+    slack_notify('>'+group_name+' update homepage complete')
     update_shopee(160)
-    slack_notify('>'+group_name+'update shopee 160 ~ complete')
+    slack_notify('>'+group_name+' update shopee 160 ~ complete')
 
 
 def second_set(group_name):
+    slack_notify('>'+group_name+' shopee 80 ~ 160')
     update_shopee(80, 160)
-    slack_notify('>'+group_name+'update shopee 80~160 complete')
+    slack_notify('>'+group_name+' update shopee 80~160 complete')
 
 
 def third_set(group_name):
+    slack_notify('>'+group_name+' shopee 0 ~ 80 & calculating')
     update_shopee(0, 80)
-    slack_notify('>'+group_name+'update shopee 0~80 complete')
+    slack_notify('>'+group_name+' update shopee 0~80 complete')
     calculating()
     preview_image_update()
-    slack_notify('>'+group_name+'calculating & thumb update ~ complete')
+    slack_notify('>'+group_name+' calculating & thumb update ~ complete')
 
 
 def validate_set(group_name):
+    slack_notify('>'+group_name+' validating & caculating')
     validate_homepage()
     validate_shopee()
     slack_notify('>'+group_name+'validate complete')

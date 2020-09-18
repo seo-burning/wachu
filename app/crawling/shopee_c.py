@@ -473,15 +473,6 @@ class ShopeeScraper:
 def update_shopee(start_index=0, end_index=None, reverse=False):
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
-    file_path = './shopee_result.txt'
-    with open(file_path, "w") as f:
-        for i, store_obj in enumerate(store_list):
-            print("\n#" + str(i) + ' update ' + str(store_obj))
-            updated = obj.search_store(store_obj)
-            result_text = store_obj.insta_id + 'total : ' + str(updated) + '\n'
-            f.writelines(result_text)
-    # slack_upload_file(file_path)
-    os.remove(file_path)
 
 
 def validate_shopee(start_index=0, end_index=None, reverse=False):
