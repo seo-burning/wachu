@@ -61,8 +61,8 @@ class ShopeeScraper:
 
     def __request_url(self, store_id, limit='100', newest='0'):
         user_agents = choice(_user_agents)
-        print('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop'
-              .format(limit=limit, store_id=store_id, newest=newest), user_agents)
+        # print('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop'
+        #       .format(limit=limit, store_id=store_id, newest=newest), user_agents)
         try:
             response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
                                     .format(limit=limit, store_id=store_id, newest=newest),
@@ -81,8 +81,8 @@ class ShopeeScraper:
             return response
 
     def __request_url_item(self, store_id, item_id):
-        print("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
-              .format(item_id=item_id, store_id=store_id))
+        # print("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
+        #       .format(item_id=item_id, store_id=store_id))
         try:
             response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
                                     .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
@@ -354,7 +354,6 @@ class ShopeeScraper:
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # 0. 상품 json load
         data = self.__request_url_item(shopid, itemid).json()['item']
-        print('.', end='')
         # 1. 상품 삭제 확인
         if data == None:
             print('d', end='')
@@ -370,7 +369,7 @@ class ShopeeScraper:
             has_extra_options = False
             if is_created:
                 # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
-                print('n', end='')
+                print('N', end='')
                 obj_product.validation = 'V'
                 self.__update_category(obj_product, data['categories'])
                 obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
@@ -399,10 +398,11 @@ class ShopeeScraper:
                     self.__update_size(obj_product, ['free'])
                 # 2. 패턴 추가
                 self.__update_pattern(obj_product)
-
+            else:
+                print('u', end='')
             if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
                     data['image'] + '_tn'):
-                print('recreate images', end='')
+                print('i', end='')
                 self.__update_images(obj_product, data, False)
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
@@ -465,6 +465,26 @@ class ShopeeScraper:
                 # slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i * 100, (i + 1) * 100))
                 break
         return pk
+#
+
+    def refactor_search_store(self, store_obj):
+        i = 0
+        empty_result = 0
+        store_id = store_obj.insta_id
+        while empty_result < 3:
+            try:
+                response = self.__request_url(store_id=store_obj.shopee_numeric_id,
+                                              limit=1, newest=i)
+                if (len(response.json()['items']) == 1):
+                    product_json = response.json()['items'].pop()
+                    product_obj = self.get_or_create_product(
+                        store_obj, product_json['itemid'], product_json['view_count'])
+                else:
+                    empty_result += 1
+            except:
+                print('R', end='')
+            i = i+1
+        return i
 
 
 def update_shopee(start_index=0, end_index=None, reverse=False):
@@ -472,7 +492,10 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index+1:end_index]
     for i, store_obj in enumerate(store_list):
         print("\n#" + str(i) + ' update ' + str(store_obj))
-        updated = obj.search_store(store_obj)
+        try:
+            updated = obj.refactor_search_store(store_obj)
+        except:
+            slack_notify('Failed to update store {}'.format(store_obj.insta_id))
 
 
 def validate_shopee(start_index=0, end_index=None, reverse=False):
@@ -483,25 +506,23 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
             try_count = 0
-            obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
-            # while True and try_count < 5:
-            #     try:
-            #         obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
-            #         print(product_obj.shopee_item_id)
-            #         break
-            #     except:
-            #         # obj.change_session()
-            #         try_count += 1
+            # obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+            while True:
+                if try_count == 5:
+                    product_obj.is_active = False
+                    break
+                try:
+                    obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+                    break
+                except:
+                    try_count += 1
 
 
 if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
-    # store_list = Store.objects.filter(is_active=True, store_type='IS')
-    # obj = ShopeeScraper()
-    # for store_obj in store_list:
-    #     obj.search_store(store_obj)
+    # update_shopee()
     # pool.map(obj.search_store, store_list)
     # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(Store.objects.get(insta_id='nanastore21'))
-    validate_shopee()
+    update_shopee()
