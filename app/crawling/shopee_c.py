@@ -60,13 +60,15 @@ class ShopeeScraper:
         return choice(_user_agents)
 
     def __request_url(self, store_id, limit='100', newest='0'):
+        print('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
+              .format(limit=limit, store_id=store_id, newest=newest))
         try:
             response = self.session.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
                                         .format(limit=limit, store_id=store_id, newest=newest),
                                         headers={'User-Agent': choice(_user_agents),
                                                  'X-Requested-With': 'XMLHttpRequest',
                                                  'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                                 }, timeout=20)
+                                                 }, timeout=10)
             # response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -78,6 +80,8 @@ class ShopeeScraper:
             return response
 
     def __request_url_item(self, store_id, item_id):
+        print("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
+              .format(item_id=item_id, store_id=store_id))
         try:
             response = self.session.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
                                         .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
@@ -85,7 +89,7 @@ class ShopeeScraper:
                                                                                               'Referer': 'https://shopee.vn/shop/' +
                                                                                               str(store_id) +
                                                                                               '/search?shopCollection=',
-                                                                                              }, timeout=20)
+                                                                                              }, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -358,8 +362,9 @@ class ShopeeScraper:
             obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
             obj_product.save()
         else:
+            x
             # TODO 재고 재 생성 확인을 해야함.
-            # 2. 신규 생성 상품 처리
+           # 2. 신규 생성 상품 처리
             color_index = None
             size_index = None
             has_extra_options = False
@@ -431,32 +436,27 @@ class ShopeeScraper:
         store_id = store_obj.insta_id
         while list_length == 100:
             try:
-                error_try_count = 0
-                while True or error_try_count > 5:
+                try_count = 0
+                while True and try_count < 5:
+                    try_count += 1
                     try:
                         response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                                       limit=list_length, newest=i*100)
                         product_list = response.json()['items']
                         break
                     except:
-                        error_try_count += 1
-                        # if error_try_count > 5 and error_try_count % 2 == 0:
-                        #     new_session = self.change_session()
-                        # else:
                         print('R', end='')
-                        # continue
-                        # print('E', end='')
                 for j, product in enumerate(product_list):
-                    error_try_count = 0
-                    while True or error_try_count > 10:
+                    try_count = 0
+                    while True and try_count < 10:
                         try:
                             product_obj = self.get_or_create_product(
                                 store_obj, product['itemid'], product['view_count'])
                             break
                         except:
-                            print('e', end='')
-                            new_session = self.change_session()
-                            error_try_count += 1
+                            print('r', end='')
+                            # new_session = self.change_session()
+                            try_count += 1
                     if (i == 0 and j == 0):
                         store_obj.recent_post_1 = product_obj.product_thumbnail_image
                     elif (i == 0 and j == 1):
@@ -469,7 +469,8 @@ class ShopeeScraper:
                 i = i+1
             except:
                 print('\nERROR\n')
-                slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i*100, (i+1)*100))
+                slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i * 100, (i + 1) * 100))
+                break
         return pk
 
 
@@ -488,15 +489,15 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
         print("\n#" + str(i) + ' update ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
-            error_try_count = 0
-            while True or error_try_count > 20:
+            try_count = 0
+            while True and try_count < 20:
                 try:
                     obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
                     print(product_obj.shopee_item_id)
                     break
                 except:
                     obj.change_session()
-                    error_try_count += 1
+                    try_count += 1
 
 
 def multi(product_obj):
@@ -521,10 +522,12 @@ def du_check(po):
 
 if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
-    # store_list = Store.objects.filter(is_active=True, store_type='IS')
-    # obj = ShopeeScraper()
+    store_list = Store.objects.filter(is_active=True, store_type='IS')
+    obj = ShopeeScraper()
+    for store_obj in store_list:
+        obj.search_store(store_obj)
     # pool.map(obj.search_store, store_list)
     # pool.close()
     # obj = ShopeeScraper()
-    # obj.search_store(Store.objects.get(insta_id='xinh_store'))
-    validate_shopee(125)
+    # obj.search_store(Store.objects.get(insta_id='nanastore21'))
+    # validate_shopee(125)
