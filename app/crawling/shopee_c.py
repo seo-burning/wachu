@@ -60,12 +60,13 @@ class ShopeeScraper:
         return choice(_user_agents)
 
     def __request_url(self, store_id, limit='100', newest='0'):
-        print('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
-              .format(limit=limit, store_id=store_id, newest=newest))
+        user_agents = choice(_user_agents)
+        print('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop'
+              .format(limit=limit, store_id=store_id, newest=newest), user_agents)
         try:
             response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
                                     .format(limit=limit, store_id=store_id, newest=newest),
-                                    headers={'User-Agent': choice(_user_agents),
+                                    headers={'User-Agent': user_agents,
                                              'X-Requested-With': 'XMLHttpRequest',
                                              'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
                                              }, timeout=10)
@@ -436,7 +437,7 @@ class ShopeeScraper:
         while list_length == 100:
             try:
                 try_count = 0
-                while True and try_count < 5:
+                while True and try_count < 1:
                     try_count += 1
                     try:
                         response = self.__request_url(store_id=store_obj.shopee_numeric_id,
@@ -456,26 +457,19 @@ class ShopeeScraper:
                             print('r', end='')
                             # new_session = self.change_session()
                             try_count += 1
-                    if (i == 0 and j == 0):
-                        store_obj.recent_post_1 = product_obj.product_thumbnail_image
-                    elif (i == 0 and j == 1):
-                        store_obj.recent_post_2 = product_obj.product_thumbnail_image
-                    elif (i == 0 and j == 2):
-                        store_obj.recent_post_3 = product_obj.product_thumbnail_image
-                    store_obj.save()
                     pk += 1
                 list_length = len(product_list)
                 i = i+1
             except:
                 print('\nERROR\n')
-                slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i * 100, (i + 1) * 100))
+                # slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i * 100, (i + 1) * 100))
                 break
         return pk
 
 
 def update_shopee(start_index=0, end_index=None, reverse=False):
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index+1:end_index]
     for i, store_obj in enumerate(store_list):
         print("\n#" + str(i) + ' update ' + str(store_obj))
         updated = obj.search_store(store_obj)
@@ -498,26 +492,6 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
             #     except:
             #         # obj.change_session()
             #         try_count += 1
-
-
-def multi(product_obj):
-    obj = ShopeeScraper()
-    store = product_obj.store
-    if store:
-        print('update ' + 'https://dabivn.com/admin/product/product/' + str(product_obj.pk))
-        obj.get_or_create_product(store, product_obj.shopee_item_id)
-
-
-def du_check(po):
-    options = po.product_options
-    for option in options.all():
-        print('.', end='')
-        option_num = options.filter(product=po, size=option.size, color=option.color, extra_option=option.extra_option)
-        if len(option_num) > 1:
-            print('d', end='')
-            po.validation = 'R'
-            po.is_active = False
-            break
 
 
 if __name__ == '__main__':

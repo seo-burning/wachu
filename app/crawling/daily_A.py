@@ -32,7 +32,7 @@ def second_set(group_name):
 def third_set(group_name):
     slack_notify('>'+group_name+' shopee 0 ~ 80 & calculating')
     update_shopee(0, 80)
-    slack_notify('>'+group_name+' update shopee 0~80 complete')
+    slack_notify('>'+group_name+' update shopee 0~80 complete & start caculating')
     calculating()
     preview_image_update()
     slack_notify('>'+group_name+' calculating & thumb update ~ complete')
