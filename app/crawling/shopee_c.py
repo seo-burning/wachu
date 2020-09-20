@@ -348,6 +348,7 @@ class ShopeeScraper:
 
     def get_or_create_product(self, store_obj, itemid, view_count=None):
         shopid = store_obj.shopee_numeric_id
+        result = ''
         # 0. 상품 생성 및 호출
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
@@ -356,6 +357,7 @@ class ShopeeScraper:
         data = self.__request_url_item(shopid, itemid).json()['item']
         # 1. 상품 삭제 확인
         if data == None:
+            result = 'd'
             print('d', end='')
             obj_product.is_active = False
             obj_product.validation = 'D'
@@ -369,6 +371,7 @@ class ShopeeScraper:
             has_extra_options = False
             if is_created:
                 # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
+                result = 'N'
                 print('N', end='')
                 obj_product.validation = 'V'
                 self.__update_category(obj_product, data['categories'])
@@ -400,10 +403,12 @@ class ShopeeScraper:
                 self.__update_pattern(obj_product)
             else:
                 print('u', end='')
-            if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
-                    data['image'] + '_tn'):
-                print('i', end='')
-                self.__update_images(obj_product, data, False)
+                result = 'u'
+                if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
+                        data['image'] + '_tn'):
+                    result = 'i'
+                    print('i', end='')
+                    self.__update_images(obj_product, data, False)
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
             obj_product.updated_at = datetime.datetime.now()
@@ -427,7 +432,7 @@ class ShopeeScraper:
             if is_created:
                 obj_product.is_active = False
                 obj_product.save()
-        return obj_product
+        return obj_product, result
 
     def search_store(self, store_obj):
         i = 0
@@ -450,7 +455,7 @@ class ShopeeScraper:
                     try_count = 0
                     while True and try_count < 10:
                         try:
-                            product_obj = self.get_or_create_product(
+                            product_obj, result = self.get_or_create_product(
                                 store_obj, product['itemid'], product['view_count'])
                             break
                         except:
@@ -470,6 +475,7 @@ class ShopeeScraper:
     def refactor_search_store(self, store_obj):
         i = 0
         empty_result = 0
+        result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
             try:
@@ -477,32 +483,43 @@ class ShopeeScraper:
                                               limit=1, newest=i)
                 if (len(response.json()['items']) == 1):
                     product_json = response.json()['items'].pop()
-                    product_obj = self.get_or_create_product(
+                    product_obj, result = self.get_or_create_product(
                         store_obj, product_json['itemid'], product_json['view_count'])
+                    result_string = result_string+result
                 else:
                     empty_result += 1
             except:
                 print('R', end='')
             i = i+1
-        return i
+        return i, result_string
 
 
 def update_shopee(start_index=0, end_index=None, reverse=False):
     obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index+1:end_index]
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index + 1:end_index]
+    results_string = 'update shopee from ' + str(start_index)
+    if (end_index):
+        results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        print("\n#" + str(i) + ' update ' + str(store_obj))
+        print("\n#" + str(i) + ' update ' + str(store_obj)+' ')
+        results_string = results_string+("\n#" + str(i) + ' update ' + str(store_obj))
         try:
-            updated = obj.refactor_search_store(store_obj)
+            updated, result_string = obj.refactor_search_store(store_obj)
+            results_string = results_string+result_string
         except:
             slack_notify('Failed to update store {}'.format(store_obj.insta_id))
+    slack_notify(results_string)
 
 
 def validate_shopee(start_index=0, end_index=None, reverse=False):
     obj = ShopeeScraper()
     store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
+    results_string = 'validate shopee from ' + str(start_index)
+    if (end_index):
+        results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        print("\n#" + str(i) + ' update ' + str(store_obj))
+        print("\n#" + str(i) + ' validate ' + str(store_obj))
+        results_string += ("\n#" + str(i) + ' validate ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
             try_count = 0
@@ -516,6 +533,7 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
                     break
                 except:
                     try_count += 1
+    slack_notify(results_string)
 
 
 if __name__ == '__main__':
@@ -525,4 +543,4 @@ if __name__ == '__main__':
     # pool.close()
     # obj = ShopeeScraper()
     # obj.search_store(Store.objects.get(insta_id='nanastore21'))
-    update_shopee()
+    validate_shopee(181, 183)
