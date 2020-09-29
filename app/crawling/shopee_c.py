@@ -407,8 +407,9 @@ class ShopeeScraper:
                 if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
                         data['image'] + '_tn'):
                     result = 'i'
+                    # print(obj_product.product_thumbnail_image, '<<<<<<<<< new : ', 'https://cf.shopee.vn/file/' + data['image'] + '_tn')
                     print('i', end='')
-                    self.__update_images(obj_product, data, False)
+                    # self.__update_images(obj_product, data, False)
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
             obj_product.updated_at = datetime.datetime.now()
@@ -541,6 +542,7 @@ if __name__ == '__main__':
     # update_shopee()
     # pool.map(obj.search_store, store_list)
     # pool.close()
-    # obj = ShopeeScraper()
-    # obj.search_store(Store.objects.get(insta_id='nanastore21'))
-    validate_shopee(181, 183)
+    obj = ShopeeScraper()
+    obj.refactor_search_store(Store.objects.get(insta_id='1994closet'))
+
+    # validate_shopee(181, 183)
