@@ -305,6 +305,7 @@ class ShopeeScraper:
                         obj_product.validation = 'R'
 
     def __update_price(self, obj_product, data):
+        print(data['price'])
         if data['show_discount'] == 0:
             obj_product.is_discount = False
             obj_product.original_price = data['price'] / 100000
@@ -351,10 +352,10 @@ class ShopeeScraper:
         shopid = store_obj.shopee_numeric_id
         result = ''
         # 0. 상품 생성 및 호출
-        time.sleep(2+randint(0, 3))
+        time.sleep(5+randint(0, 3))
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
-        print('http://dabivn.com/admin/product/product/'+str(obj_product.pk))
+        print('http://dabivn.com/admin/product/product/' + str(obj_product.pk))
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # 0. 상품 json load
         data = self.__request_url_item(shopid, itemid).json()['item']
@@ -410,7 +411,6 @@ class ShopeeScraper:
                 if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
                         data['image'] + '_tn'):
                     result = 'i'
-                    print(obj_product.product_thumbnail_image, '<<<<<<<<< new : ', 'https://cf.shopee.vn/file/' + data['image'] + '_tn')
                     print('i', end='')
                     self.__update_images(obj_product, data, False)
             # 3. 기존 / 신규 상품 업데이트
@@ -482,7 +482,7 @@ class ShopeeScraper:
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
-            if i % 3 == 0:
+            if i % 10 == 9:
                 self.change_session()
                 print('change session')
             try:
@@ -498,7 +498,7 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
-            time.sleep(3+randint(0, 5))
+            time.sleep(5+randint(0, 5))
         return i, result_string
 
 
