@@ -350,6 +350,7 @@ class ShopeeScraper:
         shopid = store_obj.shopee_numeric_id
         result = ''
         # 0. 상품 생성 및 호출
+        time.sleep(2)
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         print('http://dabivn.com/admin/product/product/'+str(obj_product.pk))
@@ -493,6 +494,7 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
+            time.sleep(10)
         return i, result_string
 
 
