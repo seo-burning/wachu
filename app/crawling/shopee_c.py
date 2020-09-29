@@ -352,7 +352,7 @@ class ShopeeScraper:
         shopid = store_obj.shopee_numeric_id
         result = ''
         # 0. 상품 생성 및 호출
-        time.sleep(60+randint(0, 3))
+        time.sleep(30+randint(0, 30))
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         print('http://dabivn.com/admin/product/product/' + str(obj_product.pk))
@@ -495,7 +495,7 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
-            time.sleep(60+randint(0, 5))
+            time.sleep(30+randint(0, 30))
         return i, result_string
 
 
@@ -547,6 +547,6 @@ if __name__ == '__main__':
     # pool.map(obj.search_store, store_list)
     # pool.close()
     obj = ShopeeScraper()
-    obj.refactor_search_store(Store.objects.get(insta_id='1994closet'))
+    obj.refactor_search_store(Store.objects.get(insta_id='missout.clo'))
 
     # validate_shopee(181, 183)
