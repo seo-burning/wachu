@@ -352,7 +352,7 @@ class ShopeeScraper:
         shopid = store_obj.shopee_numeric_id
         result = ''
         # 0. 상품 생성 및 호출
-        time.sleep(5+randint(0, 3))
+        time.sleep(60+randint(0, 3))
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
         print('http://dabivn.com/admin/product/product/' + str(obj_product.pk))
@@ -482,9 +482,6 @@ class ShopeeScraper:
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
-            if i % 10 == 9:
-                self.change_session()
-                print('change session')
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
@@ -498,7 +495,7 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
-            time.sleep(5+randint(0, 5))
+            time.sleep(60+randint(0, 5))
         return i, result_string
 
 
