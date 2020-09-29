@@ -212,6 +212,7 @@ class ShopeeScraper:
         else:
             not_valid_information = False
             for option in option_list:
+                model_id = option['price_stocks']['model_id']
                 obj_option, is_created = ProductOption.objects.get_or_create(
                     product=obj_product,
                     shopee_item_id=option['modelid'])
@@ -356,7 +357,7 @@ class ShopeeScraper:
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # 0. 상품 json load
         data = self.__request_url_item(shopid, itemid).json()['item']
-        # print(data)
+        print(data)
         # 1. 상품 삭제 확인
         if data == None:
             result = 'd'
@@ -437,46 +438,8 @@ class ShopeeScraper:
                 obj_product.save()
         return obj_product, result
 
-    def search_store(self, store_obj):
-        i = 0
-        pk = 0
-        list_length = 100
-        store_id = store_obj.insta_id
-        while list_length == 100:
-            try:
-                try_count = 0
-                while True and try_count < 1:
-                    try_count += 1
-                    try:
-                        response = self.__request_url(store_id=store_obj.shopee_numeric_id,
-                                                      limit=list_length, newest=i*100)
-                        product_list = response.json()['items']
-                        break
-                    except:
-                        print('R', end='')
-                for j, product in enumerate(product_list):
-                    try_count = 0
-                    while True and try_count < 10:
-                        try:
-                            product_obj, result = self.get_or_create_product(
-                                store_obj, product['itemid'], product['view_count'])
-                            break
-                        except:
-                            print('r', end='')
-                            # new_session = self.change_session()
-                            try_count += 1
-                    pk += 1
-                list_length = len(product_list)
-                i = i+1
-            except:
-                print('\nERROR\n')
-                # slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i * 100, (i + 1) * 100))
-                break
-        return pk
-#
-
     def refactor_search_store(self, store_obj):
-        i = 0
+        i = 1
         empty_result = 0
         result_string = ''
         store_id = store_obj.insta_id
@@ -485,6 +448,7 @@ class ShopeeScraper:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
                 if (len(response.json()['items']) == 1):
+                    print(response.json())
                     product_json = response.json()['items'].pop()
                     product_obj, result = self.get_or_create_product(
                         store_obj, product_json['itemid'], product_json['view_count'])
@@ -495,7 +459,7 @@ class ShopeeScraper:
                 print('R', end='')
             i = i + 1
             import time
-            time.sleep(1000)
+            break
         return i, result_string
 
 
