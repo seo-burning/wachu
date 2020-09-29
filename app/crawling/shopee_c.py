@@ -356,7 +356,6 @@ class ShopeeScraper:
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # 0. 상품 json load
         data = self.__request_url_item(shopid, itemid).json()['item']
-        # print(data)
         # 1. 상품 삭제 확인
         if data == None:
             result = 'd'
@@ -409,9 +408,9 @@ class ShopeeScraper:
                 if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
                         data['image'] + '_tn'):
                     result = 'i'
-                    # print(obj_product.product_thumbnail_image, '<<<<<<<<< new : ', 'https://cf.shopee.vn/file/' + data['image'] + '_tn')
+                    print(obj_product.product_thumbnail_image, '<<<<<<<<< new : ', 'https://cf.shopee.vn/file/' + data['image'] + '_tn')
                     print('i', end='')
-                    # self.__update_images(obj_product, data, False)
+                    self.__update_images(obj_product, data, False)
             # 3. 기존 / 신규 상품 업데이트
             # 3. 가격 및 레이팅 업데이트
             obj_product.updated_at = datetime.datetime.now()
@@ -494,8 +493,6 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
-            import time
-            time.sleep(1000)
         return i, result_string
 
 
