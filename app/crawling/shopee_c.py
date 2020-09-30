@@ -530,8 +530,6 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
-            if i > 10:
-                break
             # time.sleep(randint(0, 2))
         return i, result_string
 
@@ -543,7 +541,7 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
     if (end_index):
         results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        time.sleep(60+randint(0, 100))
+        time.sleep(10+randint(0, 100))
         print("\n#" + str(i) + ' update ' + str(store_obj) + ' ')
         results_string = results_string+("\n#" + str(i) + ' update ' + str(store_obj))
         try:
@@ -561,6 +559,7 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
     if (end_index):
         results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
+        time.sleep(10+randint(0, 100))
         print("\n#" + str(i) + ' validate ' + str(store_obj))
         results_string += ("\n#" + str(i) + ' validate ' + str(store_obj))
         product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
