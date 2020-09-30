@@ -74,17 +74,25 @@ class ShopeeScraper:
     def __request_url(self, store_id, limit='100', newest='0'):
         url = 'https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'.format(
             limit=limit, store_id=store_id, newest=newest)
-        proxy_host = "proxy.crawlera.com"
-        proxy_port = "8010"
-        proxy_auth = os.environ.get('CRAWLERA_API_KEY')+':'
-        proxies = {"https": "https://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port),
-                   "http": "http://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port)}
+        # proxy_host = "proxy.crawlera.com"
+        # proxy_port = "8010"
+        # proxy_auth = os.environ.get('CRAWLERA_API_KEY')+':'
+        # proxies = {"https": "https://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port),
+        #            "http": "http://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port)}
+        # headers = {'X-Crawlera-Profile': 'desktop',
+        #            'X-Crawlera-JobId': '999',
+        #            'X-Crawlera-Max-Retries': '1',
+        #            'Referer': 'https://shopee.vn/shop/{store_id}/search'.format(store_id=store_id),
+        #            }
+        # try:
+        #     response = requests.get(url, proxies=proxies, verify=False,
+        #                             headers=headers)
+        headers = {'User-Agent': choice(_user_agents),
+                   'X-Requested-With': 'XMLHttpRequest',
+                   'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
+                   }
         try:
-            response = requests.get(url, proxies=proxies, verify=False,
-                                    headers={'User-Agent': choice(_user_agents),
-                                             'X-Requested-With': 'XMLHttpRequest',
-                                             'Referer': 'https://shopee.vn/shop/{store_id}/search'.format(store_id=store_id),
-                                             })
+            response = requests.get(url, headers=headers)
             # response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -102,12 +110,16 @@ class ShopeeScraper:
         proxies = {"https": "https://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port),
                    "http": "http://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port)}
         try:
-            response = requests.get(url, proxies=proxies, verify=False, headers={'User-Agent': choice(_user_agents),
-                                                                                 'X-Requested-With': 'XMLHttpRequest',
-                                                                                 'Referer': 'https://shopee.vn/shop/' +
-                                                                                 str(store_id) +
-                                                                                 '/search',
-                                                                                 }, timeout=10)
+            response = requests.get(url,
+                                    proxies=proxies,
+                                    verify=False,
+                                    headers={'X-Crawlera-Profile': 'desktop',
+                                             'X-Crawlera-JobId': '999',
+                                             'X-Crawlera-Max-Retries': '1',
+                                             'Referer': 'https://shopee.vn/shop/' +
+                                             str(store_id) +
+                                             '/search',
+                                             }, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -373,12 +385,14 @@ class ShopeeScraper:
         # 0. 상품 json load & 정상 데이터인지 확인
         data = self.__request_url_item(shopid, itemid).json()['item']
         if data['price'] % 100 != 0:
+            print(data['price'])
             print('error')
-            time.sleep(60)
+            time.sleep(600)
             slack_notify('Crawler is caught by Shopee')
             return
         else:
-            print('0', end='')
+            print(shopid, ' ', itemid, ' ', end='')
+            print('0')
             # 1. 상품 삭제 확인
             if data == None:
                 result = 'd'
@@ -502,6 +516,7 @@ class ShopeeScraper:
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
+            time.sleep(1+randint(0, 5))
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
@@ -515,6 +530,8 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
+            if i > 10:
+                break
             # time.sleep(randint(0, 2))
         return i, result_string
 
