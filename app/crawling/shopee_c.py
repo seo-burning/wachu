@@ -543,7 +543,8 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
     if (end_index):
         results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        print("\n#" + str(i) + ' update ' + str(store_obj)+' ')
+        time.sleep(60+randint(0, 100))
+        print("\n#" + str(i) + ' update ' + str(store_obj) + ' ')
         results_string = results_string+("\n#" + str(i) + ' update ' + str(store_obj))
         try:
             updated, result_string = obj.refactor_search_store(store_obj)
