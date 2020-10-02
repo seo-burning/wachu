@@ -109,17 +109,22 @@ class ShopeeScraper:
         proxy_auth = os.environ.get('CRAWLERA_API_KEY')+':'
         proxies = {"https": "https://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port),
                    "http": "http://{}@{}:{}/".format(proxy_auth, proxy_host, proxy_port)}
+        headers = {'X-Crawlera-Profile': 'desktop',
+                   'X-Crawlera-JobId': '999',
+                   'X-Crawlera-Max-Retries': '1',
+                   'Referer': 'https://shopee.vn/shop/' +
+                   str(store_id) +
+                   '/search',
+                   }
+        proxies = {
+            "http": "http://scraperapi:8e70aa2d347d313a457d0620927d7a53@proxy-server.scraperapi.com:8001",
+            "https": "http://scraperapi:8e70aa2d347d313a457d0620927d7a53@proxy-server.scraperapi.com:8001"
+        }
         try:
             response = requests.get(url,
                                     proxies=proxies,
                                     verify=False,
-                                    headers={'X-Crawlera-Profile': 'desktop',
-                                             'X-Crawlera-JobId': '999',
-                                             'X-Crawlera-Max-Retries': '1',
-                                             'Referer': 'https://shopee.vn/shop/' +
-                                             str(store_id) +
-                                             '/search',
-                                             }, timeout=10)
+                                    headers=headers, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -516,7 +521,8 @@ class ShopeeScraper:
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
-            time.sleep(1+randint(0, 5))
+            # time.sleep(1+randint(0, 5)) 문제 없었음
+            time.sleep(1+randint(0, 3))
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
@@ -541,7 +547,6 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
     if (end_index):
         results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        time.sleep(10+randint(0, 100))
         print("\n#" + str(i) + ' update ' + str(store_obj) + ' ')
         results_string = results_string+("\n#" + str(i) + ' update ' + str(store_obj))
         try:
@@ -549,32 +554,34 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
             results_string = results_string+result_string
         except:
             slack_notify('Failed to update store {}'.format(store_obj.insta_id))
+        # time.sleep(10+randint(0, 100)) 문제없었음
+        time.sleep(5+randint(0, 20)
     slack_notify(results_string)
 
 
 def validate_shopee(start_index=0, end_index=None, reverse=False):
-    obj = ShopeeScraper()
-    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
-    results_string = 'validate shopee from ' + str(start_index)
+    obj=ShopeeScraper()
+    store_list=Store.objects.filter(store_type='IS').filter(is_active=True)[start_index:end_index]
+    results_string='validate shopee from ' + str(start_index)
     if (end_index):
         results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        time.sleep(10+randint(0, 100))
         print("\n#" + str(i) + ' validate ' + str(store_obj))
         results_string += ("\n#" + str(i) + ' validate ' + str(store_obj))
-        product_list = Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
+        product_list=Product.objects.filter(is_active=True, store=store_obj, product_source='SHOPEE')
         for product_obj in product_list:
-            try_count = 0
+            try_count=0
             # obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
             while True:
                 if try_count == 5:
-                    product_obj.is_active = False
+                    product_obj.is_active=False
                     break
                 try:
                     obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
                     break
                 except:
                     try_count += 1
+        time.sleep(10+randint(0, 100))
     slack_notify(results_string)
 
 
@@ -583,7 +590,9 @@ if __name__ == '__main__':
     # update_shopee()
     # pool.map(obj.search_store, store_list)
     # pool.close()
-    obj = ShopeeScraper()
-    obj.refactor_search_store(Store.objects.get(insta_id='1994closet'))
+    obj=ShopeeScraper()
+    obj.refactor_search_store(Store.objects.get(insta_id='su._.storee'))
 
     # validate_shopee(181, 183)
+
+0

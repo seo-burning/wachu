@@ -1,8 +1,11 @@
 import os_setup
 import threading
 import os
+from random import randint
 
 import requests
+from urllib3.exceptions import InsecureRequestWarning
+
 import json
 import time
 import datetime
@@ -21,6 +24,9 @@ from helper.clean_text import get_cleaned_text_from_color,\
 from django.shortcuts import get_object_or_404
 from store.models import Store, StorePost
 
+from scraper_api import ScraperAPIClient
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 _user_agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
@@ -36,13 +42,7 @@ _user_agents = [
 
 class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
-        self.user_agents = user_agents
-        self.session = requests.Session()
-        self.session.headers.update({'User-Agent': self.__random_agent(),
-                                     'X-Requested-With': 'XMLHttpRequest',
-                                     })
-        self.proxies = []
-        self.session_refresh_count = 0
+        self.client = ScraperAPIClient('8e70aa2d347d313a457d0620927d7a53')
 
     def change_session(self):
         if self.session_refresh_count > 5:
@@ -60,43 +60,35 @@ class ShopeeScraper:
         return choice(_user_agents)
 
     def __request_url(self, store_id, limit='100', newest='0'):
-        user_agents = choice(_user_agents)
-        # print('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop'
-        #       .format(limit=limit, store_id=store_id, newest=newest), user_agents)
+        url = 'https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'.format(
+            limit=limit, store_id=store_id, newest=newest)
+        headers = {'User-Agent': choice(_user_agents),
+                   'X-Requested-With': 'XMLHttpRequest',
+                   'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
+                   }
         try:
-            response = requests.get('https://shopee.vn/api/v2/search_items/?by=pop&limit={limit}&match_id={store_id}&newest={newest}&order=desc&page_type=shop&shop_categoryids=&version=2'
-                                    .format(limit=limit, store_id=store_id, newest=newest),
-                                    headers={'User-Agent': user_agents,
-                                             'X-Requested-With': 'XMLHttpRequest',
-                                             'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
-                                             }, timeout=10)
-            # response.raise_for_status()
+            response = requests.get(url, headers=headers)
         except requests.HTTPError as e:
             print(e)
             pass
         except requests.RequestException:
-            print(requests.RequestException)
             pass
         else:
             return response
 
     def __request_url_item(self, store_id, item_id):
-        # print("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
-        #       .format(item_id=item_id, store_id=store_id))
+        url = "https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}".format(item_id=item_id, store_id=store_id)
+        headers = {'User-Agent': choice(_user_agents),
+                   'X-Requested-With': 'XMLHttpRequest',
+                   'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
+                   }
         try:
-            response = requests.get("https://shopee.vn/api/v2/item/get?itemid={item_id}&shopid={store_id}"
-                                    .format(item_id=item_id, store_id=store_id), headers={'User-Agent': choice(_user_agents),
-                                                                                          'X-Requested-With': 'XMLHttpRequest',
-                                                                                          'Referer': 'https://shopee.vn/shop/' +
-                                                                                          str(store_id) +
-                                                                                          '/search?shopCollection=',
-                                                                                          }, timeout=10)
+            response = self.client.get(url=url, headers=headers)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
             pass
         except requests.RequestException:
-            print(requests.RequestException)
             pass
         else:
             return response
@@ -212,7 +204,6 @@ class ShopeeScraper:
         else:
             not_valid_information = False
             for option in option_list:
-                model_id = option['price_stocks']['model_id']
                 obj_option, is_created = ProductOption.objects.get_or_create(
                     product=obj_product,
                     shopee_item_id=option['modelid'])
@@ -351,104 +342,149 @@ class ShopeeScraper:
         shopid = store_obj.shopee_numeric_id
         result = ''
         # 0. 상품 생성 및 호출
+        # time.sleep(randint(0, 2))
         obj_product, is_created = Product.objects.get_or_create(
             shopee_item_id=itemid, store=store_obj)
-        print('http://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
-        # 0. 상품 json load
+        # 0. 상품 json load & 정상 데이터인지 확인
         data = self.__request_url_item(shopid, itemid).json()['item']
-        print(data)
-        # 1. 상품 삭제 확인
-        if data == None:
-            result = 'd'
-            print('d', end='')
-            obj_product.is_active = False
-            obj_product.validation = 'D'
-            obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
-            obj_product.save()
+        if data['price'] % 100 != 0:
+            print(data['price'])
+            print('error')
+            time.sleep(600)
+            slack_notify('Crawler is caught by Shopee')
+            return
         else:
-            # TODO 재고 재 생성 확인을 해야함.
-           # 2. 신규 생성 상품 처리
-            color_index = None
-            size_index = None
-            has_extra_options = False
-            if is_created:
-                # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
-                result = 'N'
-                print('N', end='')
-                obj_product.validation = 'V'
-                self.__update_category(obj_product, data['categories'])
-                obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
-                obj_product.created_at = datetime.datetime.fromtimestamp(
-                    int(data['ctime']), pytz.UTC)
-                obj_product.product_source = 'SHOPEE'
-                obj_product.name = data['name']
-                obj_product.description = data['description']
-                # image
-                self.__update_images(obj_product, data, is_created)
-                # 2. 상품 사이즈 / 컬러 정보 업데이트
-                if (data['size_chart'] != None):
-                    obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
-                for i, variation in enumerate(data['tier_variations']):
-                    variation_name = variation['name'].replace(' ', '').replace(':', '').lower().strip()
-                    if 'size' in variation_name or 'kích' in variation_name or 'kich' in variation_name:
-                        self.__update_size(obj_product, variation['options'])
-                        size_index = i
-                    elif 'màu' in variation_name or 'color' in variation_name or 'mau' in variation_name:
-                        self.__update_color(obj_product, variation['options'])
-                        color_index = i
-                    else:
-                        self.__update_extra_options(obj_product, variation)
-                        has_extra_options = True
-                if obj_product.size.count() == 0:
-                    self.__update_size(obj_product, ['free'])
-                # 2. 패턴 추가
-                self.__update_pattern(obj_product)
-            else:
-                print('u', end='')
-                result = 'u'
-                if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
-                        data['image'] + '_tn'):
-                    result = 'i'
-                    # print(obj_product.product_thumbnail_image, '<<<<<<<<< new : ', 'https://cf.shopee.vn/file/' + data['image'] + '_tn')
-                    print('i', end='')
-                    # self.__update_images(obj_product, data, False)
-            # 3. 기존 / 신규 상품 업데이트
-            # 3. 가격 및 레이팅 업데이트
-            obj_product.updated_at = datetime.datetime.now()
-            self.__update_price(obj_product, data)
-            if view_count:
-                self.__update_rating(obj_product, data, view_count)
-
-            # 3. 재고 및 품절 처리
-            obj_product.stock = data['stock']
-            if (obj_product.stock == 0):
+            print(shopid, ' ', itemid, ' ', end='')
+            print('0')
+            # 1. 상품 삭제 확인
+            if data == None:
+                result = 'd'
+                print('d', end='')
                 obj_product.is_active = False
-                obj_product.stock_available = False
-            else:
-                obj_product.stock_available = True
-
-            # 4. 옵션 생성 및 업데이트
-            self.__update_product_option(obj_product, data['models'], color_index, size_index, has_extra_options)
-            obj_product.save()
-
-            # 5. 생성 후 최종 검증
-            if is_created:
-                obj_product.is_active = False
+                obj_product.validation = 'D'
+                obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
                 obj_product.save()
-        return obj_product, result
+            else:
+                # TODO 재고 재 생성 확인을 해야함.
+                # 2. 신규 생성 상품 처리
+                color_index = None
+                size_index = None
+                has_extra_options = False
+                if is_created:
+                    # 2. 기본 정보 업데이트 (상품 링크 / 상품 생성 시간 / 상품 분류 / 이름 / 이미지)
+                    result = 'N'
+                    print('N', end='')
+                    obj_product.validation = 'V'
+                    self.__update_category(obj_product, data['categories'])
+                    obj_product.product_link = store_obj.shopee_url + '/' + str(itemid)
+                    obj_product.created_at = datetime.datetime.fromtimestamp(
+                        int(data['ctime']), pytz.UTC)
+                    obj_product.product_source = 'SHOPEE'
+                    obj_product.name = data['name']
+                    obj_product.description = data['description']
+                    # image
+                    self.__update_images(obj_product, data, is_created)
+                    # 2. 상품 사이즈 / 컬러 정보 업데이트
+                    if (data['size_chart'] != None):
+                        obj_product.size_chart = 'https://cf.shopee.vn/file/' + data['size_chart']
+                    for i, variation in enumerate(data['tier_variations']):
+                        variation_name = variation['name'].replace(' ', '').replace(':', '').lower().strip()
+                        if 'size' in variation_name or 'kích' in variation_name or 'kich' in variation_name:
+                            self.__update_size(obj_product, variation['options'])
+                            size_index = i
+                        elif 'màu' in variation_name or 'color' in variation_name or 'mau' in variation_name:
+                            self.__update_color(obj_product, variation['options'])
+                            color_index = i
+                        else:
+                            self.__update_extra_options(obj_product, variation)
+                            has_extra_options = True
+                    if obj_product.size.count() == 0:
+                        self.__update_size(obj_product, ['free'])
+                    # 2. 패턴 추가
+                    self.__update_pattern(obj_product)
+                else:
+                    result = 'u'
+                    if (obj_product.product_thumbnail_image != 'https://cf.shopee.vn/file/' +
+                            data['image'] + '_tn'):
+                        result = 'i'
+                        print('i', end='')
+                        self.__update_images(obj_product, data, False)
+                # 3. 기존 / 신규 상품 업데이트
+                # 3. 가격 및 레이팅 업데이트
+                obj_product.updated_at = datetime.datetime.now()
+                self.__update_price(obj_product, data)
+                if view_count:
+                    self.__update_rating(obj_product, data, view_count)
+
+                # 3. 재고 및 품절 처리
+                obj_product.stock = data['stock']
+                if (obj_product.stock == 0):
+                    obj_product.is_active = False
+                    obj_product.stock_available = False
+                else:
+                    obj_product.stock_available = True
+
+                # 4. 옵션 생성 및 업데이트
+                self.__update_product_option(obj_product, data['models'], color_index, size_index, has_extra_options)
+                obj_product.save()
+
+                # 5. 생성 후 최종 검증
+                if is_created:
+                    obj_product.is_active = False
+                    obj_product.save()
+            return obj_product, result
+
+    def search_store(self, store_obj):
+        i = 0
+        pk = 0
+        list_length = 100
+        store_id = store_obj.insta_id
+        while list_length == 100:
+            try:
+                try_count = 0
+                while True and try_count < 1:
+                    try_count += 1
+                    try:
+                        response = self.__request_url(store_id=store_obj.shopee_numeric_id,
+                                                      limit=list_length, newest=i*100)
+                        product_list = response.json()['items']
+                        break
+                    except:
+                        time.sleep(10)
+                        print('R', end='')
+                for j, product in enumerate(product_list):
+                    try_count = 0
+                    while True and try_count < 10:
+                        try:
+                            product_obj, result = self.get_or_create_product(
+                                store_obj, product['itemid'], product['view_count'])
+                            break
+                        except:
+                            print('r', end='')
+                            # new_session = self.change_session()
+                            try_count += 1
+                    pk += 1
+                list_length = len(product_list)
+                i = i+1
+            except:
+                print('\nERROR\n')
+                # slack_notify('Failed to get product list from {} {} ~ {}'.format(store_obj.insta_id, i * 100, (i + 1) * 100))
+                break
+        return pk
+#
 
     def refactor_search_store(self, store_obj):
-        i = 1
+        i = 0
         empty_result = 0
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
+            time.sleep(1+randint(0, 5))
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
                 if (len(response.json()['items']) == 1):
-                    print(response.json())
                     product_json = response.json()['items'].pop()
                     product_obj, result = self.get_or_create_product(
                         store_obj, product_json['itemid'], product_json['view_count'])
@@ -458,8 +494,7 @@ class ShopeeScraper:
             except:
                 print('R', end='')
             i = i + 1
-            import time
-            break
+            # time.sleep(randint(0, 2))
         return i, result_string
 
 
@@ -470,13 +505,14 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
     if (end_index):
         results_string += ' to ' + str(end_index)
     for i, store_obj in enumerate(store_list):
-        print("\n#" + str(i) + ' update ' + str(store_obj)+' ')
+        print("\n#" + str(i) + ' update ' + str(store_obj) + ' ')
         results_string = results_string+("\n#" + str(i) + ' update ' + str(store_obj))
         try:
             updated, result_string = obj.refactor_search_store(store_obj)
             results_string = results_string+result_string
         except:
             slack_notify('Failed to update store {}'.format(store_obj.insta_id))
+        time.sleep(10+randint(0, 100))
     slack_notify(results_string)
 
 
@@ -502,15 +538,16 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
                     break
                 except:
                     try_count += 1
+        time.sleep(10+randint(0, 100))
     slack_notify(results_string)
 
 
 if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
-    # update_shopee()
+    update_shopee(50, 100)
     # pool.map(obj.search_store, store_list)
     # pool.close()
-    obj = ShopeeScraper()
-    obj.refactor_search_store(Store.objects.get(insta_id='1994closet'))
-
+    # obj = ShopeeScraper()
+    # obj.refactor_search_store(Store.objects.get(insta_id='su._.storee'))
+    # validate_shopee(10, 100)
     # validate_shopee(181, 183)
