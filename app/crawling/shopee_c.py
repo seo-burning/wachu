@@ -581,7 +581,7 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
                     break
                 except:
                     try_count += 1
-        time.sleep(10+randint(0, 100))
+        time.sleep(5+randint(0, 20))
     slack_notify(results_string)
 
 

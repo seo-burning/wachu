@@ -42,7 +42,7 @@ _user_agents = [
 
 class ShopeeScraper:
     def __init__(self, user_agents=None, proxy=None):
-        self.client = ScraperAPIClient('8e70aa2d347d313a457d0620927d7a53')
+        self.client = ScraperAPIClient(os.environ.get('SCRAPERAPI_API_KEY'))
 
     def change_session(self):
         if self.session_refresh_count > 5:
