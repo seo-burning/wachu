@@ -116,10 +116,6 @@ class ShopeeScraper:
                    str(store_id) +
                    '/search',
                    }
-        proxies = {
-            "http": "http://scraperapi:8e70aa2d347d313a457d0620927d7a53@proxy-server.scraperapi.com:8001",
-            "https": "http://scraperapi:8e70aa2d347d313a457d0620927d7a53@proxy-server.scraperapi.com:8001"
-        }
         try:
             response = requests.get(url,
                                     proxies=proxies,
