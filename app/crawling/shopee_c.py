@@ -518,7 +518,7 @@ class ShopeeScraper:
         store_id = store_obj.insta_id
         while empty_result < 3:
             # time.sleep(1+randint(0, 5)) 문제 없었음
-            time.sleep(1+randint(0, 3))
+            time.sleep(1+randint(0, 2))
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
@@ -551,7 +551,7 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
         except:
             slack_notify('Failed to update store {}'.format(store_obj.insta_id))
         # time.sleep(10+randint(0, 100)) 문제없었음
-        time.sleep(5+randint(0, 20))
+        time.sleep(5+randint(0, 10))
     slack_notify(results_string)
 
 
@@ -577,7 +577,7 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
                     break
                 except:
                     try_count += 1
-        time.sleep(5+randint(0, 20))
+        time.sleep(5+randint(0, 10))
     slack_notify(results_string)
 
 

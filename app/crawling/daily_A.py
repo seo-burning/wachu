@@ -57,13 +57,14 @@ if __name__ == '__main__':
     type_A = [2, 9, 15]
     type_B = [4, 11, 17]
     type_C = [7, 9, 24]
-    if at_time in type_A:
-        first_set(group_name)
-    elif at_time in type_B:
-        second_set(group_name)
-    elif at_time in type_C:
-        third_set(group_name)
-    else:
-        validate_set(group_name)
+    # if at_time in type_A:
+    #     first_set(group_name)
+    # elif at_time in type_B:
+    #     second_set(group_name)
+    # elif at_time in type_C:
+    #     third_set(group_name)
+    # else:
+    #     validate_set(group_name)
+    first_set(group_name)
     slack_notify("--- %s seconds ---" % (time.time() - start_time))
     slack_notify(group_name + " complete")
