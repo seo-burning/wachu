@@ -257,6 +257,7 @@ class ShopeeScraper:
                     obj_option.original_price = option['price_before_discount'] / 100000
                     obj_option.discount_price = option['price'] / 100000
                 else:
+                    obj_option.discount_price = 0
                     obj_option.original_price = option['price'] / 100000
                 obj_option.currency = option['currency']
                 obj_option.stock = option['stock']

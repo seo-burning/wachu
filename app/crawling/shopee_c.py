@@ -241,6 +241,9 @@ class ShopeeScraper:
         else:
             not_valid_information = False
             for option in option_list:
+                print('\n\n')
+                print(option)
+
                 obj_option, is_created = ProductOption.objects.get_or_create(
                     product=obj_product,
                     shopee_item_id=option['modelid'])
@@ -295,6 +298,7 @@ class ShopeeScraper:
                     obj_option.discount_price = option['price'] / 100000
                 else:
                     obj_option.original_price = option['price'] / 100000
+                    obj_option.discount_price = 0
                 obj_option.currency = option['currency']
                 obj_option.stock = option['stock']
                 if option['stock'] == 0:
@@ -385,6 +389,7 @@ class ShopeeScraper:
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # 0. 상품 json load & 정상 데이터인지 확인
         data = self.__request_url_item(shopid, itemid).json()['item']
+        print(data)
         if data['price'] % 100 != 0:
             print(data['price'])
             print('error')
@@ -587,6 +592,6 @@ if __name__ == '__main__':
     # pool.map(obj.search_store, store_list)
     # pool.close()
     obj = ShopeeScraper()
-    obj.refactor_search_store(Store.objects.get(insta_id='su._.storee'))
-
+    # obj.refactor_search_store(Store.objects.get(insta_id='su._.storee'))
+    obj.get_or_create_product(Store.objects.get(insta_id='onlyqueen.666'), 4047719428)
     # validate_shopee(181, 183)
