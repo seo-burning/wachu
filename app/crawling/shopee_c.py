@@ -241,9 +241,6 @@ class ShopeeScraper:
         else:
             not_valid_information = False
             for option in option_list:
-                print('\n\n')
-                print(option)
-
                 obj_option, is_created = ProductOption.objects.get_or_create(
                     product=obj_product,
                     shopee_item_id=option['modelid'])
@@ -389,7 +386,6 @@ class ShopeeScraper:
         # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
         # 0. 상품 json load & 정상 데이터인지 확인
         data = self.__request_url_item(shopid, itemid).json()['item']
-        print(data)
         if data['price'] % 100 != 0:
             print(data['price'])
             print('error')
@@ -552,7 +548,7 @@ def update_shopee(start_index=0, end_index=None, reverse=False):
         results_string = results_string+("\n#" + str(i) + ' update ' + str(store_obj))
         try:
             updated, result_string = obj.refactor_search_store(store_obj)
-            results_string = results_string+result_string
+            results_string = results_string+result_string.replace('uuuuuuuuuu', 'U').replace('UUUUU', '5')
         except:
             slack_notify('Failed to update store {}'.format(store_obj.insta_id))
         # time.sleep(10+randint(0, 100)) 문제없었음

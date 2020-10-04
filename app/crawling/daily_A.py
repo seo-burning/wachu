@@ -49,22 +49,23 @@ def validate_set(group_name):
 
 
 if __name__ == '__main__':
-    group_name = 'A'
-    date = datetime.datetime.now().strftime('%Y-%m-%d %H:00')
-    at_time = int(datetime.datetime.now().strftime('%H'))
-    start_time = time.time()
-    slack_notify(group_name + date + '*')
-    type_A = [2, 9, 15]
-    type_B = [4, 11, 17]
-    type_C = [7, 9, 24]
-    # if at_time in type_A:
-    #     first_set(group_name)
-    # elif at_time in type_B:
-    #     second_set(group_name)
-    # elif at_time in type_C:
-    #     third_set(group_name)
-    # else:
-    #     validate_set(group_name)
-    first_set(group_name)
-    slack_notify("--- %s seconds ---" % (time.time() - start_time))
-    slack_notify(group_name + " complete")
+    while True:
+        group_name = 'A'
+        date = datetime.datetime.now().strftime('%Y-%m-%d %H:00')
+        at_time = int(datetime.datetime.now().strftime('%H'))
+        start_time = time.time()
+        slack_notify(group_name + date + '*')
+        type_A = [2, 9, 15]
+        type_B = [4, 11, 17]
+        type_C = [7, 9, 24]
+        # if at_time in type_A:
+        #     first_set(group_name)
+        # elif at_time in type_B:
+        #     second_set(group_name)
+        # elif at_time in type_C:
+        #     third_set(group_name)
+        # else:
+        #     validate_set(group_name)
+        first_set(group_name)
+        slack_notify("--- %s seconds ---" % (time.time() - start_time))
+        slack_notify(group_name + " complete")

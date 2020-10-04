@@ -481,7 +481,7 @@ class ShopeeScraper:
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
-            time.sleep(1+randint(0, 2))
+            time.sleep(1+randint(0, 1))
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
@@ -547,8 +547,8 @@ if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
     # pool.map(obj.search_store, store_list)
     # pool.close()
-    # obj = ShopeeScraper()
-    # obj.refactor_search_store(Store.objects.get(insta_id='su._.storee'))
+    obj = ShopeeScraper()
+    obj.refactor_search_store(Store.objects.get(insta_id='myanstore'))
     # validate_shopee(10, 100)
     # validate_shopee(181, 183)
-    validate_shopee()
+    # validate_shopee()
