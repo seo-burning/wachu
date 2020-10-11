@@ -83,7 +83,8 @@ class ShopeeScraper:
                    'Referer': 'https://shopee.vn/shop/{store_id}/search?shopCollection='.format(store_id=store_id),
                    }
         try:
-            response = self.client.get(url=url, headers=headers)
+            # response = self.client.get(url=url, headers=headers)
+            response = requests.get(url, headers=headers)
             response.raise_for_status()
         except requests.HTTPError as e:
             print(e)
@@ -339,6 +340,34 @@ class ShopeeScraper:
                 product=obj_product,
                 post_image_type='P')
 
+    def check_delete_product(self, store_obj, itemid, view_count=None):
+        shopid = store_obj.shopee_numeric_id
+        result = ''
+        # 0. 상품 생성 및 호출
+        # time.sleep(randint(0, 2))
+        obj_product, is_created = Product.objects.get_or_create(
+            shopee_item_id=itemid, store=store_obj)
+        # print('https://dabivn.com/admin/product/product/'+str(obj_product.pk))
+        # 0. 상품 json load & 정상 데이터인지 확인
+        data = self.__request_url_item(shopid, itemid).json()['item']
+        if data['price'] % 100 != 0:
+            print(data['price'])
+            print('error')
+            time.sleep(600)
+            slack_notify('Crawler is caught by Shopee')
+            return
+        else:
+            print(shopid, ' ', itemid, ' ', end='')
+            print('0')
+            # 1. 상품 삭제 확인
+            if data == None:
+                result = 'd'
+                print('d', end='')
+                obj_product.is_active = False
+                obj_product.validation = 'D'
+                obj_product.name = '[DELETED FROM SOURCE PAGE]' + obj_product.name
+                obj_product.save()
+
     def get_or_create_product(self, store_obj, itemid, view_count=None):
         shopid = store_obj.shopee_numeric_id
         result = ''
@@ -481,7 +510,7 @@ class ShopeeScraper:
         result_string = ''
         store_id = store_obj.insta_id
         while empty_result < 3:
-            time.sleep(1+randint(0, 1))
+            time.sleep(randint(0, 1))
             try:
                 response = self.__request_url(store_id=store_obj.shopee_numeric_id,
                                               limit=1, newest=i)
@@ -536,10 +565,11 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
                     break
                 try:
                     obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+                    time.sleep(randint(0, 1))
                     break
                 except:
                     try_count += 1
-        time.sleep(5+randint(0, 5))
+        time.sleep(randint(0, 5))
     slack_notify(results_string)
 
 
@@ -547,8 +577,8 @@ if __name__ == '__main__':
     # pool = mp.Pool(processes=64)
     # pool.map(obj.search_store, store_list)
     # pool.close()
-    obj = ShopeeScraper()
-    obj.refactor_search_store(Store.objects.get(insta_id='myanstore'))
-    # validate_shopee(10, 100)
-    # validate_shopee(181, 183)
-    # validate_shopee()
+    # obj = ShopeeScraper()
+    # obj.refactor_search_store(Store.objects.get(insta_id='tingoan_store'))
+    # # validate_shopee(10, 100)
+    validate_shopee(138)
+    # validate_shopee(reverse=True)
