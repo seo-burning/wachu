@@ -415,34 +415,27 @@ class ShopeeRatingInline(admin.StackedInline):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ShopeeRatingInline, ProductImageInline, ProductOptionInline]
+    inlines = [
+        # ShopeeRatingInline,
+        ProductImageInline, ProductOptionInline]
     list_per_page = 25
     raw_id_fields = ['store', 'post', 'shopee_category', ]
-    list_display = [
-        'product_summary',
-        'option_summary',
-        'is_active',
-        'validation',
-        'store',
-        'get_product_link'
-    ]
-    fieldsets = [('Status', {'fields': ['is_active',
-                                        'validation',
-                                        'stock_available',
-                                        'view',
-                                        'sold',
-                                        'current_product_backend_rating']}),
-                 ('Preorder', {'fields': ['is_preorder', 'preorder_campaign']}),
-                 ('Product Source', {'fields': ['store', 'product_source', 'product_link', 'current_review_rating']}),
-                 ('Product Info', {'fields': ['name', 'shopee_item_id',
-                                              'description', 'product_thumbnail_image']}),
-                 ('Price', {'fields': ['is_discount', 'is_free_ship', 'original_price', 'shipping_price',
-                                       'discount_price', 'discount_rate', 'currency', 'stock']}),
-                 ('Product Category', {'fields': ['category', 'sub_category', 'style', ]}),
-                 ('Product Detail', {'fields': ['size', 'size_chart', 'size_chart_url',
-                                                'color', 'pattern', 'extra_option']}),
-                 ('Shopee Info', {'fields': ['shopee_category', 'shopee_color', 'shopee_size', ]}),
-                 ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
+    list_display = ['product_summary', 'option_summary', 'is_active', 'validation', 'store', 'get_product_link']
+    readonly_fields = ['view', 'store', 'product_source', 'product_link', 'sold', 'current_product_backend_rating', 'current_review_rating',
+                       'shopee_item_id', 'original_price', 'shipping_price', 'discount_price', 'discount_rate', 'currency', 'stock',
+                       'shopee_category', 'shopee_color', 'shopee_size', 'category']
+    fieldsets = [('Status', {'fields': [('is_active', 'stock_available', ), 'validation',
+                                        ('view', 'sold', 'current_product_backend_rating', 'current_review_rating')]}),
+                 #  ('Preorder', {'fields': ['is_preorder', 'preorder_campaign']}),
+                 ('Product Source', {'fields': [('store', 'product_source', 'shopee_item_id',), 'product_link']}),
+                 ('Product Info', {'fields': [('name',  'product_thumbnail_image'),
+                                              'description', ]}),
+                 ('Price', {'fields': [('is_discount', 'is_free_ship'), ('original_price', 'shipping_price',
+                                                                         'discount_price', 'discount_rate', 'currency', ), ('stock')]}),
+                 ('Product Category', {'fields': [('category', 'sub_category', 'style'), ]}),
+                 ('Product Detail', {'fields': [('size', 'size_chart', 'size_chart_url'), ('color', 'pattern'), ]}),
+                 ('Shopee Info', {'fields': [('shopee_category', 'shopee_color', 'shopee_size'), ]}),
+                 #  ('Post Info', {'fields': ['post', 'thumb_image_pk', ]}),
                  ]
     list_display_links = ['product_summary', ]
     search_fields = ['store__insta_id', 'name', 'pk']
@@ -463,6 +456,9 @@ class ProductAdmin(admin.ModelAdmin):
                'make_valid_and_active',
                'make_valid', 'make_not_valid', 'make_need_to_review',
                'categorize_bag', 'categorize_jewelry', 'categorize_shoes',
+               'product_category_dam_kieu',
+               'product_category_ao_somi',
+               'product_set_vest',
                'product_pattern_print',
                'product_pattern_floral',
                'product_pattern_tiedye',
@@ -477,9 +473,6 @@ class ProductAdmin(admin.ModelAdmin):
                'product_style_street',
                'product_style_feminine',
                'make_name_to_option',
-               'product_category_dam_kieu',
-               'product_category_ao_somi',
-               'product_set_vest',
                'make_it_to_pick_object'
                ]
 
@@ -906,3 +899,9 @@ class ProductAdmin(admin.ModelAdmin):
                 option_obj.size = u_size
                 option_obj.save()
     make_name_to_option.short_description = '[Option] Make Product Option from option name'
+
+    def save_model(self, request, obj, form, change):
+        if 'sub_category' in form.changed_data:
+            obj.category = form.cleaned_data['sub_category'].category
+        obj.inspector = request.user
+        super().save_model(request, obj, form, change)

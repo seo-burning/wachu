@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from utils.helper.model.abstract_model import TimeStampedModel, ActiveModel, OrderingModel, DispalyNameModel, ViewModel
-from .abstract_model import SoldModel
+from .abstract_model import SoldModel, InpectionModel
 from preorder.models import PreorderCampaign
 from django.db.models import Q
 from django.db.models.constraints import UniqueConstraint
@@ -219,7 +219,7 @@ class PriceModel(models.Model):
     shipping_price = models.IntegerField(default=None, null=True, blank=True)
 
 
-class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel):
+class Product(TimeStampedModel, PriceModel, ActiveModel, ViewModel, SoldModel, InpectionModel):
     class Meta:
         verbose_name = u'제품 / Product'
         verbose_name_plural = verbose_name
