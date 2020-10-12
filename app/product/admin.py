@@ -390,6 +390,7 @@ class ProductOptionInline(admin.StackedInline):
     fields = ['is_active', 'name', 'original_price',
               'discount_price', 'stock', 'size', 'color', 'extra_option']
     readonly_fields = ['name', ]
+    classes = ['collapse']
     extra = 0
 
 
@@ -400,6 +401,7 @@ class ProductImageInline(admin.StackedInline):
     extra = 0
     classes = ('grp-collapse grp-open',)
     inline_classes = ('grp-collapse grp-open',)
+    classes = ['collapse']
 
     def post_image_shot(self, obj):
         return mark_safe('<img src="{url}" \
