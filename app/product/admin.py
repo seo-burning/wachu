@@ -423,9 +423,10 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['product_summary', 'option_summary', 'is_active', 'validation', 'store', 'get_product_link']
     readonly_fields = ['view', 'store', 'product_source', 'product_link', 'sold', 'current_product_backend_rating', 'current_review_rating',
                        'shopee_item_id', 'original_price', 'shipping_price', 'discount_price', 'discount_rate', 'currency', 'stock',
-                       'shopee_category', 'shopee_color', 'shopee_size', 'category']
+                       'shopee_category', 'shopee_color', 'shopee_size', 'category', 'inspector']
     fieldsets = [('Status', {'fields': [('is_active', 'stock_available', ), 'validation',
-                                        ('view', 'sold', 'current_product_backend_rating', 'current_review_rating')]}),
+                                        ('view', 'sold', 'current_product_backend_rating', 'current_review_rating'),
+                                        ('inspector')]}),
                  #  ('Preorder', {'fields': ['is_preorder', 'preorder_campaign']}),
                  ('Product Source', {'fields': [('store', 'product_source', 'shopee_item_id',), 'product_link']}),
                  ('Product Info', {'fields': [('name',  'product_thumbnail_image'),
@@ -496,79 +497,79 @@ class ProductAdmin(admin.ModelAdmin):
     make_it_to_pick_object.short_description = '[pick] Make a pick objects from selected products'
 
     def make_activate(self, request, queryset):
-        updated_count = queryset.update(is_active=True)
+        updated_count = queryset.update(inspector=request.user, is_active=True)
         self.message_user(
             request, '{}건의 상품을 Activated 상태로 변경'.format(updated_count))
     make_activate.short_description = '[is_active] Make is_active status to Actived'
 
     def make_deactivate(self, request, queryset):
-        updated_count = queryset.update(is_active=False)
+        updated_count = queryset.update(inspector=request.user, is_active=False)
         self.message_user(
             request, '{}건의 상품을 Deavtivate 상태로 변경'.format(updated_count))
     make_deactivate.short_description = '[is_active] Make is_active status to Deactived'
 
     def make_valid_and_active(self, request, queryset):
-        updated_count = queryset.update(validation='V', is_active=True)
+        updated_count = queryset.update(inspector=request.user, validation='V', is_active=True)
         self.message_user(
             request, '{}건의 상품을 확인 완료 & Active로 변경'.format(updated_count))
     make_valid_and_active.short_description = '[is_active] 지정 상품을 확인 완료 후 Active'
 
     def make_valid(self, request, queryset):
-        updated_count = queryset.update(validation='V')
+        updated_count = queryset.update(inspector=request.user, validation='V')
         self.message_user(
             request, '{}건의 상품을 확인 완료 상태로 변경'.format(updated_count))
     make_valid.short_description = '[validation] Mark product validation as Validated (확인완료)'
 
     def make_not_valid(self, request, queryset):
-        updated_count = queryset.update(validation='N')
+        updated_count = queryset.update(inspector=request.user, validation='N')
         self.message_user(
             request, '{}건의 상품을 비정상상품 상태로 변경'.format(updated_count))
     make_not_valid.short_description = '[validation] Mark product validation as Unqualified (비정상)'
 
     def make_need_to_review(self, request, queryset):
-        updated_count = queryset.update(validation='V')
+        updated_count = queryset.update(inspector=request.user, validation='V')
         self.message_user(
             request, '{}건의 상품을 리뷰 필요 상태로 변경'.format(updated_count))
     make_need_to_review.short_description = '[validation] Mark product validation as Need to Review (확인필요)'
 
     def categorize_bag(self, request, queryset):
         category_bag = models.ProductCategory.objects.get(name='bag')
-        updated_count = queryset.update(category=category_bag)
+        updated_count = queryset.update(inspector=request.user, category=category_bag)
         self.message_user(
             request, '{}건의 상품을 Bag으로 분류'.format(updated_count))
     categorize_bag.short_description = '[Category] Categorize product as bag'
 
     def categorize_jewelry(self, request, queryset):
         category_jewelry = models.ProductCategory.objects.get(name='jewelry')
-        updated_count = queryset.update(category=category_jewelry)
+        updated_count = queryset.update(inspector=request.user, category=category_jewelry)
         self.message_user(
             request, '{}건의 상품을 jewelry으로 분류'.format(updated_count))
     categorize_jewelry.short_description = '[Category] Categorize product as jewelry'
 
     def categorize_shoes(self, request, queryset):
         category_shoes = models.ProductCategory.objects.get(name='shoes')
-        updated_count = queryset.update(category=category_shoes)
+        updated_count = queryset.update(inspector=request.user, category=category_shoes)
         self.message_user(
             request, '{}건의 상품을 shoes으로 분류'.format(updated_count))
     categorize_shoes.short_description = '[Category] Categorize product as shoes'
 
     def product_category_dam_kieu(self, request, queryset):
         sub_categroy_dam = models.ProductSubCategory.objects.get(name='dam_kieu')
-        updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
+        updated_count = queryset.update(inspector=request.user, sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
     product_category_dam_kieu.short_description = '[Category] Categorize product as Dam kieu'
 
     def product_category_ao_somi(self, request, queryset):
         sub_categroy_dam = models.ProductSubCategory.objects.get(name='shirts')
-        updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
+        updated_count = queryset.update(inspector=request.user, sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
     product_category_ao_somi.short_description = '[Category] Categorize product as Ao somi'
 
     def product_set_vest(self, request, queryset):
         vest_sub_category = models.ProductSubCategory.objects.get(pk=73)
-        updated_count = queryset.update(sub_category=vest_sub_category, category=vest_sub_category.category)
+        updated_count = queryset.update(inspector=request.user, sub_category=vest_sub_category, category=vest_sub_category.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
     product_set_vest.short_description = '[Category] Categorize product as - Set / Vest'
@@ -577,6 +578,7 @@ class ProductAdmin(admin.ModelAdmin):
         print_pattern = models.ProductPattern.objects.get(name='print')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(print_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -588,6 +590,7 @@ class ProductAdmin(admin.ModelAdmin):
         floral_pattern = models.ProductPattern.objects.get(name='floral')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(floral_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -599,6 +602,7 @@ class ProductAdmin(admin.ModelAdmin):
         tiedye_pattern = models.ProductPattern.objects.get(name='tiedye')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(tiedye_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -610,6 +614,7 @@ class ProductAdmin(admin.ModelAdmin):
         polka_pattern = models.ProductPattern.objects.get(name='polka')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(polka_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -621,6 +626,7 @@ class ProductAdmin(admin.ModelAdmin):
         striped_pattern = models.ProductPattern.objects.get(name='striped')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(striped_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -632,6 +638,7 @@ class ProductAdmin(admin.ModelAdmin):
         texture_pattern = models.ProductPattern.objects.get(name='texture')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(texture_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -643,6 +650,7 @@ class ProductAdmin(admin.ModelAdmin):
         caro_pattern = models.ProductPattern.objects.get(name='caro')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.pattern.add(caro_pattern)
             obj.save()
             updated_count = updated_count + 1
@@ -654,6 +662,7 @@ class ProductAdmin(admin.ModelAdmin):
         simple_style = models.ProductStyle.objects.get(name='simple')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.style = simple_style
             obj.save()
             updated_count = updated_count + 1
@@ -665,6 +674,7 @@ class ProductAdmin(admin.ModelAdmin):
         lovely_style = models.ProductStyle.objects.get(name='lovely')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.style = lovely_style
             obj.save()
             updated_count = updated_count + 1
@@ -676,6 +686,7 @@ class ProductAdmin(admin.ModelAdmin):
         street_style = models.ProductStyle.objects.get(name='street')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.style = street_style
             obj.save()
             updated_count = updated_count + 1
@@ -687,6 +698,7 @@ class ProductAdmin(admin.ModelAdmin):
         feminine_style = models.ProductStyle.objects.get(name='feminine')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.style = feminine_style
             obj.save()
             updated_count = updated_count + 1
@@ -698,6 +710,7 @@ class ProductAdmin(admin.ModelAdmin):
         sexy_style = models.ProductStyle.objects.get(name='sexy')
         updated_count = 0
         for obj in queryset.all():
+            obj.inspector = request.user
             obj.style = sexy_style
             obj.save()
             updated_count = updated_count + 1
@@ -710,6 +723,7 @@ class ProductAdmin(admin.ModelAdmin):
         updated_count = 0
         for obj in queryset.all():
             obj.style = vintage_style
+            obj.inspector = request.user
             obj.save()
             updated_count = updated_count + 1
         self.message_user(
@@ -764,6 +778,7 @@ class ProductAdmin(admin.ModelAdmin):
                         <p class="bold {subcategory}">{category} > {subcategory}</p>\
                         <h4>{name}</h4>\
                         <p class="{pick_set_exist}"> Pick exists : {pick_set_exist}</p>\
+                        <p> Inspector : {inspector}</p>\
                         <p class="light right">{created_at}</p>\
                         <p class="{style}">Style : {style}</p>\
                         <p>Price :{original_price} VND \
@@ -772,6 +787,7 @@ class ProductAdmin(admin.ModelAdmin):
                         <p class={stock_is_null}>Stock : {stock}</p>'.format(
             url=obj.product_thumbnail_image,
             pick_set_exist=pick_set_exist,
+            inspector=obj.inspector,
             category=obj.category,
             subcategory=obj.sub_category,
             created_at=obj.created_at,
