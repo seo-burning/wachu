@@ -463,7 +463,6 @@ class ProductAdmin(admin.ModelAdmin):
                'make_valid_and_active',
                'make_valid', 'make_not_valid', 'make_need_to_review',
                'categorize_bag', 'categorize_jewelry', 'categorize_shoes',
-               'product_type_instagram',
                'product_pattern_print',
                'product_pattern_floral',
                'product_pattern_tiedye',
@@ -506,84 +505,79 @@ class ProductAdmin(admin.ModelAdmin):
         updated_count = queryset.update(is_active=True)
         self.message_user(
             request, '{}건의 상품을 Activated 상태로 변경'.format(updated_count))
-    make_activate.short_description = '지정 상품을 Activate 상태로 변경'
+    make_activate.short_description = '[is_active] Make is_active status to Actived'
 
     def make_deactivate(self, request, queryset):
         updated_count = queryset.update(is_active=False)
         self.message_user(
             request, '{}건의 상품을 Deavtivate 상태로 변경'.format(updated_count))
-    make_deactivate.short_description = '지정 상품을 Deactivate 상태로 변경'
+    make_deactivate.short_description = '[is_active] Make is_active status to Deactived'
 
     def make_valid_and_active(self, request, queryset):
         updated_count = queryset.update(validation='V', is_active=True)
         self.message_user(
             request, '{}건의 상품을 확인 완료 & Active로 변경'.format(updated_count))
-    make_valid_and_active.short_description = '지정 상품을 확인 완료 후 Active'
+    make_valid_and_active.short_description = '[is_active] 지정 상품을 확인 완료 후 Active'
 
     def make_valid(self, request, queryset):
         updated_count = queryset.update(validation='V')
         self.message_user(
             request, '{}건의 상품을 확인 완료 상태로 변경'.format(updated_count))
-    make_valid.short_description = '지정 상품을 확인 완료 상태로 변경'
+    make_valid.short_description = '[validation] Mark product validation as Validated (확인완료)'
 
     def make_not_valid(self, request, queryset):
         updated_count = queryset.update(validation='N')
         self.message_user(
             request, '{}건의 상품을 비정상상품 상태로 변경'.format(updated_count))
-    make_not_valid.short_description = '지정 상품을 비정상상품 상태로 변경'
+    make_not_valid.short_description = '[validation] Mark product validation as Unqualified (비정상)'
 
     def make_need_to_review(self, request, queryset):
         updated_count = queryset.update(validation='V')
         self.message_user(
             request, '{}건의 상품을 리뷰 필요 상태로 변경'.format(updated_count))
-    make_need_to_review.short_description = '리뷰 필요'
+    make_need_to_review.short_description = '[validation] Mark product validation as Need to Review (확인필요)'
 
     def categorize_bag(self, request, queryset):
         category_bag = models.ProductCategory.objects.get(name='bag')
         updated_count = queryset.update(category=category_bag)
         self.message_user(
             request, '{}건의 상품을 Bag으로 분류'.format(updated_count))
-    categorize_bag.short_description = '상품을 Bag으로 분류'
+    categorize_bag.short_description = '[Category] Categorize product as bag'
 
     def categorize_jewelry(self, request, queryset):
         category_jewelry = models.ProductCategory.objects.get(name='jewelry')
         updated_count = queryset.update(category=category_jewelry)
         self.message_user(
             request, '{}건의 상품을 jewelry으로 분류'.format(updated_count))
-    categorize_jewelry.short_description = '상품을 jewelry으로 분류'
+    categorize_jewelry.short_description = '[Category] Categorize product as jewelry'
 
     def categorize_shoes(self, request, queryset):
         category_shoes = models.ProductCategory.objects.get(name='shoes')
         updated_count = queryset.update(category=category_shoes)
         self.message_user(
             request, '{}건의 상품을 shoes으로 분류'.format(updated_count))
-    categorize_shoes.short_description = '상품을 shoes으로 분류'
-
-    def product_type_instagram(self, request, queryset):
-        updated_count = queryset.update(product_source='INSTAGRAM')
-        self.message_user(
-            request, '{}건의 상품을 INSTAGRAM 분류'.format(updated_count))
-    product_type_instagram.short_description = 'product source instagram'
+    categorize_shoes.short_description = '[Category] Categorize product as shoes'
 
     def product_category_dam_kieu(self, request, queryset):
         sub_categroy_dam = models.ProductSubCategory.objects.get(name='dam_kieu')
         updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
+    product_category_dam_kieu.short_description = '[Category] Categorize product as Dam kieu'
 
     def product_category_ao_somi(self, request, queryset):
         sub_categroy_dam = models.ProductSubCategory.objects.get(name='shirts')
         updated_count = queryset.update(sub_category=sub_categroy_dam, category=sub_categroy_dam.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
-    product_category_ao_somi.short_description = '상품 카테고리 분류 - Ao somi'
+    product_category_ao_somi.short_description = '[Category] Categorize product as Ao somi'
 
     def product_set_vest(self, request, queryset):
         vest_sub_category = models.ProductSubCategory.objects.get(pk=73)
         updated_count = queryset.update(sub_category=vest_sub_category, category=vest_sub_category.category)
         self.message_user(
             request, '{}건의 상품 분류'.format(updated_count))
-    product_set_vest.short_description = '상품 카테고리 분류 - Set / Vest'
+    product_set_vest.short_description = '[Category] Categorize product as - Set / Vest'
 
     def product_pattern_print(self, request, queryset):
         print_pattern = models.ProductPattern.objects.get(name='print')
@@ -594,7 +588,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
-    product_pattern_print.short_description = 'print 패턴 추가'
+    product_pattern_print.short_description = '[Pattern] Add print pattern on product'
 
     def product_pattern_floral(self, request, queryset):
         floral_pattern = models.ProductPattern.objects.get(name='floral')
@@ -605,7 +599,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 floral 패턴 추가'.format(updated_count))
-    product_pattern_floral.short_description = 'floral 패턴 추가'
+    product_pattern_floral.short_description = '[Pattern] Add floral pattern on product'
 
     def product_pattern_tiedye(self, request, queryset):
         tiedye_pattern = models.ProductPattern.objects.get(name='tiedye')
@@ -616,7 +610,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 tiedye 패턴 추가'.format(updated_count))
-    product_pattern_tiedye.short_description = 'tiedye 패턴 추가'
+    product_pattern_tiedye.short_description = '[Pattern] Add tiedye pattern on product'
 
     def product_pattern_polka(self, request, queryset):
         polka_pattern = models.ProductPattern.objects.get(name='polka')
@@ -627,7 +621,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
-    product_pattern_polka.short_description = 'polka 패턴 추가'
+    product_pattern_polka.short_description = '[Pattern] Add polka pattern on product'
 
     def product_pattern_striped(self, request, queryset):
         striped_pattern = models.ProductPattern.objects.get(name='striped')
@@ -638,7 +632,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
-    product_pattern_striped.short_description = 'striped 패턴 추가'
+    product_pattern_striped.short_description = '[Pattern] Add striped pattern on product'
 
     def product_pattern_texture(self, request, queryset):
         texture_pattern = models.ProductPattern.objects.get(name='texture')
@@ -649,7 +643,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
-    product_pattern_texture.short_description = 'texture 패턴 추가'
+    product_pattern_texture.short_description = '[Pattern] Add texture pattern on product'
 
     def product_pattern_caro(self, request, queryset):
         caro_pattern = models.ProductPattern.objects.get(name='caro')
@@ -660,7 +654,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 PRINT 패턴 추가'.format(updated_count))
-    product_pattern_caro.short_description = 'caro 패턴 추가'
+    product_pattern_caro.short_description = '[Pattern] Add caro pattern on product'
 
     def product_style_simple(self, request, queryset):
         simple_style = models.ProductStyle.objects.get(name='simple')
@@ -671,7 +665,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 simple 스타일 분류'.format(updated_count))
-    product_style_simple.short_description = '스타일 분류 - simple'
+    product_style_simple.short_description = '[style] Mark product style as simple'
 
     def product_style_lovely(self, request, queryset):
         lovely_style = models.ProductStyle.objects.get(name='lovely')
@@ -682,7 +676,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 lovely 스타일 분류'.format(updated_count))
-    product_style_lovely.short_description = '스타일 분류 - lovely'
+    product_style_lovely.short_description = '[style] Mark product style as lovely'
 
     def product_style_street(self, request, queryset):
         street_style = models.ProductStyle.objects.get(name='street')
@@ -693,7 +687,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 street 스타일 분류'.format(updated_count))
-    product_style_street.short_description = '스타일 분류 - street'
+    product_style_street.short_description = '[style] Mark product style as street'
 
     def product_style_feminine(self, request, queryset):
         feminine_style = models.ProductStyle.objects.get(name='feminine')
@@ -704,7 +698,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 feminine 스타일 분류'.format(updated_count))
-    product_style_feminine.short_description = '스타일 분류 - feminine'
+    product_style_feminine.short_description = '[style] Mark product style as feminine'
 
     def product_style_sexy(self, request, queryset):
         sexy_style = models.ProductStyle.objects.get(name='sexy')
@@ -715,7 +709,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 sexy 스타일 분류'.format(updated_count))
-    product_style_sexy.short_description = '스타일 분류 - sexy'
+    product_style_sexy.short_description = '[style] Mark product style as sexy'
 
     def product_style_vintage(self, request, queryset):
         vintage_style = models.ProductStyle.objects.get(name='vintage')
@@ -726,7 +720,7 @@ class ProductAdmin(admin.ModelAdmin):
             updated_count = updated_count + 1
         self.message_user(
             request, '{}건의 상품에 vintage 스타일 분류'.format(updated_count))
-    product_style_vintage.short_description = '스타일 분류 - vintage'
+    product_style_vintage.short_description = '[style] Mark product style as vintage'
 
     def changelist_view(self, request, extra_context=None):
         # Aggregate new subscribers per day
@@ -777,11 +771,11 @@ class ProductAdmin(admin.ModelAdmin):
                         <h4>{name}</h4>\
                         <p class="{pick_set_exist}"> Pick exists : {pick_set_exist}</p>\
                         <p class="light right">{created_at}</p>\
-                        <p class="{style}">스타일 : {style}</p>\
-                        <p>가격 :{original_price} VND \
-                            <span class={is_discount}>/ 할인가격 :{discount_price} VND ({discount_rate}%)</span>\
+                        <p class="{style}">Style : {style}</p>\
+                        <p>Price :{original_price} VND \
+                            <span class={is_discount}>/ Discount Price :{discount_price} VND ({discount_rate}%)</span>\
                         </p>\
-                        <p class={stock_is_null}>재고 / stock : {stock}</p>'.format(
+                        <p class={stock_is_null}>Stock : {stock}</p>'.format(
             url=obj.product_thumbnail_image,
             pick_set_exist=pick_set_exist,
             category=obj.category,
@@ -825,14 +819,14 @@ class ProductAdmin(admin.ModelAdmin):
                 div.active { background-color : rgba(223, 245, 223,0.3) }\
         </style> "
         pattern_list = obj.pattern.all()
-        pattern_info = '<h4>패턴 종류 / pattern ({len}) : </h4><p>'.format(len=len(pattern_list))
+        pattern_info = '<h4>Pattern ({len}) : </h4><p>'.format(len=len(pattern_list))
         for pattern_obj in pattern_list:
             pattern_info += '{pattern}, '.format(pattern=pattern_obj)
         pattern_info += '</p>'
 
         size_list = obj.size.all()
         shopee_size_list = obj.shopee_size.all()
-        size_info = '<h4>사이즈 종류 / size ({len} / src {source_len}): </h4><p>'.format(
+        size_info = '<h4>Size ({len} / src {source_len}): </h4><p>'.format(
             len=len(size_list), source_len=len(shopee_size_list))
         for size_obj in size_list:
             size_info += '{size}, '.format(size=size_obj)
@@ -840,7 +834,7 @@ class ProductAdmin(admin.ModelAdmin):
 
         color_list = obj.color.all()
         shopee_color_list = obj.shopee_color.all()
-        color_info = '<h4>색상 종류 / color ({len} / src {source_len}) : </h4><p>'.format(
+        color_info = '<h4>Color ({len} / src {source_len}) : </h4><p>'.format(
             len=len(color_list), source_len=len(shopee_color_list))
         for color_obj in color_list:
             color_info += '{color}, '.format(color=color_obj)
@@ -848,21 +842,14 @@ class ProductAdmin(admin.ModelAdmin):
 
         extra_option_list = obj.extra_option.all()
         source_extra_option_list = obj.source_extra_option.all()
-        extra_option_info = '<h4>기타 옵션 / extra_option ({len} / src {source_len}) : </h4><p>'.format(
+        extra_option_info = '<h4>Extra_option ({len} / src {source_len}) : </h4><p>'.format(
             len=len(extra_option_list), source_len=len(source_extra_option_list))
         for extra_option_obj in extra_option_list:
             extra_option_info += '{extra_option}, '.format(extra_option=extra_option_obj)
         extra_option_info += '</p>'
 
-        pattern_option_list = obj.pattern.all()
-        pattern_option_info = '<h4>패턴/ extra_option ({len}) : </h4><p>'.format(
-            len=len(pattern_option_list))
-        for pattern_option_obj in pattern_option_list:
-            pattern_option_info += '{pattern_option}, '.format(pattern_option=pattern_option_obj)
-        pattern_option_info += '</p>'
-
         option_list = obj.product_options.all()
-        option_info = '<h4>상품 옵션 / Options ({len}) : </h4>\
+        option_info = '<h4>Options ({len}) : </h4>\
             <table>\
                 <tr>\
                     <td>No</td>\
@@ -917,4 +904,4 @@ class ProductAdmin(admin.ModelAdmin):
                 option_obj.color = u_color
                 option_obj.size = u_size
                 option_obj.save()
-    make_name_to_option.short_description = '옵션 변경'
+    make_name_to_option.short_description = '[Option] Make Product Option from option name'

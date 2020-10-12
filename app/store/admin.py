@@ -166,6 +166,7 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                     'current_ranking',
                     'store_infomation',
                     'store_validation',
+                    'need_to_check_num',
                     'need_to_update_num',
                     'product_num', ]
     list_display_links = ['store_infomation', 'store_validation']
@@ -183,13 +184,13 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
         updated_count = queryset.update(is_active=True)
         self.message_user(
             request, '{}건의 포스팅을 Activated 상태로 변경'.format(updated_count))
-    make_activate.short_description = '지정 스토어를 Activate 상태로 변경'
+    make_activate.short_description = '[is_active]Make store status to Actived'
 
     def make_deactivate(self, request, queryset):
         updated_count = queryset.update(is_active=False)
         self.message_user(
             request, '{}건의 포스팅을 Deavtivate 상태로 변경'.format(updated_count))
-    make_deactivate.short_description = '지정 스토어를 Deactivate 상태로 변경'
+    make_deactivate.short_description = '[is_active]Make store status to Deactived'
 
     def profile_image_shot(self, obj):
         if 'http' in str(obj.profile_image):
@@ -212,6 +213,17 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
                            'admin/product/product/?q=%s&is_active__exact=1&stock_available__exact=1">%s</a>'
                            % (obj.insta_id, product_num)
                            )
+
+    def need_to_check_num(self, obj):
+        product_num = obj.product_set.filter(validation='V', is_active=False, stock_available=True).count()
+        if product_num > 0:
+            return format_html('<a href="http://dabivn.com/'
+                               'admin/product/product/?q=%s&validation__exact=V'
+                               '&stock_available__exact=1&is_active__exact=0"><p style="color:red">%s</p></a>'
+                               % (obj.insta_id, product_num)
+                               )
+        else:
+            return product_num
 
     def need_to_update_num(self, obj):
         product_num = obj.product_set.filter(validation='R', stock_available=True).count()
@@ -339,9 +351,9 @@ class StoreAdmin(admin.ModelAdmin, ExportCsvMixin):
             validation_string = insta_is_valid + '/'+facebook_is_valid+'/'+homepage_is_valid+'/'+shopee_is_valid
             obj.validation_string = validation_string
             obj.save()
-
-    need_to_update_num.short_description = '업데이트 필요'
-    product_num.short_description = '유효 상품'
+    need_to_check_num.short_description = 'Check Prod'
+    need_to_update_num.short_description = 'Validate Prod'
+    product_num.short_description = 'Active Prod'
     instagram_link.short_description = "Link"
     instagram_link.allow_tags = True
 
