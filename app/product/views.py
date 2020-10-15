@@ -91,7 +91,7 @@ class ProductSearchListView(generics.ListAPIView):
         q_filter = []
         q = self.request.query_params.get('q').lower()
         if(q):
-            q_filter = q.split(',').split('_')
+            q_filter = q.split('_')[0]
         print(q_filter)
         # 여러가지 키워드가 날라오는거 기반으로 초반에 설계함
         queryset = queryset.filter(Q(color__name__icontains=q_filter) | Q(
