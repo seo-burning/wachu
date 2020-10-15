@@ -92,14 +92,15 @@ class ProductSearchListView(generics.ListAPIView):
         queryset = models.Product.objects.filter(is_active=True)
         q_filter_list = []
         q = self.request.query_params.get('q').lower()
+        # 여러가지 키워드가 날라오는거 기반으로 초반에 설계함
         if(q):
             q_filter_list = q.split('_')
-        print(q_filter_list)
-        # 여러가지 키워드가 날라오는거 기반으로 초반에 설계함
-        queryset = queryset.filter(reduce(and_, [Q(name__icontains=query) for query in q_filter_list]))
-
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+            queryset = queryset.filter(reduce(and_, [Q(name__icontains=query) for query in q_filter_list]))
+            print(q_filter_list)
+            queryset = self.get_serializer_class().setup_eager_loading(queryset)
+            return queryset
+        else:
+            return []
 
 
 class ProductRatingView(generics.RetrieveAPIView):
