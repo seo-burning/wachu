@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from product import serializers, models
 from user.models import UserProductView
 from utils.slack import slack_notify
+from operator import and_
+from functools import reduce
 
 
 class ProductDetailView(generics.RetrieveAPIView):
@@ -88,15 +90,13 @@ class ProductSearchListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = models.Product.objects.filter(is_active=True)
-        q_filter = []
+        q_filter_list = []
         q = self.request.query_params.get('q').lower()
         if(q):
-            q_filter = q.split('_')[0]
-        print(q_filter)
+            q_filter_list = q.split('_')
+        print(q_filter_list)
         # 여러가지 키워드가 날라오는거 기반으로 초반에 설계함
-        queryset = queryset.filter(Q(color__name__icontains=q_filter) | Q(
-            sub_category__name__icontains=q_filter) | Q(category__name__icontains=q_filter)
-            | Q(style__name__icontains=q_filter) | Q(name__icontains=q_filter)).distinct()
+        queryset = queryset.filter(reduce(and_, [Q(name__icontains=query) for query in q_filter_list]))
 
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
