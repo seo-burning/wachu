@@ -172,7 +172,7 @@ def send_test_notification(body, title, route=None, params=None):
     notification_obj.save()
 
 
-def send_multiple_push_message_to_all(body, title, route=None, params=None):
+def smta(body, title, route=None, params=None):
     user_push_token_list = UserPushToken.objects.filter(is_active=True)
     print("total push estimate : {}".format(len(user_push_token_list)))
     data = None

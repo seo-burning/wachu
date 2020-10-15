@@ -565,7 +565,32 @@ def validate_shopee(start_index=0, end_index=None, reverse=False):
                     break
                 try:
                     obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
-                    time.sleep(randint(0, 1))
+                    time.sleep(randint(0, 2))
+                    break
+                except:
+                    try_count += 1
+        time.sleep(randint(0, 5))
+    slack_notify(results_string)
+
+
+def update_discount_product():
+    obj = ShopeeScraper()
+    store_list = Store.objects.filter(store_type='IS').filter(is_active=True)
+    results_string = ''
+    for i, store_obj in enumerate(store_list):
+        print("\n#" + str(i) + ' update discount product ' + str(store_obj))
+        results_string += ("\n#" + str(i) + ' update discount product ' + str(store_obj))
+        product_list = Product.objects.filter(is_active=True, is_discount=True, store=store_obj, product_source='SHOPEE')
+        for product_obj in product_list:
+            try_count = 0
+            # obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+            while True:
+                if try_count == 5:
+                    product_obj.is_active = False
+                    break
+                try:
+                    obj.get_or_create_product(store_obj, product_obj.shopee_item_id)
+                    time.sleep(randint(0, 2))
                     break
                 except:
                     try_count += 1
@@ -580,5 +605,6 @@ if __name__ == '__main__':
     # obj = ShopeeScraper()
     # obj.refactor_search_store(Store.objects.get(insta_id='tingoan_store'))
     # # validate_shopee(10, 100)
-    validate_shopee(138)
+    update_discount_product()
+    # validate_shopee(136)
     # validate_shopee(reverse=True)
